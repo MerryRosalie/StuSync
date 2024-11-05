@@ -1,0 +1,107 @@
+import { useState } from "react";
+import {
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import Feather from "@expo/vector-icons/Feather";
+import { useRouter } from "expo-router";
+
+const FriendsTab = {
+  All: "all",
+  Incoming: "incoming",
+  Pending: "pending",
+};
+
+function Tab({ buttons, selectedTab, setSelectedTab }) {
+  return (
+    <View className="flex-row">
+      {buttons.map((button) => {
+        const selected = button === selectedTab;
+        return (
+          <Pressable
+            key={button}
+            className={`flex-1 justify-center items-center py-3 rounded-full mb-4 ${
+              selected && "bg-purple-default dark:bg-dark-purple-default"
+            }`}
+            onPress={() => setSelectedTab(button)}
+          >
+            <Text
+              className={`capitalize ${
+                selected
+                  ? "font-inter-bold text-background dark:text-dark-background"
+                  : "text-text-default dark:text-dark-text-default"
+              }`}
+            >
+              {button}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
+  );
+}
+
+function AllPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  return (
+    <ScrollView>
+      <View className="flex-row items-center gap-3 px-6 py-3 bg-text-default/5 dark:bg-dark-text-default/5 rounded-full">
+        <Feather className="opacity-50" name="search" size={24} />
+        <TextInput
+          className="flex-1"
+          placeholder="Search for users..."
+          value={searchQuery}
+          onChangeText={(text) => setSearchQuery(text)}
+        />
+      </View>
+    </ScrollView>
+  );
+}
+
+export default function Page() {
+  const router = useRouter();
+  const [selectedTab, setSelectedTab] = useState(FriendsTab.All);
+
+  const buttons = Object.values(FriendsTab);
+
+  return (
+    <SafeAreaProvider>
+      <SafeAreaView className="flex-1 bg-background dark:bg-dark-background px-6">
+        {/* Header */}
+        <View className="flex-row items-center justify-between mb-3">
+          <TouchableOpacity className="p-4" onPress={() => router.back()}>
+            <Feather
+              className="color-text-default dark:color-dark-text-default"
+              name="chevron-left"
+              size={24}
+            />
+          </TouchableOpacity>
+          <Text className="font-inter-bold">Friends List</Text>
+          <TouchableOpacity
+            onPress={() => router.push("/friends/add")}
+            className="p-4"
+          >
+            <Feather
+              className="color-text-default dark:color-dark-text-default"
+              name="user-plus"
+              size={24}
+            />
+          </TouchableOpacity>
+        </View>
+        {/* Tabs */}
+        <Tab
+          buttons={buttons}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+        />
+        {/* Pages based on selectedTab */}
+        {selectedTab === FriendsTab.All && <AllPage />}
+      </SafeAreaView>
+    </SafeAreaProvider>
+  );
+}
