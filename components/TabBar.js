@@ -1,13 +1,5 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
-import { cssInterop } from "nativewind";
-
-cssInterop(Feather, {
-  className: {
-    target: "style",
-    nativeStyleToProp: { height: true, width: true, size: true },
-  },
-});
 
 export default function TabBar({ state, descriptors, navigation }) {
   // Filter out unwanted routes
