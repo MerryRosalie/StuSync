@@ -7,6 +7,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { cssInterop } from "nativewind";
+import Feather from "@expo/vector-icons/Feather";
 import "react-native-reanimated";
 
 import "../global.css";
