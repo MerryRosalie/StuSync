@@ -6,12 +6,21 @@ import {
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { cssInterop } from "nativewind";
 import "react-native-reanimated";
 
 import "../global.css";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+// Enable icon to be coloured with nativewind
+cssInterop(Feather, {
+  className: {
+    target: "style",
+    nativeStyleToProp: { height: true, width: true, size: true },
+  },
+});
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({ Inter_400Regular, Inter_700Bold });
