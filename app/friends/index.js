@@ -34,7 +34,7 @@ function Tab({ buttons, selectedTab, setSelectedTab }) {
               className={`capitalize ${
                 selected
                   ? "font-inter-bold text-background dark:text-dark-background"
-                  : "text-text-default dark:text-dark-text-default"
+                  : "font-inter text-text-default/50 dark:text-dark-text-default/50"
               }`}
             >
               {button}
@@ -50,11 +50,16 @@ function AllPage() {
   const [searchQuery, setSearchQuery] = useState("");
   return (
     <ScrollView>
+      {/* Search Bar */}
       <View className="flex-row items-center gap-3 px-6 py-3 bg-text-default/5 dark:bg-dark-text-default/5 rounded-full">
-        <Feather className="opacity-50" name="search" size={24} />
+        <Feather
+          className="opacity-50 color-text-default dark:color-dark-text-default"
+          name="search"
+          size={24}
+        />
         <TextInput
-          className="flex-1"
-          placeholder="Search for users..."
+          className="flex-1 font-inter text-text-default dark:text-dark-text-default placeholder:text-text-default/50 dark:placeholder:text-dark-text-default/50"
+          placeholder="Search by name or username..."
           value={searchQuery}
           onChangeText={(text) => setSearchQuery(text)}
         />
@@ -81,7 +86,9 @@ export default function Page() {
               size={24}
             />
           </TouchableOpacity>
-          <Text className="font-inter-bold">Friends List</Text>
+          <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
+            Friends List
+          </Text>
           <TouchableOpacity
             onPress={() => router.push("/friends/add")}
             className="p-4"
