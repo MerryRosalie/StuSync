@@ -1,29 +1,50 @@
-// import { Tabs } from "expo-router";
-// import Ionicons from "@expo/vector-icons/Ionicons";
+import {
+  Inter_400Regular,
+  Inter_700Bold,
+  useFonts,
+} from "@expo-google-fonts/inter";
+import { Stack } from "expo-router";
+import * as SplashScreen from "expo-splash-screen";
+import { useEffect } from "react";
+import { cssInterop } from "nativewind";
+import Feather from "@expo/vector-icons/Feather";
+import "react-native-reanimated";
 
-// export default function RootLayout() {
-//   return (
-//     <Tabs>
-//       <Tabs.Screen
-//         name="notes"
-//         options={{
-//           title: "Notes",
-//           headerShown: false,
-//           tabBarIcon: ({ size, color }) => (
-//             <Ionicons name="document-text" size={size} color={color} />
-//           ),
-//         }}
-//       />
-//       <Tabs.Screen
-//         name="settings"
-//         options={{
-//           title: "Settings",
-//           tabBarIcon: ({ size, color }) => (
-//             <Ionicons name="settings" size={size} color={color} />
-//           ),
-//         }}
-//       />
-//       <Tabs.Screen name="index" options={{ href: null }} />
-//     </Tabs>
-//   );
-// }
+import "../global.css";
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync();
+
+// Enable icon to be coloured with nativewind
+cssInterop(Feather, {
+  className: {
+    target: "style",
+    nativeStyleToProp: { height: true, width: true, size: true },
+  },
+});
+
+export default function RootLayout() {
+  const [loaded, error] = useFonts({ Inter_400Regular, Inter_700Bold });
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
+  return <RootLayoutNavigation />;
+}
+
+function RootLayoutNavigation() {
+  return (
+    // TODO: Change to Auth first
+    <Stack initialRouteName="main" screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="main" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
