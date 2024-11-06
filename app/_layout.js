@@ -42,8 +42,8 @@ export default function RootLayout() {
 function RootLayoutNavigation() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(app)" options={{ headerShown: false }} />
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="app" options={{ headerShown: false }} />
     </Stack>
   );
 }
