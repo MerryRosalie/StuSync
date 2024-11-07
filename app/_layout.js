@@ -41,9 +41,10 @@ export default function RootLayout() {
 
 function RootLayoutNavigation() {
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(app)" options={{ headerShown: false }} />
+    // TODO: Change to Auth first
+    <Stack initialRouteName="main" screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="auth" options={{ headerShown: false }} />
+      <Stack.Screen name="main" options={{ headerShown: false }} />
       <Stack.Screen name="friends" options={{ headerShown: false }} />
     </Stack>
   );
