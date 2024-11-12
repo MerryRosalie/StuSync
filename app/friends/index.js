@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   Text,
   View,
@@ -10,6 +10,7 @@ import {
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
+import Friend from "../../components/Friend";
 
 const FriendsTab = {
   All: "all",
@@ -49,7 +50,7 @@ function Tab({ buttons, selectedTab, setSelectedTab }) {
 function AllPage() {
   const [searchQuery, setSearchQuery] = useState("");
   return (
-    <ScrollView>
+    <ScrollView className="flex-1">
       {/* Search Bar */}
       <View className="flex-row items-center gap-3 px-6 py-3 bg-text-default/5 dark:bg-dark-text-default/5 rounded-full">
         <Feather
@@ -64,6 +65,10 @@ function AllPage() {
           onChangeText={(text) => setSearchQuery(text)}
         />
       </View>
+      {/* Friends List */}
+      <View className="flex-1">
+        <Friend />
+      </View>
     </ScrollView>
   );
 }
@@ -75,7 +80,7 @@ export default function Page() {
   const buttons = Object.values(FriendsTab);
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider className="flex-1">
       <SafeAreaView className="flex-1 bg-background dark:bg-dark-background px-6">
         {/* Header */}
         <View className="flex-row items-center justify-between mb-3">

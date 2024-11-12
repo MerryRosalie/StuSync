@@ -8,9 +8,22 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { cssInterop } from "nativewind";
 import Feather from "@expo/vector-icons/Feather";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "react-native-reanimated";
 
 import "../global.css";
+
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from "expo-router";
+
+export const unstable_settings = {
+  // TODO: Change to Auth first
+  // Ensure that reloading on `/modal` keeps a back button present.
+  initialRouteName: "main",
+};
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -26,13 +39,18 @@ cssInterop(Feather, {
 export default function RootLayout() {
   const [loaded, error] = useFonts({ Inter_400Regular, Inter_700Bold });
 
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
-    if (loaded || error) {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [loaded]);
 
-  if (!loaded && !error) {
+  if (!loaded) {
     return null;
   }
 
@@ -41,11 +59,15 @@ export default function RootLayout() {
 
 function RootLayoutNavigation() {
   return (
-    // TODO: Change to Auth first
-    <Stack initialRouteName="main" screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="auth" options={{ headerShown: false }} />
-      <Stack.Screen name="main" options={{ headerShown: false }} />
-      <Stack.Screen name="friends" options={{ headerShown: false }} />
-    </Stack>
+    <GestureHandlerRootView className="flex-1">
+      <BottomSheetModalProvider>
+        <Stack initialRouteName="main" screenOptions={{ headerShown: false }}>
+          {/* // TODO: Change to Auth first */}
+          <Stack.Screen name="auth" options={{ headerShown: false }} />
+          <Stack.Screen name="main" options={{ headerShown: false }} />
+          <Stack.Screen name="friends" options={{ headerShown: false }} />
+        </Stack>
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
   );
 }
