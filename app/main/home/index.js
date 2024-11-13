@@ -11,6 +11,12 @@ export default function Page() {
       </Text>
       <Link
         className="text-text-default dark:text-dark-text-default"
+        href="/chat"
+      >
+        Go to Chat
+      </Link>
+      <Link
+        className="text-text-default dark:text-dark-text-default"
         href="/auth/login"
       >
         Go to Signin
