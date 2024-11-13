@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 
 export default function TabBar({ state, descriptors, navigation }) {

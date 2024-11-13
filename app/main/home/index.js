@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PreviousStudySessCard from "../../../components/PreviousStudySessCard";
 import Feather from "@expo/vector-icons/Feather";
 import ProfileIcon from "../../../components/ProfileIcon";
+import { Link } from "expo-router";
 
 export default function Page() {
   return (
@@ -68,6 +69,19 @@ export default function Page() {
           </View>
         </ScrollView>
       </View>
+      <Link
+        className="text-text-default dark:text-dark-text-default"
+        href="/chat"
+      >
+        Go to Chat
+      </Link>
+      <Link
+        className="text-text-default dark:text-dark-text-default"
+        href="/auth/login"
+      >
+        Go to Signin
+      </Link>
+      <ModeSwitch />
     </SafeAreaView>
   );
 }
