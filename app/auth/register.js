@@ -21,7 +21,6 @@ export default function Page() {
           source={RegisterImage}
           className="absolute top-8 z-10 h-[180px] self-end"
         />
-
         <ScrollView className="flex-1 mt-[220px]">
           <View className="bg-white dark:bg-dark-background px-5 py-8 rounded-t-[30px] min-h-[500px]">
             <Text className="font-inter-bold text-2xl text-purple-default dark:text-dark-purple-default self-start mb-6">
