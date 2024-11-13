@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   Text,
   View,
@@ -20,7 +20,7 @@ const FriendsTab = {
 
 function Tab({ buttons, selectedTab, setSelectedTab }) {
   return (
-    <View className="flex-row">
+    <View className="flex-row px-6">
       {buttons.map((button) => {
         const selected = button === selectedTab;
         return (
@@ -50,7 +50,7 @@ function Tab({ buttons, selectedTab, setSelectedTab }) {
 function AllPage() {
   const [searchQuery, setSearchQuery] = useState("");
   return (
-    <ScrollView className="flex-1">
+    <ScrollView className="flex-1 px-6">
       {/* Search Bar */}
       <View className="flex-row items-center gap-3 px-6 py-3 bg-text-default/5 dark:bg-dark-text-default/5 rounded-full">
         <Feather
@@ -81,9 +81,9 @@ export default function Page() {
 
   return (
     <SafeAreaProvider className="flex-1">
-      <SafeAreaView className="flex-1 bg-background dark:bg-dark-background px-6">
+      <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
         {/* Header */}
-        <View className="flex-row items-center justify-between mb-3">
+        <View className="flex-row items-center justify-between mb-3 px-6">
           <TouchableOpacity className="p-4" onPress={() => router.back()}>
             <Feather
               className="color-text-default dark:color-dark-text-default"

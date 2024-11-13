@@ -37,7 +37,7 @@ export default function Friend() {
   const handlePresentModalPress = () => bottomSheetRef.current?.present();
 
   return (
-    <View className="flex-row items-center gap-2 p-2 py-4 flex-2">
+    <View className="flex-row items-center gap-2 p-2 flex-2">
       {/* Profile picture + Name + Settings */}
       <View className="relative">
         {/* TODO: Change to Image */}
@@ -62,8 +62,11 @@ export default function Friend() {
       {/* Settings Modal */}
       <Sheet ref={bottomSheetRef} noExpand>
         <View>
-          {icons.map((icon) => (
-            <TouchableOpacity className="flex-row items-center gap-2 py-4">
+          {icons.map((icon, index) => (
+            <TouchableOpacity
+              key={index}
+              className="flex-row items-center gap-2 py-4"
+            >
               {icon.icon({
                 className: icon.warn
                   ? "color-alert-text dark:color-dark-alert-text"
