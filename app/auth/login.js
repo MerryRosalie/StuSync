@@ -16,14 +16,18 @@ export default function Page() {
           Welcome Back!
         </Text>
 
-        <Text className="font-inter-medium text-lg mb-2">Email</Text>
+        <Text className="font-inter-medium text-lg mb-2 dark:text-dark-text-default">
+          Email
+        </Text>
         <TextInput
           placeholder="Enter your email..."
           className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
           placeholderTextColor="#9CA3AF"
         />
 
-        <Text className="font-inter-medium text-lg my-2">Password</Text>
+        <Text className="font-inter-medium text-lg my-2 dark:text-dark-text-default">
+          Password
+        </Text>
         <TextInput
           placeholder="Enter your password..."
           secureTextEntry
