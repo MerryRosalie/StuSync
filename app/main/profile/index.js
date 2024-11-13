@@ -3,8 +3,11 @@ import ModeSwitch from "../../../components/ModeSwitch";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Page() {
+  const navigation = useNavigation();
+
   const circles = [
     { color: "bg-red-500", label: "Circle 1" },
     { color: "bg-blue-500", label: "Circle 2" },
@@ -54,13 +57,10 @@ export default function Page() {
           <Text>Jan 1, 2024</Text>
         </View>
       </View>
-      {/* <Link
-        className="text-text-default dark:text-dark-text-default"
-        href="/friends"
+      <TouchableOpacity
+        className="flex-row justify-between w-full rounded-[20px] border-2 border-gray p-4 items-center"
+        onPress={() => navigation.navigate("friends")}
       >
-        Go to Friends
-      </Link> */}
-      <TouchableOpacity className="flex-row justify-between w-full rounded-[20px] border-2 border-gray p-4 items-center">
         <Text className="text-base font-bold">Your Friends</Text>
         <View className="flex-row">
           <View className="flex-row items-center justify-center">

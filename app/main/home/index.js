@@ -4,9 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PreviousStudySessCard from "../../../components/PreviousStudySessCard";
 import Feather from "@expo/vector-icons/Feather";
 import ProfileIcon from "../../../components/ProfileIcon";
+import { useNavigation } from "@react-navigation/native";
 import { Link } from "expo-router";
 
 export default function Page() {
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 justify-around pb-32">
       {/* <Text className="font-inter-bold text-xl text-purple-default dark:text-dark-purple-default">
@@ -19,7 +22,10 @@ export default function Page() {
         <Text className="text-left text-2xl font-semibold">Username</Text>
       </View>
       {/* active study sess */}
-      <TouchableOpacity className="bg-purple-default w-full h-40 rounded-2xl p-4 justify-between">
+      <TouchableOpacity
+        className="bg-purple-default w-full h-40 rounded-2xl p-4 justify-between"
+        onPress={() => navigation.navigate("chat")}
+      >
         <View>
           <Text className="text-white font-semibold text-base">
             COMP1511 studymaxxing!!
@@ -29,7 +35,10 @@ export default function Page() {
         <Text className="text-white font-semibold text-2xl">13 DEC 12PM</Text>
       </TouchableOpacity>
       <View className="gap-6">
-        <TouchableOpacity className="flex-row justify-between">
+        <TouchableOpacity
+          className="flex-row justify-between"
+          onPress={() => navigation.navigate("friends")}
+        >
           <Text className="text-left text-xl font-semibold">{`Friends On Campus! (7)`}</Text>
           <Feather name="chevron-right" size={24} color="black" />
         </TouchableOpacity>
@@ -71,17 +80,10 @@ export default function Page() {
       </View>
       <Link
         className="text-text-default dark:text-dark-text-default"
-        href="/chat"
-      >
-        Go to Chat
-      </Link>
-      <Link
-        className="text-text-default dark:text-dark-text-default"
         href="/auth/login"
       >
         Go to Signin
       </Link>
-      <ModeSwitch />
     </SafeAreaView>
   );
 }
