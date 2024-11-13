@@ -15,6 +15,12 @@ export default function Page() {
       >
         Go to Chat
       </Link>
+      <Link
+        className="text-text-default dark:text-dark-text-default"
+        href="/auth/login"
+      >
+        Go to Signin
+      </Link>
       <ModeSwitch />
     </SafeAreaView>
   );
