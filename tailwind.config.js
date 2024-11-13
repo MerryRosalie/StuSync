@@ -16,6 +16,7 @@ module.exports = {
           default: "#121212",
           dimmed: "#DCDCDC",
         },
+        gray: "#EEEEEE",
         purple: {
           default: "#7A51EC",
           secondary: "#EBE5FC",
