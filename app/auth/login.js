@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Text,
   TextInput,
@@ -8,12 +9,55 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import LoginImage from "../../assets/auth/sign-in.png";
-import { useNavigation } from "@react-navigation/native";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function Page() {
-  const navigation = useNavigation();
+  const router = useRouter();
+  const { login } = useUser();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Check email is valid using regex
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      return "Email is required";
+    }
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    return "";
+  };
+
+  // If no errors, login
+  const handleLogin = async () => {
+    const emailError = validateEmail(email);
+    if (emailError) {
+      setError(emailError);
+      return;
+    }
+
+    if (!password) {
+      setError("Please enter your password");
+      return;
+    }
+
+    setIsLoading(true);
+    setError("");
+
+    try {
+      await login(email, password);
+      router.replace("/");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -34,8 +78,14 @@ export default function Page() {
             Email
           </Text>
           <TextInput
+            value={email}
+            onChangeText={setEmail}
             placeholder="Enter your email..."
-            className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            className={`w-full p-4 rounded-xl bg-white dark:bg-dark-background border text-text-default dark:text-dark-text-default ${
+              error ? "border-red-500" : "border-gray dark:border-gray-700"
+            }`}
             placeholderTextColor="#9CA3AF"
           />
 
@@ -43,11 +93,19 @@ export default function Page() {
             Password
           </Text>
           <TextInput
+            value={password}
+            onChangeText={setPassword}
             placeholder="Enter your password..."
             secureTextEntry
-            className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
+            className={`w-full p-4 rounded-xl bg-white dark:bg-dark-background border text-text-default dark:text-dark-text-default ${
+              error ? "border-red-500" : "border-gray dark:border-gray-700"
+            }`}
             placeholderTextColor="#9CA3AF"
           />
+
+          {error && (
+            <Text className="text-red-500 mt-2 text-center">{error}</Text>
+          )}
 
           <View className="flex-row justify-center items-center mt-4">
             <Text className="font-inter-regular dark:text-dark-text-default">
@@ -62,11 +120,14 @@ export default function Page() {
           </View>
 
           <TouchableOpacity
-            className="w-full bg-purple-default py-4 rounded-xl mt-safe"
-            onPress={() => navigation.navigate("home")}
+            className={`w-full bg-purple-default py-4 rounded-xl mt-safe ${
+              isLoading ? "opacity-50" : ""
+            }`}
+            onPress={handleLogin}
+            disabled={isLoading}
           >
             <Text className="text-white font-inter-bold text-center text-lg">
-              LOGIN
+              {isLoading ? "LOGGING IN..." : "LOGIN"}
             </Text>
           </TouchableOpacity>
         </View>

@@ -29,24 +29,66 @@ export const UserProvider = ({ children }) => {
 
   const saveUserStore = async (newUserStore) => {
     try {
-      await AsyncStorage.setItem("userStore", JSON.stringify(newUserStore));
-      setUserStore(newUserStore);
+      const currentStore = await AsyncStorage.getItem("userStore");
+      let finalStore = newUserStore;
+
+      if (currentStore) {
+        const parsedStore = JSON.parse(currentStore);
+        finalStore = {
+          ...parsedStore,
+          ...newUserStore,
+          users: {
+            ...parsedStore.users,
+            ...newUserStore.users,
+          },
+        };
+      }
+
+      await AsyncStorage.setItem("userStore", JSON.stringify(finalStore));
+      setUserStore(finalStore);
     } catch (error) {
-      console.error("Error saving users:", error);
+      throw error;
+    }
+  };
+
+  const addUser = async (user) => {
+    try {
+      if (!user.uid || !user.email || !user.password) {
+        throw new Error("Invalid user object");
+      }
+
+      const currentStore = await AsyncStorage.getItem("userStore");
+      const baseStore = currentStore ? JSON.parse(currentStore) : userStore;
+
+      const newUserStore = {
+        ...baseStore,
+        users: {
+          ...baseStore.users,
+          [user.uid]: user,
+        },
+      };
+
+      await saveUserStore(newUserStore);
+      return user;
+    } catch (error) {
+      throw error;
     }
   };
 
   const setCurrentUser = async (uid) => {
-    const newUserStore = { ...userStore, activeUser: uid };
-    await saveUserStore(newUserStore);
-  };
+    try {
+      const currentStore = await AsyncStorage.getItem("userStore");
+      const baseStore = currentStore ? JSON.parse(currentStore) : userStore;
 
-  const addUser = async (user) => {
-    const newUserStore = {
-      ...userStore,
-      users: { ...userStore.users, [user.uid]: user },
-    };
-    await saveUserStore(newUserStore);
+      const newUserStore = {
+        ...baseStore,
+        activeUser: uid,
+      };
+
+      await saveUserStore(newUserStore);
+    } catch (error) {
+      throw error;
+    }
   };
 
   const removeUser = async (uid) => {
@@ -64,6 +106,33 @@ export const UserProvider = ({ children }) => {
     ? userStore.users[userStore.activeUser]
     : null;
 
+  const login = async (email, password) => {
+    try {
+      const user = Object.values(userStore.users).find(
+        (u) => u.email.toLowerCase() === email.toLowerCase()
+      );
+
+      if (!user) {
+        throw new Error("No account found with this email");
+      }
+
+      if (user.password !== password) {
+        throw new Error("Incorrect password");
+      }
+
+      await setCurrentUser(user.uid);
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const checkEmailExists = (email) => {
+    return Object.values(userStore.users).some(
+      (user) => user.email.toLowerCase() === email.toLowerCase()
+    );
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -73,6 +142,8 @@ export const UserProvider = ({ children }) => {
         addUser,
         removeUser,
         isLoading,
+        login,
+        checkEmailExists,
       }}
     >
       {children}

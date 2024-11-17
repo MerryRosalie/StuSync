@@ -1,102 +1,208 @@
-import {
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-  Image,
-  ScrollView,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useState } from "react";
+import { useRouter } from "expo-router";
+import { useUser } from "../../src/contexts/UserContext";
+import NameStep from "../../components/register/steps/NameStep";
+import PasswordStep from "../../components/register/steps/PasswordStep";
+import EmailStep from "../../components/register/steps/EmailStep";
+import CoursesStep from "../../components/register/steps/CoursesStep";
+import { SafeAreaView, View, Text, TouchableOpacity } from "react-native";
+import ProgressBar from "../../components/register/ProgressBar";
 import { Link } from "expo-router";
-import RegisterImage from "../../assets/auth/sign-up.png";
-import { useNavigation } from "@react-navigation/native";
 
-export default function Page() {
-  const navigation = useNavigation();
+export default function Register() {
+  const router = useRouter();
+  const { addUser, setCurrentUser, checkEmailExists } = useUser();
+  const [step, setStep] = useState(1);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const [courses, setCourses] = useState([]);
+  const [courseInput, setCourseInput] = useState("");
+
+  // Ensure email matches regex
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.trim()) {
+      return "Email is required";
+    }
+    if (!emailRegex.test(email)) {
+      return "Please enter a valid email address";
+    }
+    return "";
+  };
+
+  // Ensure password is at least 8 characters long, contains at least one uppercase letter, one lowercase letter, one number and matches confirm password
+  const validatePassword = (pass, confirm) => {
+    if (pass.length < 8) {
+      return "Password must be at least 8 characters long";
+    }
+    if (!/[A-Z]/.test(pass)) {
+      return "Password must contain at least one uppercase letter";
+    }
+    if (!/[a-z]/.test(pass)) {
+      return "Password must contain at least one lowercase letter";
+    }
+    if (!/[0-9]/.test(pass)) {
+      return "Password must contain at least one number";
+    }
+    if (confirm && pass !== confirm) {
+      return "Passwords do not match";
+    }
+    return "";
+  };
+
+  // If no errors, set email
+  const handleEmailChange = (text) => {
+    setEmail(text);
+    setEmailError(validateEmail(text));
+  };
+
+  // If no errors proceed to next step
+  const canProceed = () => {
+    switch (step) {
+      case 1:
+        return name.trim().length >= 2;
+      case 2:
+        return email.trim().length > 0 && !emailError;
+      case 3:
+        return (
+          password.length >= 8 && !passwordError && password === confirmPassword
+        );
+      case 4:
+        return true;
+    }
+  };
+
+  // If no errors set password
+  const handlePasswordChange = (text) => {
+    setPassword(text);
+    setPasswordError(validatePassword(text, confirmPassword));
+  };
+
+  // If no errors set confirm password
+  const handleConfirmPasswordChange = (text) => {
+    setConfirmPassword(text);
+    setPasswordError(validatePassword(password, text));
+  };
+
+  // If course input is not empty add course to courses
+  const addCourse = () => {
+    if (courseInput.trim()) {
+      setCourses([...courses, courseInput.trim().toUpperCase()]);
+      setCourseInput("");
+    }
+  };
+
+  // If course is in courses remove it
+  const removeCourse = (courseToRemove) => {
+    setCourses(courses.filter((course) => course !== courseToRemove));
+  };
+
+  // If no errors add user to database
+  const handleRegister = async () => {
+    try {
+      const newUser = {
+        uid: Date.now().toString(),
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        password: password,
+        courses: courses,
+        createdAt: new Date().toISOString(),
+      };
+
+      await addUser(newUser);
+      await setCurrentUser(newUser.uid);
+      router.replace("/");
+    } catch (error) {
+      console.error("Registration error:", error);
+    }
+  };
+
+  // If on first step go back to login otherwise go back one step
+  const handleBackPress = () => {
+    if (step === 1) {
+      router.back();
+    } else {
+      setStep((prev) => prev - 1);
+    }
+  };
+
+  // Render the current step
+  const renderStep = () => {
+    switch (step) {
+      case 1:
+        return <NameStep value={name} onChangeText={setName} />;
+      case 2:
+        return (
+          <EmailStep
+            value={email}
+            onChangeText={handleEmailChange}
+            error={emailError}
+          />
+        );
+      case 3:
+        return (
+          <PasswordStep
+            password={password}
+            confirmPassword={confirmPassword}
+            onPasswordChange={handlePasswordChange}
+            onConfirmPasswordChange={handleConfirmPasswordChange}
+            error={passwordError}
+          />
+        );
+      case 4:
+        return (
+          <CoursesStep
+            courses={courses}
+            onAddCourse={addCourse}
+            onRemoveCourse={removeCourse}
+            courseInput={courseInput}
+            setCourseInput={setCourseInput}
+          />
+        );
+    }
+  };
 
   return (
-    <SafeAreaView className="flex-1 bg-purple-secondary dark:bg-dark-purple-secondary">
-      <View className="flex-1 relative">
-        <Image
-          source={RegisterImage}
-          className="absolute top-8 z-10 h-[180px] self-end"
-        />
-
-        <ScrollView className="flex-1 mt-[220px]">
-          <View className="bg-white dark:bg-dark-background px-5 py-8 rounded-t-[30px] min-h-[500px]">
-            <Text className="font-inter-bold text-2xl text-purple-default dark:text-dark-purple-default self-start mb-6">
-              Create an account
+    <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
+      <View className="flex-1">
+        <View className="pt-4">
+          <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
+            <Text className="text-2xl text-text-default dark:text-dark-text-default">
+              ←
             </Text>
+          </TouchableOpacity>
+          <ProgressBar currentStep={step} totalSteps={4} />
+        </View>
 
-            <Text className="font-inter-medium text-lg mb-2 dark:text-dark-text-default">
-              Name
-            </Text>
-            <TextInput
-              placeholder="Enter your name..."
-              className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
-              placeholderTextColor="#9CA3AF"
-            />
+        <View className="flex-1 px-5 pt-8">
+          {renderStep()}
 
-            <Text className="font-inter-medium text-lg my-2 dark:text-dark-text-default">
-              Username
-            </Text>
-            <TextInput
-              placeholder="Enter your username..."
-              className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
-              placeholderTextColor="#9CA3AF"
-            />
-
-            <Text className="font-inter-medium text-lg my-2 dark:text-dark-text-default">
-              Email
-            </Text>
-            <TextInput
-              placeholder="Enter your email..."
-              className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
-              placeholderTextColor="#9CA3AF"
-            />
-
-            <Text className="font-inter-medium text-lg my-2 dark:text-dark-text-default">
-              Password
-            </Text>
-            <TextInput
-              placeholder="Enter your password..."
-              secureTextEntry
-              className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
-              placeholderTextColor="#9CA3AF"
-            />
-
-            <Text className="font-inter-medium text-lg my-2 dark:text-dark-text-default">
-              Confirm Password
-            </Text>
-            <TextInput
-              placeholder="Confirm password..."
-              secureTextEntry
-              className="w-full p-4 rounded-xl bg-white dark:bg-dark-background border border-gray-200 dark:border-gray-700"
-              placeholderTextColor="#9CA3AF"
-            />
-
-            <View className="flex-row justify-center items-center mt-4">
-              <Text className="font-inter-regular dark:text-dark-text-default">
-                Have an account?{" "}
-              </Text>
-              <Link
-                href="/auth/login"
-                className="font-inter-medium text-purple-default"
-              >
-                Log In
-              </Link>
-            </View>
-
+          <View className="absolute bottom-8 left-5 right-5">
             <TouchableOpacity
-              className="w-full bg-purple-default py-4 rounded-xl mt-safe"
-              onPress={() => navigation.navigate("home")}
+              className={`w-full py-4 rounded-xl ${
+                canProceed()
+                  ? "bg-purple-default dark:bg-dark-purple-default"
+                  : "bg-purple-default/50 dark:bg-dark-purple-default/50"
+              }`}
+              disabled={!canProceed()}
+              onPress={() => {
+                if (step < 4) {
+                  setStep((prev) => prev + 1);
+                } else {
+                  handleRegister();
+                }
+              }}
             >
-              <Text className="text-white font-inter-bold text-center text-lg">
-                SIGN UP
+              <Text className="text-background dark:text-dark-text-default font-semibold text-center text-lg">
+                {step === 4 ? "Get Started" : "Next"}
               </Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
       </View>
     </SafeAreaView>
   );
