@@ -37,8 +37,12 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
   const [contentHeight, setContentHeight] = useState(0);
 
   const snapPoints = useMemo(() => {
-    const height = Math.min(contentHeight, 600);
-    return [height, "100%"];
+    if (contentHeight) {
+      const height = Math.min(contentHeight + 8, 600);
+      return [height, "100%"];
+    } else {
+      return ["100%"];
+    }
   }, [contentHeight]);
 
   const onLayoutContent = useCallback((event) => {
