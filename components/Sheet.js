@@ -1,6 +1,10 @@
-import React, { forwardRef, useMemo } from "react";
-import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { View, useColorScheme } from "react-native";
+import React, { forwardRef, useMemo, useState } from "react";
+import {
+  BottomSheetModal,
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import { ScrollView, View, useColorScheme } from "react-native";
 import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import Animated, {
   useAnimatedStyle,
@@ -30,7 +34,17 @@ const CustomBackground = ({ style, animatedIndex, targetColor }) => {
 
 const Sheet = forwardRef(({ children, noExpand }, ref) => {
   const colorScheme = useColorScheme();
-  const snapPoints = useMemo(() => ["100%"], []);
+  const [contentHeight, setContentHeight] = useState(0);
+
+  const snapPoints = useMemo(() => {
+    const height = Math.min(contentHeight, 600);
+    return [height, "100%"];
+  }, [contentHeight]);
+
+  const onLayoutContent = useCallback((event) => {
+    const { height } = event.nativeEvent.layout;
+    setContentHeight(height);
+  }, []);
 
   const renderBackdrop = useMemo(
     () => (props) => (
@@ -73,6 +87,7 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
       backgroundComponent={background}
       enableContentPanningGesture={noExpand ? false : true}
       enableHandlePanningGesture={noExpand ? false : true}
+      enableDynamicSizing
       handleComponent={() =>
         !noExpand && (
           <View className="self-center">
@@ -81,9 +96,13 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
         )
       }
     >
-      <BottomSheetScrollView className="flex-1">
-        <View className="flex-1 p-6">{children}</View>
-      </BottomSheetScrollView>
+      <BottomSheetView className="flex-1">
+        <ScrollView className="flex-1">
+          <View onLayout={onLayoutContent} className="flex-1 p-6">
+            {children}
+          </View>
+        </ScrollView>
+      </BottomSheetView>
     </BottomSheetModal>
   );
 });
