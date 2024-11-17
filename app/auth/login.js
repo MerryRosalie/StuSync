@@ -9,7 +9,9 @@ export default function Page() {
 
   return (
     <SafeAreaView className="flex justify-start items-center bg-purple-secondary dark:bg-dark-purple-secondary h-full">
-      <Image source={LoginImage} className="px-12 mt-16 mb-5" />
+      <View className="h-[45%] w-full">
+        <Image source={LoginImage} className="h-full w-full" />
+      </View>
       <View className="bg-white dark:bg-dark-background w-full h-full px-5 py-12 rounded-t-[30px]">
         <Text className="font-inter-bold text-3xl text-purple-default dark:text-dark-purple-default self-start mb-8">
           Welcome Back!
