@@ -8,6 +8,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { cssInterop } from "nativewind";
 import Feather from "@expo/vector-icons/Feather";
+import Entypo from "@expo/vector-icons/Entypo";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "react-native-reanimated";
@@ -32,6 +33,12 @@ SplashScreen.preventAutoHideAsync();
 
 // Enable icon to be coloured with nativewind
 cssInterop(Feather, {
+  className: {
+    target: "style",
+    nativeStyleToProp: { height: true, width: true, size: true },
+  },
+});
+cssInterop(Entypo, {
   className: {
     target: "style",
     nativeStyleToProp: { height: true, width: true, size: true },
