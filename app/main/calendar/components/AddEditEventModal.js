@@ -108,14 +108,14 @@ export default function AddEditEventModal({
   };
 
   return (
-    <ScrollView className="py-10 px-7">
+    <ScrollView className="py-10 px-7 ">
       {/* Header */}
       <View className="flex-row justify-between items-center mb-8">
         <Text className="text-xl font-inter-bold dark:text-white">
           {event ? "Edit Event" : "Add Event"}
         </Text>
         <TouchableOpacity onPress={hideModal}>
-          <Text className="text-gray-500 dark:text-gray-400">Close</Text>
+          <Text className="text-md dark:text-white">Close</Text>
         </TouchableOpacity>
       </View>
 
@@ -127,7 +127,7 @@ export default function AddEditEventModal({
       <TextInput
         value={title}
         onChangeText={setTitle}
-        className="bg-gray-100 dark:bg-dark-gray-100 p-3 rounded-lg mb-4 border border-gray dark:border-gray-700"
+        className="bg-gray dark:bg-dark-gray p-3 rounded-lg mb-4 border border-gray dark:border-dark-gray text-text-default dark:text-dark-text-default"
         placeholder="Enter Title"
       />
 
@@ -138,9 +138,9 @@ export default function AddEditEventModal({
       </View>
       <TouchableOpacity
         onPress={() => setShowDatePicker(true)}
-        className="bg-gray-100 dark:bg-dark-gray-100 p-3 rounded-lg mb-4 border border-gray dark:border-gray-700"
+        className="bg-gray dark:bg-dark-gray p-3 rounded-lg mb-4 border border-gray dark:border-dark-gray"
       >
-        <Text>
+        <Text className="text-text-default dark:text-dark-text-default">
           {selectedDate.toLocaleDateString("en-US", {
             weekday: "short",
             month: "short",
@@ -160,9 +160,9 @@ export default function AddEditEventModal({
           </View>
           <TouchableOpacity
             onPress={() => setShowStartTimePicker(true)}
-            className="bg-gray-100 dark:bg-dark-gray-100 p-3 rounded-lg border border-gray dark:border-gray-700"
+            className="bg-gray dark:bg-dark-gray p-3 rounded-lg border border-gray dark:border-dark-gray"
           >
-            <Text>
+            <Text className="text-text-default dark:text-dark-text-default">
               {startTime.toLocaleTimeString("en-GB", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -177,9 +177,9 @@ export default function AddEditEventModal({
           </View>
           <TouchableOpacity
             onPress={() => setShowEndTimePicker(true)}
-            className="bg-gray-100 dark:bg-dark-gray-100 p-3 rounded-lg border border-gray dark:border-gray-700"
+            className="bg-gray dark:bg-dark-gray p-3 rounded-lg border border-gray dark:border-dark-gray"
           >
-            <Text>
+            <Text className="text-text-default dark:text-dark-text-default">
               {endTime.toLocaleTimeString("en-GB", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -196,7 +196,7 @@ export default function AddEditEventModal({
       <TextInput
         value={description}
         onChangeText={setDescription}
-        className="bg-gray-100 dark:bg-dark-gray-100 p-3 rounded-lg mb-4 border border-gray dark:border-gray-700"
+        className="bg-gray dark:bg-dark-gray p-3 rounded-lg mb-4 border border-gray dark:border-dark-gray text-text-default dark:text-dark-text-default"
         placeholder="Enter Description"
         numberOfLines={3}
       />
@@ -242,23 +242,21 @@ export default function AddEditEventModal({
 
       <View className="flex-col  ">
         <TouchableOpacity
-          className={`flex-1 bg-purple-600 p-4 rounded-lg items-center my-3 ${
+          className={`flex-1 bg-purple-default dark:bg-dark-purple-default p-4 rounded-lg items-center my-3 ${
             !title ? "opacity-50" : "opacity-100"
           }`}
           onPress={handleSave}
           disabled={!title}
         >
-          <Text className="text-white dark:text-white font-inter-medium">
-            SAVE
-          </Text>
+          <Text className="text-white font-inter-medium">SAVE</Text>
         </TouchableOpacity>
         {event && (
           // Only show delete button when editing an event
           <TouchableOpacity
-            className="flex-1 bg-red-100 dark:bg-red-900 p-4 rounded-lg items-center"
+            className="flex-1 bg-failure-background dark:bg-dark-alert-background p-4 rounded-lg items-center"
             onPress={handleDelete}
           >
-            <Text className="text-red-600 dark:text-red-300 font-inter-medium">
+            <Text className="text-failure-text dark:text-dark-alert-text font-inter-medium">
               DELETE
             </Text>
           </TouchableOpacity>

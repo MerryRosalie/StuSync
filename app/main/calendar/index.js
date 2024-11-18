@@ -96,7 +96,7 @@ export default function Page() {
     setCalendarDate(newDate);
   };
 
-  // Filter events for selected date (the date displayed in the calendar)
+  // Filter events for selected date
   const getEventsForDate = (date) => {
     return events.filter((event) => {
       const eventDate = new Date(event.startTime);
