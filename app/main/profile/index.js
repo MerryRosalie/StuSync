@@ -2,10 +2,8 @@ import { Text, TouchableOpacity, View } from "react-native";
 import ModeSwitch from "../../../components/ModeSwitch";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
-import Feather from "@expo/vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import Feather from "@expo/vector-icons/Feather";
-import { useNavigation } from "@react-navigation/native";
 
 export default function Page() {
   const navigation = useNavigation();
