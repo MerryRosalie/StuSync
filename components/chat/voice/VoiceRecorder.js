@@ -49,7 +49,7 @@ export default function VoiceRecorder({ onRecordingComplete }) {
       clearInterval(timerRef.current);
       setIsRecording(false);
       setRecordingDuration(0);
-      onRecordingComplete(uri);
+      if (onRecordingComplete) onRecordingComplete(uri);
     } catch (error) {
       Alert.alert("Failed to stop recording. Try again later.");
     }

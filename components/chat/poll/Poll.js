@@ -1,118 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { View, Text, TouchableOpacity, TextInput, Alert } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
-
-// ResultBox Component - Displays a poll option with voting percentage and selection status
-const ResultBox = ({ option, checked, percentage }) => {
-  return (
-    <View
-      className={`relative flex-row items-center px-4 py-3 border rounded-lg ${
-        checked
-          ? "border-purple-default dark:border-dark-purple-default"
-          : "border-text-dimmed dark:border-dark-text-dimmed"
-      }`}
-    >
-      {/* Progress bar background */}
-      <View
-        className="absolute rounded-tl-lg rounded-bl-lg top-0 left-0 bottom-0 bg-purple-secondary dark:bg-dark-purple-secondary"
-        style={{ width: `${percentage}%` }}
-      />
-      {/* Option text */}
-      <Text
-        className={`flex-1 line-clamp-1 text-ellipsis ${
-          checked
-            ? "text-purple-default dark:text-dark-purple-default"
-            : "text-text-default dark:text-dark-text-default"
-        }`}
-      >
-        {option}
-      </Text>
-      <View className="flex-row gap-4 items-center">
-        {/* Percentage display */}
-        <Text
-          className={`font-inter-bold ${
-            checked
-              ? "text-purple-default dark:text-dark-purple-default"
-              : "text-text-default dark:text-dark-text-default"
-          }`}
-        >
-          {Math.floor(percentage)}%
-        </Text>
-        {/* Checkbox indicator */}
-        <View
-          onPress={() => setChecked((prev) => !prev)}
-          className={`border h-10 w-10 items-center justify-center rounded-lg ${
-            checked
-              ? "border-purple-default dark:border-dark-purple-default bg-purple-default dark:bg-dark-purple-default"
-              : "border-text-default dark:border-dark-text-default/25"
-          }`}
-        >
-          {checked && (
-            <Feather
-              name="check"
-              size={24}
-              className="color-background dark:color-dark-background"
-            />
-          )}
-        </View>
-      </View>
-    </View>
-  );
-};
-
-// Checkbox Component - Interactive poll option for voting
-const Checkbox = ({ option, value, onChange }) => {
-  const [checked, setChecked] = useState(value || false);
-
-  // Notify parent component when checkbox state changes
-  useEffect(() => {
-    onChange(checked);
-  }, [checked]);
-
-  return (
-    <TouchableOpacity
-      onPress={() => setChecked((prev) => !prev)}
-      className={`flex-row items-center px-4 py-3 border rounded-lg ${
-        checked
-          ? "border-purple-default dark:border-dark-purple-default"
-          : "border-text-dimmed dark:border-dark-text-dimmed"
-      }`}
-    >
-      {/* Option Text */}
-      <Text
-        className={`flex-1 line-clamp-1 text-ellipsis ${
-          checked
-            ? "text-purple-default dark:text-dark-purple-default"
-            : "text-text-default dark:text-dark-text-default"
-        }`}
-      >
-        {option}
-      </Text>
-      {/* Checkbox */}
-      <TouchableOpacity
-        onPress={() => setChecked((prev) => !prev)}
-        className={`border h-10 w-10 items-center justify-center rounded-lg ${
-          checked
-            ? "border-purple-default dark:border-dark-purple-default bg-purple-default dark:bg-dark-purple-default"
-            : "border-text-default dark:border-dark-text-default/25"
-        }`}
-      >
-        {/* Checkmark icon - only shown when selected */}
-        {checked && (
-          <Feather
-            name="check"
-            size={24}
-            className="color-background dark:color-dark-background"
-          />
-        )}
-      </TouchableOpacity>
-    </TouchableOpacity>
-  );
-};
+import Checkbox from "./Checkbox";
+import ResultBox from "./ResultBox";
 
 // Main Poll Component - Manages poll options and voting state
 export default function Poll({ options, onChange, showResults }) {
-  // Initialize votes state with all options set to false
+  // Initialise votes state with all options set to false
   const [votes, setVotes] = useState(
     options.reduce((accumulator, option) => {
       accumulator[option] = false;
@@ -157,7 +51,7 @@ export default function Poll({ options, onChange, showResults }) {
 
   // Notify parent component when votes change
   useEffect(() => {
-    onChange(votes);
+    if (onChange) onChange(votes);
   }, [votes]);
 
   return (
@@ -169,6 +63,7 @@ export default function Poll({ options, onChange, showResults }) {
             <ResultBox
               option={option}
               checked={votes[option]}
+              numOfVotes={1}
               percentage={
                 votes[option]
                   ? (1 / Object.values(votes).filter((value) => value).length) *

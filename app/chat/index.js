@@ -8,6 +8,7 @@ import {
   PanResponder,
   Image,
 } from "react-native";
+import Modal from "react-native-modal";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
@@ -20,6 +21,10 @@ import ImageModal from "../../components/ImageModal";
 import VoiceRecorder from "../../components/chat/voice/VoiceRecorder";
 import VoiceMessage from "../../components/chat/voice/VoiceMessage";
 import LocationPollModal from "../../components/chat/LocationPollModal";
+import ProposeEndTimeModal from "../../components/chat/ProposeEndTimeModal";
+import KickAMemberModal from "../../components/chat/KickAMemberModal";
+import Poll from "../../components/chat/poll/Poll";
+import BinaryPoll from "../../components/chat/poll/BinaryPoll";
 
 // ChatBubble component handles individual message display
 const ChatBubble = ({
@@ -29,6 +34,7 @@ const ChatBubble = ({
   time,
   images,
   reply,
+  poll,
   onSwipe,
   voiceUri,
 }) => {
@@ -68,6 +74,7 @@ const ChatBubble = ({
             voiceUri,
             reply,
             images,
+            poll,
           });
           // Return to original position after delay
           setTimeout(() => {
@@ -196,6 +203,9 @@ const ChatBubble = ({
             {/* Voice message component */}
             {voiceUri && <VoiceMessage uri={voiceUri} mode={mode} />}
 
+            {/* Poll interface */}
+            {poll && <BinaryPoll />}
+
             {/* Message timestamp */}
             <Text
               className={`${
@@ -227,20 +237,22 @@ export default function Page() {
 
   // References for scrolling down when there's a new message
   const scrollView = useRef();
-  // References for location poll
+  // References for different polls
   const locationSheetRef = useRef(null);
+  const proposeEndTimeSheetRef = useRef(null);
+  const kickAMemberSheetRef = useRef(null);
 
-  // Initialise chat history with dummy data
+  // Initialise dummy data
   const [chats, setChats] = useState([
     {
       username: "ur-ja",
       userMode: "sender",
       time: new Date(),
-      content:
-        "very very very very very very very very very very very very very long message",
+      content: "Hello",
       voiceUri: undefined,
       reply: undefined,
       images: [],
+      poll: false,
     },
     {
       username: "shinybuncis",
@@ -250,14 +262,36 @@ export default function Page() {
       voiceUri: undefined,
       reply: undefined,
       images: [],
+      poll: false,
+    },
+  ]);
+  const [members, setMembers] = useState([
+    {
+      name: "Merry Rosalie",
+      username: "shinybuncis",
+    },
+    {
+      name: "Christine Phung",
+      username: "khr1s_",
+    },
+    {
+      name: "Urja Arora",
+      username: "ur-ja",
     },
   ]);
 
-  // States
+  // States for chatting functionalities
   const [message, setMessage] = useState("");
   const [images, setImages] = useState([]);
   const [reply, setReply] = useState(undefined);
   const [voiceUri, setVoiceUri] = useState(undefined);
+
+  // States to handle poll options e.g propose end time, kick a member, etc
+  const [showPollOptions, setShowPollOptions] = useState(false);
+  const [proposedEndTime, setProposedEndTime] = useState(undefined);
+  const [memberKicking, setMemberKicking] = useState(undefined);
+
+  // States to show or hide location poll warning
   const [showLocationPoll, setShowLocationPoll] = useState(true);
 
   // Memoized values for UI states
@@ -324,25 +358,58 @@ export default function Page() {
   // Effect to handle voice message recording completion
   useEffect(() => {
     if (voiceUri) {
-      addChats();
+      addChats({
+        userMode: "receiver",
+        username,
+        time: new Date(),
+        content: message,
+        voiceUri,
+        reply,
+        images,
+        poll: false,
+      });
     }
   }, [voiceUri]);
 
+  // Effect to add chats when end time is proposed
+  useEffect(() => {
+    if (proposedEndTime) {
+      addChats({
+        userMode: "receiver",
+        username,
+        time: new Date(),
+        content: `⏰ I suggest we end at ${format(
+          proposedEndTime,
+          "p"
+        )}\n\nDoes this work for everyone?\n\nThis requires majority vote (at least 50%) to apply`,
+        voiceUri,
+        reply,
+        images,
+        poll: true,
+      });
+    }
+  }, [proposedEndTime]);
+
+  // Effect to add chats when a member is being kicked
+  useEffect(() => {
+    if (memberKicking) {
+      addChats({
+        userMode: "receiver",
+        username,
+        time: new Date(),
+        content: `⚠️ Remove ${memberKicking.name} from study session?\n\nThis requires majority vote (at least 50%) to apply`,
+        voiceUri,
+        reply,
+        images,
+        poll: true,
+      });
+    }
+  }, [memberKicking]);
+
   // Function to add a chat to the chats array
-  const addChats = () => {
+  const addChats = (chat) => {
     setChats((prevChats) => {
-      const newChats = [
-        ...prevChats,
-        {
-          userMode: "receiver",
-          username,
-          time: new Date(),
-          content: message,
-          voiceUri,
-          reply,
-          images,
-        },
-      ];
+      const newChats = [...prevChats, chat];
       return newChats;
     });
     resetMessage();
@@ -374,8 +441,11 @@ export default function Page() {
             <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
               Active Study Session
             </Text>
-            <Text className="text-sm text-text-default dark:text-dark-text-default">
-              Christine, Urja, Merry
+            <Text className="text-sm line-clamp-1 text-ellipsis text-text-default dark:text-dark-text-default">
+              {members
+                .map((member) => member.name.split(" ")[0])
+                .sort()
+                .join(", ")}
             </Text>
           </View>
           {/* Go to Details */}
@@ -432,6 +502,7 @@ export default function Page() {
               reply={chat.reply}
               onSwipe={swipeToReply}
               voiceUri={chat.voiceUri}
+              poll={chat.poll}
             />
           ))}
         </ScrollView>
@@ -489,11 +560,75 @@ export default function Page() {
               </TouchableOpacity>
             </View>
           )}
+          {/* Poll Options Modal */}
+          <Modal
+            isVisible={showPollOptions}
+            onBackdropPress={() => setShowPollOptions(false)}
+            backdropOpacity={0}
+            animationIn="fadeIn"
+            animationOut="fadeOut"
+            avoidKeyboard={false}
+          >
+            <View className="absolute left-0 right-0 bottom-20 flex-row justify-center px-4 py-6 rounded-lg gap-4 bg-text-dimmed dark:bg-dark-text-dimmed">
+              {/* Propose end time button */}
+              <TouchableOpacity
+                onPress={() => {
+                  setShowPollOptions(false);
+                  handlePresentModalPress(proposeEndTimeSheetRef);
+                }}
+                className="flex flex-col gap-2 justify-center"
+              >
+                <Feather
+                  name="clock"
+                  size={24}
+                  className="mx-auto p-4 rounded-full bg-purple-secondary dark:bg-dark-purple-secondary color-purple-default dark:color-dark-purple-default"
+                />
+                <Text className="text-text-default dark:text-dark-text-default">
+                  Propose End Time
+                </Text>
+              </TouchableOpacity>
+              {/* Kick a member button */}
+              <TouchableOpacity
+                onPress={() => {
+                  setShowPollOptions(false);
+                  handlePresentModalPress(kickAMemberSheetRef);
+                }}
+                className="flex-col gap-2 justify-center"
+              >
+                <Feather
+                  name="user-minus"
+                  size={24}
+                  className="mx-auto p-4 rounded-full bg-dark-alert-text dark:bg-dark-alert-background color-failure-text dark:color-dark-alert-text"
+                />
+                <Text className="text-text-default dark:text-dark-text-default">
+                  Kick a Member
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
+          {/* Propose End Time Sheet */}
+          <Sheet ref={proposeEndTimeSheetRef} noExpand>
+            <ProposeEndTimeModal
+              onSubmit={(date) => setProposedEndTime(date)}
+              sheetRef={proposeEndTimeSheetRef}
+            />
+          </Sheet>
+          {/* Kick a Member Sheet */}
+          <Sheet ref={kickAMemberSheetRef} noExpand>
+            <KickAMemberModal
+              onSubmit={(member) => setMemberKicking(member)}
+              sheetRef={kickAMemberSheetRef}
+              members={members}
+            />
+          </Sheet>
           {/* Chat Utilities Interface */}
           <View className="flex-row gap-3 px-6 my-6">
             {/* Make a poll button */}
             {!isTyping && (
-              <TouchableOpacity className="p-4 bg-text-dimmed dark:bg-dark-text-dimmed rounded-full">
+              <TouchableOpacity
+                onPress={() => setShowPollOptions((prev) => !prev)}
+                className="p-4 bg-text-dimmed dark:bg-dark-text-dimmed rounded-full"
+              >
                 <Feather
                   className="color-text-default/50 dark:color-dark-text-default/50"
                   name="align-left"
@@ -504,10 +639,11 @@ export default function Page() {
             {/* Emoji + Input + Image */}
             <View className="flex-row flex-1 rounded-full bg-text-dimmed dark:bg-dark-text-dimmed px-1">
               <TextInput
-                className="flex-1 line-clamp-1 pl-4 text-text-default dark:text-dark-text-default placeholder:text-text-default/50 dark:placeholder:text-dark-text-default/50"
+                className="flex-1 line-clamp-2 pl-4 text-text-default dark:text-dark-text-default placeholder:text-text-default/50 dark:placeholder:text-dark-text-default/50"
                 placeholder="Send a message..."
                 value={message}
                 onChangeText={(text) => setMessage(text)}
+                multiline
               />
               <TouchableOpacity onPress={() => uploadImage()} className="p-4">
                 <Feather
@@ -520,7 +656,18 @@ export default function Page() {
             {/* Send messages or voice messages */}
             {isTyping ? (
               <TouchableOpacity
-                onPress={() => addChats()}
+                onPress={() =>
+                  addChats({
+                    userMode: "receiver",
+                    username,
+                    time: new Date(),
+                    content: message,
+                    voiceUri,
+                    reply,
+                    images,
+                    poll: false,
+                  })
+                }
                 className="p-4 bg-purple-default dark:bg-dark-purple-default rounded-full"
               >
                 <Feather

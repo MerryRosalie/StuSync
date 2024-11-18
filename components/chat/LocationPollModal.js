@@ -1,6 +1,6 @@
 import { View, TouchableOpacity, Text } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
-import Poll from "../Poll";
+import Poll from "./poll/Poll";
 import { useMemo, useState } from "react";
 
 // Component which represents the page for location poll
