@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useState } from "react";
-import { useUser } from "../../../../src/contexts/UserContext";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function AddEditEventModal({
   event,

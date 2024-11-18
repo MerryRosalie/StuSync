@@ -5,9 +5,9 @@ import { Animated, Dimensions } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useUser } from "../../../src/contexts/UserContext";
-import TimeSlots from "./components/TimeSlots";
-import AddEditEventModal from "./components/AddEditEventModal";
-import LinkCalendarModal from "./components/LinkCalendarModal";
+import TimeSlots from "../../../components/calendar/TimeSlots";
+import AddEditEventModal from "../../../components/calendar/AddEditEventModal";
+import LinkCalendarModal from "../../../components/calendar/LinkCalendarModal";
 
 export default function Page() {
   const { currentUser } = useUser();
