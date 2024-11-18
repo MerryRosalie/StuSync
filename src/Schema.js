@@ -11,9 +11,14 @@ export const TimerTemplate = {
 };
 
 export const TextTemplate = {
+  messageId: "",
   message: "",
   senderUid: "",
   timestamp: "",
+  voiceUri: null,
+  reply: null,
+  images: [],
+  poll: false,
 };
 
 export const ChatTemplate = {

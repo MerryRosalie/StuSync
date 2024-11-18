@@ -89,11 +89,26 @@ export default function VoiceRecorder({ onRecordingComplete }) {
       {/* Recording interface */}
       {isRecording && (
         <View className="absolute left-0 right-0 bottom-0 flex-row items-center bg-text-dimmed dark:bg-dark-text-dimmed p-6 mx-6 rounded-full">
-          <View className="flex-row items-center">
-            <View className="w-2 h-2 rounded-full bg-failure-text animate-pulse mr-2" />
-            <Text className="text-text-default dark:text-dark-text-default">
-              {formatDuration(recordingDuration)}
-            </Text>
+          <View className="flex-row w-full items-center justify-between">
+            <View className="flex-row items-center">
+              <View className="w-2 h-2 rounded-full bg-failure-text animate-pulse mr-2" />
+              <Text className="text-text-default dark:text-dark-text-default">
+                {formatDuration(recordingDuration)}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={stopRecording}
+              className="flex-row items-center gap-2"
+            >
+              <Feather
+                name="stop-circle"
+                size={24}
+                className="color-failure-text dark:color-dark-alert-text"
+              />
+              <Text className="text-failure-text dark:text-dark-alert-text">
+                STOP
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       )}
