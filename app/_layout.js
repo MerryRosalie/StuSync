@@ -13,6 +13,7 @@ import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "react-native-reanimated";
 
 import "../global.css";
+import { StatusBar } from "expo-status-bar";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -68,6 +69,7 @@ function RootLayoutNavigation() {
           <Stack.Screen name="friends" options={{ headerShown: false }} />
         </Stack>
       </BottomSheetModalProvider>
+      <StatusBar style="auto" />
     </GestureHandlerRootView>
   );
 }
