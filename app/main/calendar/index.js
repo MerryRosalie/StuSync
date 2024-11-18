@@ -34,7 +34,7 @@ export default function Page() {
     setShowAddEvent(true);
     requestAnimationFrame(() => {
       Animated.spring(modalHeight, {
-        toValue: screenHeight * 0.8,
+        toValue: screenHeight * 0.9,
         useNativeDriver: false,
       }).start();
     });
@@ -131,48 +131,50 @@ export default function Page() {
       {/* Header */}
       <View className="px-4 py-6 border-b border-gray dark:border-dark-text-dimmed">
         <View className="flex-row justify-between items-center">
-          <TouchableOpacity onPress={goToPreviousDay}>
-            <Feather
-              name="chevron-left"
-              size={24}
-              className="text-text-default dark:text-dark-text-default"
-            />
-          </TouchableOpacity>
+          <View className="flex-row items-center">
+            <TouchableOpacity onPress={goToPreviousDay}>
+              <Feather
+                name="chevron-left"
+                size={24}
+                className="text-text-default dark:text-dark-text-default"
+              />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            className="flex-1 ml-4"
-          >
-            <View className="flex-row items-center">
+            <TouchableOpacity
+              onPress={() => setShowDatePicker(true)}
+              className="ml-4 w-auto"
+            >
               <View className="flex-row items-center">
-                <View
-                  className={`${
-                    isToday(calendarDate)
-                      ? "bg-purple-default dark:bg-dark-purple-default px-2 py-1 rounded-lg"
-                      : ""
-                  }`}
-                >
-                  <Text
-                    className={`text-2xl font-inter-bold ${
+                <View className="flex-row items-center ">
+                  <View
+                    className={`${
                       isToday(calendarDate)
-                        ? "text-white dark:text-black" // Today's date colors
-                        : "text-text-default dark:text-dark-text-default" // Other dates colors
+                        ? "bg-purple-default dark:bg-dark-purple-default px-2 py-1 rounded-lg"
+                        : ""
                     }`}
                   >
-                    {calendarDate.getDate()}
+                    <Text
+                      className={`text-2xl font-inter-bold ${
+                        isToday(calendarDate)
+                          ? "text-white dark:text-black"
+                          : "text-text-default dark:text-dark-text-default"
+                      }`}
+                    >
+                      {calendarDate.getDate()}
+                    </Text>
+                  </View>
+                  <Text className="text-2xl font-inter-bold dark:text-white ml-2">
+                    {calendarDate.toLocaleString("default", { month: "long" })}
                   </Text>
                 </View>
-                <Text className="text-2xl font-inter-bold dark:text-white ml-2">
-                  {calendarDate.toLocaleString("default", { month: "long" })}
-                </Text>
+                <Feather
+                  name="chevron-down"
+                  size={24}
+                  className="text-text-default dark:text-dark-text-default ml-1"
+                />
               </View>
-              <Feather
-                name="chevron-down"
-                size={24}
-                className="text-text-default dark:text-dark-text-default ml-1"
-              />
-            </View>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
 
           <View className="flex-row items-center">
             <TouchableOpacity className="mr-4" onPress={showLinkModal}>
@@ -222,6 +224,14 @@ export default function Page() {
         onCancel={() => setShowDatePicker(false)}
       />
 
+      {/* Add Event Button */}
+      <TouchableOpacity
+        className="absolute bottom-32 right-6 w-14 h-14 bg-purple-default dark:bg-dark-purple-default rounded-full items-center justify-center shadow-lg z-0"
+        onPress={handleAddEvent}
+      >
+        <Feather name="plus" size={24} className="text-white" />
+      </TouchableOpacity>
+
       {/* Event Modal */}
       {showAddEvent && (
         <Animated.View
@@ -230,8 +240,8 @@ export default function Page() {
             transform: [
               {
                 translateY: modalHeight.interpolate({
-                  inputRange: [0, screenHeight * 0.8],
-                  outputRange: [screenHeight * 0.8, 0],
+                  inputRange: [0, screenHeight * 0.9],
+                  outputRange: [screenHeight * 0.9, 0],
                 }),
               },
             ],
@@ -246,14 +256,6 @@ export default function Page() {
           />
         </Animated.View>
       )}
-
-      {/* Add Event Button */}
-      <TouchableOpacity
-        className="absolute bottom-32 right-6 w-14 h-14 bg-purple-default dark:bg-dark-purple-default rounded-full items-center justify-center shadow-lg"
-        onPress={handleAddEvent}
-      >
-        <Feather name="plus" size={24} className="text-white" />
-      </TouchableOpacity>
 
       {showLinkCalendar && (
         <Animated.View

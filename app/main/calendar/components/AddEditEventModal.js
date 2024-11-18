@@ -108,14 +108,14 @@ export default function AddEditEventModal({
   };
 
   return (
-    <ScrollView className="py-10 px-7 ">
+    <ScrollView className="py-10 px-7 h-full ">
       {/* Header */}
       <View className="flex-row justify-between items-center mb-8">
         <Text className="text-xl font-inter-bold dark:text-white">
           {event ? "Edit Event" : "Add Event"}
         </Text>
         <TouchableOpacity onPress={hideModal}>
-          <Text className="text-md dark:text-white">Close</Text>
+          <Text className="text-lg dark:text-white">Close</Text>
         </TouchableOpacity>
       </View>
 
@@ -240,7 +240,7 @@ export default function AddEditEventModal({
         minimumDate={startTime}
       />
 
-      <View className="flex-col  ">
+      <View className="flex-col">
         <TouchableOpacity
           className={`flex-1 bg-purple-default dark:bg-dark-purple-default p-4 rounded-lg items-center my-3 ${
             !title ? "opacity-50" : "opacity-100"
