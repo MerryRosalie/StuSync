@@ -3,8 +3,11 @@ import ModeSwitch from "../../../components/ModeSwitch";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Page() {
+  const navigation = useNavigation();
+
   const circles = [
     { color: "bg-red-500", label: "Circle 1" },
     { color: "bg-blue-500", label: "Circle 2" },
@@ -28,9 +31,16 @@ export default function Page() {
           <Text className="font-semibold text-xl ">Christine Phung</Text>
           <Text className="text-sm">@khr1s_</Text>
         </View>
-        <TouchableOpacity className="flex-row rounded-xl bg-purple-default p-4 gap-2 items-center w-36">
+        <TouchableOpacity
+          className="flex-row rounded-xl bg-purple-default p-4 gap-2 items-center w-36"
+          onPress={() => navigation.navigate("editprofile")}
+        >
           <Feather name="edit-2" size={24} color="white" />
           <Text className="text-base text-white font-inter">Edit Profile</Text>
+          <Link
+            className="text-text-default dark:text-dark-text-default"
+            href="/editprofile"
+          ></Link>
         </TouchableOpacity>
       </View>
       <View className="rounded-2xl bg-gray p-4 gap-4 w-full">
