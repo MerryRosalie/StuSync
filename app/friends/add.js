@@ -14,13 +14,15 @@ export default function Page() {
 
   const filteredUsers = useMemo(() => {
     if (searchQuery) {
-      return Object.values(allUsers).filter(
-        (user) =>
-          currentUser.username !== user.username &&
-          (user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            user.email.toLowerCase().includes(searchQuery.toLowerCase()))
-      );
+      return Object.values(allUsers)
+        .filter(
+          (user) =>
+            currentUser.email !== user.email &&
+            (user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
+        .sort((a, b) => a.name.localeCompare(b.name));
     }
     return [];
   }, [searchQuery, allUsers]);
@@ -58,7 +60,7 @@ export default function Page() {
         {filteredUsers.length !== 0 ? (
           <>
             {filteredUsers.map((user, index) => (
-              <Friend key={index} />
+              <Friend key={index} user={user} />
             ))}
           </>
         ) : (

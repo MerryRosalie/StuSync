@@ -75,14 +75,14 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const setCurrentUser = async (user) => {
+  const setCurrentUser = async (uid) => {
     try {
       const currentStore = await AsyncStorage.getItem("userStore");
       const baseStore = currentStore ? JSON.parse(currentStore) : userStore;
 
       const newUserStore = {
         ...baseStore,
-        activeUser: user,
+        activeUser: uid,
       };
 
       await saveUserStore(newUserStore);
@@ -105,6 +105,17 @@ export const UserProvider = ({ children }) => {
   const currentUser = userStore.activeUser
     ? userStore.users[userStore.activeUser]
     : null;
+
+  const addFriend = async (uid) => {
+    if (currentUser) {
+      const newAllFriends = [
+        ...userStore.users[userStore.activeUser].friends.allFriends,
+        uid,
+      ];
+      userStore.users[userStore.activeUser].friends.allFriends = newAllFriends;
+      await saveUserStore(userStore);
+    }
+  };
 
   const login = async (email, password) => {
     try {
@@ -133,6 +144,12 @@ export const UserProvider = ({ children }) => {
     );
   };
 
+  const checkUsernameExists = (username) => {
+    return Object.values(userStore.users).some(
+      (user) => user.username.toLowerCase() === username.toLowerCase()
+    );
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -144,6 +161,8 @@ export const UserProvider = ({ children }) => {
         isLoading,
         login,
         checkEmailExists,
+        checkUsernameExists,
+        addFriend,
       }}
     >
       {children}

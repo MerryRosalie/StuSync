@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Text,
   View,
@@ -10,6 +10,7 @@ import {
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
+import { useUser } from "../../src/contexts/UserContext";
 import Friend from "../../components/Friend";
 
 const FriendsTab = {
@@ -48,7 +49,24 @@ function Tab({ buttons, selectedTab, setSelectedTab }) {
 }
 
 function AllPage() {
+  const { currentUser, allUsers } = useUser();
   const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredUsers = useMemo(() => {
+    if (searchQuery) {
+      return Object.values(allUsers)
+        .filter(
+          (user) =>
+            currentUser.email !== user.email &&
+            (user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+              user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+        )
+        .sort((a, b) => a.name.localeCompare(b.name));
+    }
+    return [];
+  }, [searchQuery, allUsers]);
+
   return (
     <ScrollView className="flex-1 px-6">
       {/* Search Bar */}
@@ -66,8 +84,23 @@ function AllPage() {
         />
       </View>
       {/* Friends List */}
-      <View className="flex-1">
-        <Friend />
+      <View className="flex-1 mt-4 gap-1">
+        {filteredUsers.length !== 0 ? (
+          <>
+            {filteredUsers.map((user, index) => (
+              <Friend key={index} user={user} />
+            ))}
+          </>
+        ) : (
+          <>
+            {currentUser.friends.allFriends
+              .map((friend) => allUsers[friend])
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((friend, index) => (
+                <Friend key={index} user={friend} />
+              ))}
+          </>
+        )}
       </View>
     </ScrollView>
   );
