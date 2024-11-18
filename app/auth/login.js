@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Text,
   TextInput,
@@ -9,7 +9,7 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link, useRouter } from "expo-router";
+import { Link, useRouter, useLocalSearchParams } from "expo-router";
 import LoginImage from "../../assets/auth/sign-in.png";
 import { useUser } from "../../src/contexts/UserContext";
 
@@ -61,13 +61,23 @@ export default function Page() {
     return email.trim() !== "" && password.trim() !== "";
   };
 
+  // Add useLocalSearchParams to get email from register redirect
+  const { email: redirectEmail } = useLocalSearchParams();
+
+  // Set email from params if available
+  useEffect(() => {
+    if (redirectEmail) {
+      setEmail(redirectEmail);
+    }
+  }, [redirectEmail]);
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <SafeAreaView className="flex justify-start items-center bg-purple-secondary dark:bg-dark-purple-secondary h-full">
-        <View className="h-[20%] w-full">
+        <View className="h-[20%] w-full relative">
           <Image
             source={LoginImage}
-            className="h-full w-full"
+            className="h-full w-[100%] absolute right-[-20%] top-10 z-10"
             resizeMode="contain"
           />
         </View>
@@ -85,9 +95,10 @@ export default function Page() {
             placeholder="Enter your email..."
             keyboardType="email-address"
             autoCapitalize="none"
+            editable={!redirectEmail} // Make email field readonly if redirected
             className={`w-full p-4 rounded-xl bg-white dark:bg-dark-background border text-text-default dark:text-dark-text-default ${
               error ? "border-red-500" : "border-gray dark:border-gray-700"
-            }`}
+            } ${redirectEmail ? "opacity-50" : ""}`}
             placeholderTextColor="#9CA3AF"
           />
 

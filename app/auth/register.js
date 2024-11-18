@@ -64,13 +64,13 @@ export default function Register() {
   const canProceed = () => {
     switch (step) {
       case 1:
-        return name.trim().length >= 2;
-      case 2:
         return email.trim().length > 0 && !emailError;
-      case 3:
+      case 2:
         return (
           password.length >= 8 && !passwordError && password === confirmPassword
         );
+      case 3:
+        return name.trim().length >= 2;
       case 4:
         return true;
     }
@@ -130,12 +130,21 @@ export default function Register() {
     }
   };
 
+  // Add email check before proceeding
+  const handleEmailStep = async () => {
+    const emailExists = await checkEmailExists(email);
+    if (emailExists) {
+      // Use the correct navigation method for Expo Router
+      router.push(`/auth/login?email=${encodeURIComponent(email)}`);
+      return;
+    }
+    setStep(step + 1);
+  };
+
   // Render the current step
   const renderStep = () => {
     switch (step) {
       case 1:
-        return <NameStep value={name} onChangeText={setName} />;
-      case 2:
         return (
           <EmailStep
             value={email}
@@ -143,7 +152,7 @@ export default function Register() {
             error={emailError}
           />
         );
-      case 3:
+      case 2:
         return (
           <PasswordStep
             password={password}
@@ -153,6 +162,8 @@ export default function Register() {
             error={passwordError}
           />
         );
+      case 3:
+        return <NameStep value={name} onChangeText={setName} />;
       case 4:
         return (
           <CoursesStep
@@ -190,7 +201,9 @@ export default function Register() {
               }`}
               disabled={!canProceed()}
               onPress={() => {
-                if (step < 4) {
+                if (step === 1) {
+                  handleEmailStep();
+                } else if (step < 4) {
                   setStep((prev) => prev + 1);
                 } else {
                   handleRegister();

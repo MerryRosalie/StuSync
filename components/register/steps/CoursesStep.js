@@ -27,6 +27,15 @@ export default function CoursesStep({
           placeholderTextColor="#9CA3AF"
           autoCapitalize="characters"
         />
+        <TouchableOpacity
+          onPress={onAddCourse}
+          disabled={!courseInput.trim()}
+          className={`mt-2 p-3 rounded-xl ${
+            courseInput.trim() ? "bg-purple-600" : "bg-gray-300"
+          } items-center`}
+        >
+          <Text className="text-white font-semibold">Add Course</Text>
+        </TouchableOpacity>
       </View>
 
       <View className="flex-row flex-wrap gap-2">
