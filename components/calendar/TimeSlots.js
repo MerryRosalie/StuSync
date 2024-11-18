@@ -1,4 +1,3 @@
-import React from "react";
 import { View, Text } from "react-native";
 import Event from "./Event";
 
@@ -61,18 +60,17 @@ export default function TimeSlots({
 
   return (
     <View>
-      {timeSlots.map((timeSlot) => {
-        const slotEvents = getEventsForTimeSlot(timeSlot);
+      {timeSlots.map((time) => {
+        const events = getEventsForTimeSlot(time);
 
         return (
           <View
-            key={timeSlot}
+            key={time}
             className="flex-row border-b h-36 border-gray dark:border-dark-text-dimmed"
           >
-            {/* Time label */}
             <View className="w-20 py-4 px-2 ml-2">
               <Text className="text-text-default dark:text-dark-text-default">
-                {timeSlot}
+                {time}
               </Text>
             </View>
 
