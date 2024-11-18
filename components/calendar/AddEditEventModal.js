@@ -251,7 +251,6 @@ export default function AddEditEventModal({
           <Text className="text-white font-inter-medium">SAVE</Text>
         </TouchableOpacity>
         {event && (
-          // Only show delete button when editing an event
           <TouchableOpacity
             className="flex-1 bg-failure-background dark:bg-dark-alert-background p-4 rounded-lg items-center"
             onPress={handleDelete}
