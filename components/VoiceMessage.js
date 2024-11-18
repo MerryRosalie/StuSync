@@ -125,7 +125,7 @@ const VoiceMessage = ({ uri, mode }) => {
   const progressPercentage = (position / duration) * 100 || 0;
 
   return (
-    <View className="flex-row flex-1 items-center gap-3 mt-2">
+    <View className="flex-row items-center gap-3">
       {/* Play/Pause button */}
       <TouchableOpacity
         onPress={handlePlayPause}

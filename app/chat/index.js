@@ -20,14 +20,26 @@ import ImageModal from "../../components/ImageModal";
 import VoiceRecorder from "../../components/VoiceRecorder";
 import VoiceMessage from "../../components/VoiceMessage";
 
+// Component which represents the page for location poll
 const LocationPollModal = () => {
   return <Text>Location Poll Modal</Text>;
 };
 
-const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
-  // Handle pan gestures
+// ChatBubble component handles individual message display
+const ChatBubble = ({
+  mode,
+  username,
+  message,
+  time,
+  images,
+  reply,
+  onSwipe,
+  voiceUri,
+}) => {
+  // Animation value for swipe gesture
   const translateX = useRef(new Animated.Value(0)).current;
 
+  // Configure pan responder for swipe-to-reply gesture
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: (_, gestureState) => {
@@ -38,21 +50,29 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
         // Only handle horizontal swipes
         return Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
       },
+      // Handle swipe movement
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dx > 0) {
           translateX.setValue(gestureState.dx);
         }
       },
+      // Handle swipe release
       onPanResponderRelease: (_, gestureState) => {
-        // Swipe to the right
         if (gestureState.dx > 20) {
           // Animate to swipe position
           Animated.spring(translateX, {
             toValue: 60,
             useNativeDriver: true,
           }).start();
-          // Trigger the reply action
-          onSwipe(message);
+          onSwipe({
+            username,
+            userMode: mode,
+            time,
+            content: message,
+            voiceUri,
+            reply,
+            images,
+          });
           // Return to original position after delay
           setTimeout(() => {
             Animated.spring(translateX, {
@@ -61,6 +81,7 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
             }).start();
           }, 500);
         } else {
+          // Reset if swipe not far enough
           Animated.spring(translateX, {
             toValue: 0,
             useNativeDriver: true,
@@ -70,7 +91,7 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
     })
   ).current;
 
-  // Function to pair images into rows of two
+  // Utility function to arrange images in pairs
   const pairImages = (images) => {
     const paired = [];
     for (let i = 0; i < images.length; i += 2) {
@@ -79,30 +100,68 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
     return paired;
   };
 
-  // Mode can be either "sender" or "receiver"
   return (
     <View>
       <Animated.View
         {...panResponder.panHandlers}
         style={{ transform: [{ translateX: translateX }] }}
       >
+        {/* Show username for sender's messages */}
         {mode === "sender" && (
-          <Text
-            className="text-text-default/50 dark:text-dark-text-default/50 mr-auto
-            "
-          >
-            @shinybuncis
+          <Text className="text-text-default/50 dark:text-dark-text-default/50 mr-auto">
+            @{username}
           </Text>
         )}
-        <View className="flex-row relative items-center gap-4">
+
+        {/* Message bubble container */}
+        <View className="relative">
           <View
-            className={`py-3 px-4 self-start max-w-80 mt-2 mb-4 ${
+            className={`flex-col gap-2 py-3 px-4 self-start max-w-80 mt-2 mb-4 ${
               mode === "sender"
                 ? "rounded-tl-2xl rounded-tr-2xl rounded-br-2xl rounded-bl-none mr-auto bg-text-dimmed dark:bg-dark-text-dimmed"
                 : "rounded-tl-2xl rounded-tr-2xl rounded-br-none rounded-bl-2xl bg-purple-default dark:bg-dark-purple-default ml-auto"
             }`}
           >
-            {/* Message */}
+            {reply && (
+              <View
+                className={`flex-row gap-2 rounded-md ${
+                  mode === "sender"
+                    ? "bg-text-default/15 dark:bg-dark-text-default/15"
+                    : "bg-purple-secondary/15 dark:bg-dark-purple-secondary/15"
+                }`}
+              >
+                {/* Reply */}
+                <View
+                  className={`w-1 rounded-tl-full rounded-bl-full ${
+                    mode === "sender"
+                      ? "bg-purple-default dark:bg-dark-purple-default"
+                      : "bg-purple-secondary dark:bg-dark-purple-secondary"
+                  }`}
+                />
+                <View className="p-2 gap-1">
+                  <Text
+                    className={`text-sm font-inter-bold ${
+                      mode === "sender"
+                        ? "text-purple-default dark:text-dark-purple-default"
+                        : "text-background dark:text-dark-background"
+                    }`}
+                  >
+                    @{reply.username}
+                  </Text>
+                  <Text
+                    className={`line-clamp-1 text-ellipsis ${
+                      mode === "sender"
+                        ? "text-text-default dark:text-dark-text-default"
+                        : "text-background dark:text-dark-background"
+                    }`}
+                  >
+                    {reply.content}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            {/* Text message content */}
             {message && (
               <Text
                 className={`${
@@ -114,9 +173,10 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
                 {message}
               </Text>
             )}
-            {/* Images preview */}
+
+            {/* Image grid display */}
             {images && images.length !== 0 && (
-              <View className="mt-2">
+              <View>
                 {pairImages(images).map((pair, rowIndex) => (
                   <View key={rowIndex} className="flex-row gap-2 mb-2">
                     {pair.map((image, index) => (
@@ -136,19 +196,23 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
                 ))}
               </View>
             )}
-            {/* Voice Recording */}
+
+            {/* Voice message component */}
             {voiceUri && <VoiceMessage uri={voiceUri} mode={mode} />}
-            {/* Timestamp */}
+
+            {/* Message timestamp */}
             <Text
               className={`${
                 mode === "sender"
                   ? "text-text-default/50 dark:text-dark-text-default/50"
                   : "text-background/50 dark:text-dark-background/50"
-              } mt-2 ml-auto`}
+              } ml-auto`}
             >
               {format(time, "p")}
             </Text>
           </View>
+
+          {/* Reply icon for affordance */}
           <Entypo
             className="absolute top-1/2 -translate-y-1/2 -left-16 color-text-default dark:color-dark-text-default bg-text-dimmed dark:bg-dark-text-dimmed p-2 rounded-full"
             name="reply"
@@ -161,6 +225,8 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
 };
 
 export default function Page() {
+  // TODO: Get actual user
+  const username = "shinybuncis";
   const router = useRouter();
 
   // References for scrolling down when there's a new message
@@ -168,18 +234,25 @@ export default function Page() {
   // References for location poll
   const locationSheetRef = useRef(null);
 
-  // Dummy data for chats
+  // Initialise chat history with dummy data
   const [chats, setChats] = useState([
     {
+      username: "ur-ja",
       userMode: "sender",
       time: new Date(),
-      content: "Hello there :)",
+      content:
+        "very very very very very very very very very very very very very long message",
+      voiceUri: undefined,
+      reply: undefined,
       images: [],
     },
     {
+      username: "shinybuncis",
       userMode: "receiver",
       time: new Date(),
       content: "Hi there too!",
+      voiceUri: undefined,
+      reply: undefined,
       images: [],
     },
   ]);
@@ -187,33 +260,33 @@ export default function Page() {
   // States
   const [message, setMessage] = useState("");
   const [images, setImages] = useState([]);
-  const [reply, setReply] = useState("");
+  const [reply, setReply] = useState(undefined);
   const [voiceUri, setVoiceUri] = useState(undefined);
   const [showLocationPoll, setShowLocationPoll] = useState(true);
 
-  // Memoised values
+  // Memoized values for UI states
   const isTyping = useMemo(
     () => message.length !== 0 || images.length !== 0,
     [message, images]
   );
-  const isReplying = useMemo(() => reply.length !== 0, [reply]);
 
-  // Function to open sheet
+  // Handler for sheet modal
   const handlePresentModalPress = (ref) => {
     ref.current?.present();
   };
 
-  // Function for swipe to reply function
-  const swipeToReply = (message) => {
-    setReply(message.length > 50 ? message.slice(0, 50) + "..." : message);
+  // Handler for swipe-to-reply feature
+  const swipeToReply = (reply) => {
+    console.log(reply);
+    setReply(reply);
   };
 
-  // Function to close and/or cancel reply
+  // Handler to cancel reply
   const closeReply = () => {
-    setReply("");
+    setReply(undefined);
   };
 
-  // Function to upload an image
+  // Image handling functions
   const uploadImage = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -234,14 +307,14 @@ export default function Page() {
     }
   };
 
-  // Function to add image
+  // Function to add images
   const addImages = (images) => {
     setImages((array) => {
       return [...array, ...images];
     });
   };
 
-  // Function to delete image
+  // Function to delete an image
   const deleteImage = (index) => {
     setImages((array) => {
       let prevArray = [...array];
@@ -252,22 +325,25 @@ export default function Page() {
     });
   };
 
+  // Effect to handle voice message recording completion
   useEffect(() => {
     if (voiceUri) {
       addChats();
     }
   }, [voiceUri]);
 
-  // Function to add a chat
+  // Function to add a chat to the chats array
   const addChats = () => {
     setChats((prevChats) => {
       const newChats = [
         ...prevChats,
         {
           userMode: "receiver",
+          username,
           time: new Date(),
           content: message,
           voiceUri,
+          reply,
           images,
         },
       ];
@@ -281,6 +357,7 @@ export default function Page() {
     setMessage("");
     setImages([]);
     setVoiceUri(undefined);
+    closeReply();
   };
 
   return (
@@ -346,12 +423,13 @@ export default function Page() {
             <ChatBubble
               key={index}
               mode={chat.userMode}
+              username={chat.username}
               message={chat.content}
               time={chat.time}
               images={chat.images}
+              reply={chat.reply}
               onSwipe={swipeToReply}
               voiceUri={chat.voiceUri}
-              isReplying={isReplying}
             />
           ))}
         </ScrollView>
@@ -386,6 +464,29 @@ export default function Page() {
               ))}
             </ScrollView>
           )}
+          {/* Reply preview */}
+          {reply && (
+            <View className="flex-row w-full items-center gap-2 px-6 mt-3">
+              <View className="flex-row flex-1 gap-2 bg-text-dimmed dark:bg-dark-text-dimmed rounded-md">
+                <View className="bg-purple-default w-1 rounded-tl-full rounded-bl-full" />
+                <View className="p-2 gap-1">
+                  <Text className="text-sm font-inter-bold text-purple-default dark:text-dark-purple-default">
+                    {reply.username}
+                  </Text>
+                  <Text className="line-clamp-1 text-ellipsis text-text-default dark:text-dark-text-default">
+                    {reply.content}
+                  </Text>
+                </View>
+              </View>
+              <TouchableOpacity onPress={() => closeReply()} className="p-4">
+                <Feather
+                  name="x"
+                  size={24}
+                  className="color-text-default dark:color-dark-text-default"
+                />
+              </TouchableOpacity>
+            </View>
+          )}
           {/* Chat Utilities Interface */}
           <View className="flex-row gap-3 px-6 my-6">
             {/* Make a poll button */}
@@ -414,7 +515,7 @@ export default function Page() {
                 />
               </TouchableOpacity>
             </View>
-            {/* Voice message or send message */}
+            {/* Send messages or voice messages */}
             {isTyping ? (
               <TouchableOpacity
                 onPress={() => addChats()}
