@@ -24,9 +24,6 @@ export default function Page() {
   // Check email is valid using regex
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email.trim()) {
-      return "Email is required";
-    }
     if (!emailRegex.test(email)) {
       return "Please enter a valid email address";
     }
@@ -57,6 +54,11 @@ export default function Page() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // check if email and password are not empty
+  const isEmpty = () => {
+    return email.trim() !== "" && password.trim() !== "";
   };
 
   return (
@@ -120,11 +122,11 @@ export default function Page() {
           </View>
 
           <TouchableOpacity
-            className={`w-full bg-purple-default py-4 rounded-xl mt-safe ${
+            className={`w-full py-4 rounded-xl mt-safe ${
               isLoading ? "opacity-50" : ""
-            }`}
+            } ${!isEmpty() ? "bg-purple-default/50" : "bg-purple-default"}`}
             onPress={handleLogin}
-            disabled={isLoading}
+            disabled={isLoading || !isEmpty()}
           >
             <Text className="text-white font-inter-bold text-center text-lg">
               {isLoading ? "LOGGING IN..." : "LOGIN"}
