@@ -88,10 +88,10 @@ export default function VoiceRecorder({ onRecordingComplete }) {
 
       {/* Recording interface */}
       {isRecording && (
-        <View className="absolute left-0 right-0 bottom-0 flex-row items-center bg-purple-secondary dark:bg-dark-purple-secondary p-4 rounded-lg">
-          <View className="flex-row items-center flex-1">
-            <View className="w-2 h-2 rounded-full bg-alert-text animate-pulse mr-2" />
-            <Text className="text-purple-default dark:text-dark-purple-default">
+        <View className="absolute left-0 right-0 bottom-0 flex-row items-center bg-text-dimmed dark:bg-dark-text-dimmed p-6 mx-6 rounded-full">
+          <View className="flex-row items-center">
+            <View className="w-2 h-2 rounded-full bg-failure-text animate-pulse mr-2" />
+            <Text className="text-text-default dark:text-dark-text-default">
               {formatDuration(recordingDuration)}
             </Text>
           </View>

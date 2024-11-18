@@ -15,6 +15,7 @@ import "react-native-reanimated";
 
 import "../global.css";
 import { StatusBar } from "expo-status-bar";
+import { UserProvider } from "../src/contexts/UserContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -62,7 +63,11 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNavigation />;
+  return (
+    <UserProvider>
+      <RootLayoutNavigation />
+    </UserProvider>
+  );
 }
 
 function RootLayoutNavigation() {

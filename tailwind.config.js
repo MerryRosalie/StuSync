@@ -11,6 +11,7 @@ module.exports = {
         "inter-bold": ["Inter_700Bold"],
       },
       colors: {
+        // Light mode colors
         background: "#FFFFFF",
         text: {
           default: "#121212",
@@ -27,7 +28,12 @@ module.exports = {
           secondary: "#FDE08D",
         },
         green: "#7DC353",
-        alert: {
+        pink: "#F302C9",
+        info: {
+          text: "#1E3A8A",
+          background: "#DBEAFE",
+        },
+        failure: {
           background: "#FFE8E6",
           text: "#FB4D3D",
         },
@@ -39,16 +45,15 @@ module.exports = {
           background: "#FEF9C3",
           text: "#713F12",
         },
-        timer: {
-          pause: "#F56A52",
-        },
 
+        // Dark mode colors
         dark: {
           background: "#121212",
           text: {
             default: "#FFFFFF",
             dimmed: "#353535",
           },
+          gray: "#242424",
           purple: {
             default: "#9E9EFF",
             secondary: "#272735",
@@ -59,6 +64,11 @@ module.exports = {
             secondary: "#FDE08D",
           },
           green: "#ABE28B",
+          pink: "#F4AFE8",
+          info: {
+            text: "#1E3A8A",
+            background: "#DBEAFE",
+          },
           alert: {
             background: "#7F1D1D",
             text: "#FF8F85",

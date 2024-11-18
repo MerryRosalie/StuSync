@@ -144,7 +144,7 @@ const ChatBubble = ({ mode, message, time, images, onSwipe, voiceUri }) => {
                 mode === "sender"
                   ? "text-text-default/50 dark:text-dark-text-default/50"
                   : "text-background/50 dark:text-dark-background/50"
-              } ml-auto`}
+              } mt-2 ml-auto`}
             >
               {format(time, "p")}
             </Text>
@@ -358,7 +358,14 @@ export default function Page() {
         <View>
           {/* Images preview */}
           {images.length !== 0 && (
-            <ScrollView horizontal className="flex-row py-3 p-2">
+            <ScrollView
+              horizontal
+              className="flex-row"
+              contentContainerStyle={{
+                paddingHorizontal: 16,
+                paddingVertical: 12,
+              }}
+            >
               {images.map((image, index) => (
                 <View key={index} className="relative">
                   <ImageModal initialVisibility={false} image={image}>
@@ -421,17 +428,6 @@ export default function Page() {
               </TouchableOpacity>
             ) : (
               <VoiceRecorder onRecordingComplete={(uri) => setVoiceUri(uri)} />
-
-              //   <TouchableOpacity
-              //     onPress={() => setShowVoiceRecorder(true)}
-              //     className="p-4 bg-purple-default dark:bg-dark-purple-default rounded-full"
-              //   >
-              //     <Feather
-              //       className="color-background dark:color-dark-background"
-              //       name="mic"
-              //       size={24}
-              //     />
-              //   </TouchableOpacity>
             )}
           </View>
         </View>

@@ -35,7 +35,6 @@ const CustomBackground = ({ style, animatedIndex, targetColor }) => {
 // Sheet Component - A customizable bottom sheet
 const Sheet = forwardRef(({ children, noExpand }, ref) => {
   const colorScheme = useColorScheme();
-  // Track content height for dynamic sizing
   const [contentHeight, setContentHeight] = useState(0);
 
   // Calculate snap points based on content height
