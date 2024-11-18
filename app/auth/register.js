@@ -8,6 +8,7 @@ import CoursesStep from "../../components/register/steps/CoursesStep";
 import { SafeAreaView, View, Text, TouchableOpacity } from "react-native";
 import ProgressBar from "../../components/register/ProgressBar";
 import { Link } from "expo-router";
+import { generateProfilePicture } from "../../src/Schema";
 
 export default function Register() {
   const router = useRouter();
@@ -109,6 +110,7 @@ export default function Register() {
         name: name.trim(),
         email: email.trim().toLowerCase(),
         password: password,
+        profilePicture: generateProfilePicture(name.trim()),
         courses: courses,
         createdAt: new Date().toISOString(),
       };

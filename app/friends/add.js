@@ -2,12 +2,28 @@ import { Text, View, TouchableOpacity, TextInput, Image } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { useUser } from "../../src/contexts/UserContext";
+import Friend from "../../components/Friend";
 
 export default function Page() {
+  const { currentUser, allUsers } = useUser();
   const router = useRouter();
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredUsers = useMemo(() => {
+    if (searchQuery) {
+      return Object.values(allUsers).filter(
+        (user) =>
+          currentUser.username !== user.username &&
+          (user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+    return [];
+  }, [searchQuery, allUsers]);
 
   return (
     <SafeAreaProvider>
@@ -39,23 +55,31 @@ export default function Page() {
             onChangeText={(text) => setSearchQuery(text)}
           />
         </View>
-        <View className="flex-1 w-3/4 m-auto opacity-50 justify-center">
-          <View className="items-center h-1/4 mb-6">
-            <Image
-              className="flex-1 aspect-square"
-              width={100}
-              height={100}
-              source={require("../../assets/add-friends.png")}
-            />
+        {filteredUsers.length !== 0 ? (
+          <>
+            {filteredUsers.map((user, index) => (
+              <Friend key={index} />
+            ))}
+          </>
+        ) : (
+          <View className="flex-1 w-3/4 m-auto opacity-50 justify-center">
+            <View className="items-center h-1/4 mb-6">
+              <Image
+                className="flex-1 aspect-square"
+                width={100}
+                height={100}
+                source={require("../../assets/add-friends.png")}
+              />
+            </View>
+            <Text className="mb-2 text-text-default text-center dark:text-dark-text-default text-xl font-inter-bold">
+              Add Your Friends
+            </Text>
+            <Text className="text-text-default text-center dark:text-dark-text-default font-inter">
+              Search by name or username to discover and connect with people you
+              know
+            </Text>
           </View>
-          <Text className="mb-2 text-text-default text-center dark:text-dark-text-default text-xl font-inter-bold">
-            Add Your Friends
-          </Text>
-          <Text className="text-text-default text-center dark:text-dark-text-default font-inter">
-            Search by name or username to discover and connect with people you
-            know
-          </Text>
-        </View>
+        )}
       </SafeAreaView>
     </SafeAreaProvider>
   );

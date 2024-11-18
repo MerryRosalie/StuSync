@@ -75,14 +75,14 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const setCurrentUser = async (uid) => {
+  const setCurrentUser = async (user) => {
     try {
       const currentStore = await AsyncStorage.getItem("userStore");
       const baseStore = currentStore ? JSON.parse(currentStore) : userStore;
 
       const newUserStore = {
         ...baseStore,
-        activeUser: uid,
+        activeUser: user,
       };
 
       await saveUserStore(newUserStore);
