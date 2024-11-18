@@ -2,11 +2,9 @@ import { View, TouchableOpacity, ScrollView, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef, useEffect } from "react";
 import { Animated, Dimensions } from "react-native";
-import { MaterialIcons } from "@expo/vector-icons";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import { Feather } from "@expo/vector-icons";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import { useUser } from "../../../src/contexts/UserContext";
-
 import TimeSlots from "./components/TimeSlots";
 import AddEditEventModal from "./components/AddEditEventModal";
 import LinkCalendarModal from "./components/LinkCalendarModal";
@@ -97,7 +95,7 @@ export default function Page() {
     setCalendarDate(newDate);
   };
 
-  // Filter events for selected date (the date displayed in the calendar)
+  // Filter events for selected date
   const getEventsForDate = (date) => {
     return events.filter((event) => {
       const eventDate = new Date(event.startTime);
@@ -105,40 +103,15 @@ export default function Page() {
     });
   };
 
-  // Render events in time slots
-  const renderEvents = (time) => {
+  // Get events for a specific time slot
+  const getEventsForTimeSlot = (time) => {
     const dateEvents = getEventsForDate(calendarDate);
     const hour = parseInt(time.split(":")[0]);
 
-    const timeSlotEvents = dateEvents.filter((event) => {
+    return dateEvents.filter((event) => {
       const eventStart = new Date(event.startTime);
       return eventStart.getHours() === hour;
     });
-
-    if (timeSlotEvents.length === 0) {
-      return null;
-    }
-
-    return timeSlotEvents.map((event) => (
-      <TouchableOpacity
-        key={event.eventId}
-        className="bg-purple-100 dark:bg-purple-900 p-2 rounded-lg mb-1"
-        onPress={() => handleEventPress(event)}
-      >
-        <Text className="font-inter-medium dark:text-white">{event.title}</Text>
-        <Text className="text-sm text-gray-500 dark:text-gray-400">
-          {new Date(event.startTime).toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-          {" - "}
-          {new Date(event.endTime).toLocaleTimeString("en-GB", {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </Text>
-      </TouchableOpacity>
-    ));
   };
 
   // Generate time slots
@@ -156,10 +129,14 @@ export default function Page() {
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       {/* Header */}
-      <View className="px-4 py-6 border-b border-gray dark:border-gray-800">
+      <View className="px-4 py-6 border-b border-gray dark:border-dark-text-dimmed">
         <View className="flex-row justify-between items-center">
           <TouchableOpacity onPress={goToPreviousDay}>
-            <MaterialIcons name="chevron-left" size={24} color="black" />
+            <Feather
+              name="chevron-left"
+              size={24}
+              className="text-text-default dark:text-dark-text-default"
+            />
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -171,11 +148,17 @@ export default function Page() {
                 <View
                   className={`${
                     isToday(calendarDate)
-                      ? "bg-purple-secondary dark:bg-purple-secondary px-2 py-1 rounded-lg"
+                      ? "bg-purple-default dark:bg-dark-purple-default px-2 py-1 rounded-lg"
                       : ""
                   }`}
                 >
-                  <Text className="text-2xl font-inter-bold dark:text-white">
+                  <Text
+                    className={`text-2xl font-inter-bold ${
+                      isToday(calendarDate)
+                        ? "text-white dark:text-black" // Today's date colors
+                        : "text-text-default dark:text-dark-text-default" // Other dates colors
+                    }`}
+                  >
                     {calendarDate.getDate()}
                   </Text>
                 </View>
@@ -183,21 +166,28 @@ export default function Page() {
                   {calendarDate.toLocaleString("default", { month: "long" })}
                 </Text>
               </View>
-              <MaterialIcons
-                name="keyboard-arrow-down"
+              <Feather
+                name="chevron-down"
                 size={24}
-                color="black"
-                className="ml-2 mt-1"
+                className="text-text-default dark:text-dark-text-default ml-1"
               />
             </View>
           </TouchableOpacity>
 
           <View className="flex-row items-center">
             <TouchableOpacity className="mr-4" onPress={showLinkModal}>
-              <MaterialCommunityIcons name="link" size={24} color="black" />
+              <Feather
+                name="link"
+                size={24}
+                className="text-text-default dark:text-dark-text-default"
+              />
             </TouchableOpacity>
             <TouchableOpacity onPress={goToNextDay}>
-              <MaterialIcons name="chevron-right" size={24} color="black" />
+              <Feather
+                name="chevron-right"
+                size={24}
+                className="text-text-default dark:text-dark-text-default"
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -208,9 +198,15 @@ export default function Page() {
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 100 }} // Add padding for FAB
+          contentContainerStyle={{ paddingBottom: 100 }}
         >
-          <TimeSlots timeSlots={timeSlots} renderEvents={renderEvents} />
+          <TimeSlots
+            timeSlots={timeSlots}
+            events={events}
+            selectedDate={calendarDate}
+            getEventsForTimeSlot={getEventsForTimeSlot}
+            onEventPress={handleEventPress}
+          />
         </ScrollView>
       </View>
 
@@ -253,10 +249,10 @@ export default function Page() {
 
       {/* Add Event Button */}
       <TouchableOpacity
-        className="absolute bottom-28 right-6 w-14 h-14 bg-purple-600 rounded-full items-center justify-center shadow-lg"
+        className="absolute bottom-32 right-6 w-14 h-14 bg-purple-default dark:bg-dark-purple-default rounded-full items-center justify-center shadow-lg"
         onPress={handleAddEvent}
       >
-        <MaterialIcons name="add" size={24} color="white" />
+        <Feather name="plus" size={24} className="text-white" />
       </TouchableOpacity>
 
       {showLinkCalendar && (
