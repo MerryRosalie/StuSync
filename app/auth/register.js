@@ -111,6 +111,24 @@ export default function Register() {
         password: password,
         courses: courses,
         createdAt: new Date().toISOString(),
+        calendar: {
+          events: [],
+        },
+        profile: {
+          aboutMe: "",
+          currentCourses: courses,
+          memberSince: new Date().toISOString(),
+        },
+        friends: {
+          allFriends: [],
+          incomingRequests: [],
+          pendingRequests: [],
+        },
+        settings: {
+          theme: "Light",
+          privacy: "FriendsOnly",
+        },
+        studySessions: [],
       };
 
       await addUser(newUser);
