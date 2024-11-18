@@ -17,13 +17,9 @@ import Sheet from "../../components/Sheet";
 import { format } from "date-fns/format";
 import * as ImagePicker from "expo-image-picker";
 import ImageModal from "../../components/ImageModal";
-import VoiceRecorder from "../../components/VoiceRecorder";
-import VoiceMessage from "../../components/VoiceMessage";
-
-// Component which represents the page for location poll
-const LocationPollModal = () => {
-  return <Text>Location Poll Modal</Text>;
-};
+import VoiceRecorder from "../../components/chat/voice/VoiceRecorder";
+import VoiceMessage from "../../components/chat/voice/VoiceMessage";
+import LocationPollModal from "../../components/chat/LocationPollModal";
 
 // ChatBubble component handles individual message display
 const ChatBubble = ({
@@ -365,6 +361,7 @@ export default function Page() {
       <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
         {/* Header */}
         <View className="flex-row items-center justify-between mb-3 px-6">
+          {/* Back button */}
           <TouchableOpacity className="p-4" onPress={() => router.back()}>
             <Feather
               className="color-text-default dark:color-dark-text-default"
@@ -372,6 +369,7 @@ export default function Page() {
               size={24}
             />
           </TouchableOpacity>
+          {/* Brief study session details */}
           <View className="flex-1">
             <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
               Active Study Session
@@ -380,6 +378,7 @@ export default function Page() {
               Christine, Urja, Merry
             </Text>
           </View>
+          {/* Go to Details */}
           <TouchableOpacity
             onPress={() => router.push("/details")}
             className="p-4"
@@ -393,7 +392,10 @@ export default function Page() {
         </View>
         {/* Location Poll Warning */}
         {showLocationPoll && (
-          <TouchableOpacity className="w-full px-6 py-4 flex-row justify-between items-center bg-purple-secondary dark:bg-dark-purple-secondary">
+          <TouchableOpacity
+            onPress={() => handlePresentModalPress(locationSheetRef)}
+            className="w-full px-6 py-4 flex-row justify-between items-center bg-purple-secondary dark:bg-dark-purple-secondary"
+          >
             <Text className="text-purple-default dark:text-dark-purple-default">
               Tap here to vote for a location!
             </Text>
@@ -406,7 +408,7 @@ export default function Page() {
         )}
         {/* Location Poll Modal */}
         <Sheet ref={locationSheetRef}>
-          <Text>test</Text>
+          <LocationPollModal sheetRef={locationSheetRef} />
         </Sheet>
         {/* Chat Interface */}
         <ScrollView

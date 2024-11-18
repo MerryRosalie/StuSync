@@ -4,7 +4,8 @@ import {
   BottomSheetBackdrop,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { ScrollView, View, useColorScheme } from "react-native";
+import { TouchableOpacity, View, useColorScheme, Text } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   interpolateColor,
@@ -107,8 +108,13 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
       }
     >
       <BottomSheetView className="flex-1">
-        <ScrollView className="flex-1">
-          <View onLayout={onLayoutContent} className="flex-1 p-6">
+        <ScrollView
+          className="flex-1"
+          bounces={false}
+          overScrollMode="never"
+          simultaneousHandlers={ref}
+        >
+          <View className="flex-1 p-6" onLayout={onLayoutContent}>
             {children}
           </View>
         </ScrollView>
