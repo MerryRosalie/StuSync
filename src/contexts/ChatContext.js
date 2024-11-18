@@ -27,7 +27,6 @@ export const ChatProvider = ({ children }) => {
 
   const saveChats = async (newChats) => {
     try {
-      console.log(newChats);
       await AsyncStorage.setItem("chats", JSON.stringify(newChats));
       setChats(newChats);
     } catch (error) {
