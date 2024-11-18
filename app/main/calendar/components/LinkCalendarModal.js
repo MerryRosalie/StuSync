@@ -11,13 +11,13 @@ export default function LinkCalendarModal({ hideModal }) {
   };
 
   return (
-    <View className="py-10 px-7">
+    <View className="py-10 px-7 ">
       <View className="flex-row justify-between items-center mb-8">
         <Text className="text-xl font-inter-bold dark:text-white">
           Link External Calendar
         </Text>
         <TouchableOpacity onPress={hideModal}>
-          <Text className="text-md dark:text-white">Close</Text>
+          <Text className="text-lg dark:text-white">Close</Text>
         </TouchableOpacity>
       </View>
 
