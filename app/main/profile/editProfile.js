@@ -9,6 +9,7 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
+import MultiSelectTextInput from "react-native-multi-select-text-input";
 
 export default function EditProfilecreen() {
   const [name, setName] = useState("Christine Phung");
@@ -17,6 +18,13 @@ export default function EditProfilecreen() {
   const [currentCourses, setCurrentCourses] = useState(["COMP6991"]);
 
   const router = useRouter();
+
+  const addCourse = () => {
+    if (courseInput.trim()) {
+      setCourses([...courses, courseInput.trim().toUpperCase()]);
+      setCourseInput("");
+    }
+  };
 
   const handleRemoveCourse = (course) => {
     setCurrentCourses(currentCourses.filter((c) => c !== course));
@@ -52,6 +60,7 @@ export default function EditProfilecreen() {
           <Text className="text-base font-semibold">Name</Text>
           <TextInput
             className="border border-gray rounded-xl items-center p-4"
+            placeholder="Enter name"
             onChangeText={(e) => {
               setName(e);
             }}
@@ -63,6 +72,7 @@ export default function EditProfilecreen() {
           <Text className="text-base font-semibold">Username</Text>
           <TextInput
             className="border border-gray rounded-xl items-center p-4"
+            placeholder="Enter username"
             onChangeText={(e) => {
               setUsername(e);
             }}
@@ -74,12 +84,27 @@ export default function EditProfilecreen() {
           <Text className="text-base font-semibold">About Me</Text>
           <TextInput
             className="border border-gray rounded-xl items-center p-4"
+            placeholder="Enter about me"
+            multiline={true}
             onChangeText={(e) => {
               setAboutMe(e);
             }}
             value={aboutMe}
           />
         </View>
+        {/* courses input */}
+        <View className="gap-2">
+          <Text className="text-base font-semibold">Current Courses</Text>
+          <TextInput
+            className="border border-gray rounded-xl items-center p-4"
+            placeholder="Enter username"
+            onChangeText={(e) => {
+              setUsername(e);
+            }}
+            value={course}
+          />
+        </View>
+        <MultiSelectTextInput />
       </View>
     </SafeAreaView>
   );

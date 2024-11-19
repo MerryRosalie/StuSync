@@ -70,7 +70,10 @@ export default function Page() {
       >
         Go to Friends
       </Link> */}
-      <TouchableOpacity className="flex-row justify-between w-full rounded-[20px] border-2 border-gray p-4 items-center">
+      <TouchableOpacity
+        className="flex-row justify-between w-full rounded-2xl border border-gray p-4 items-center"
+        onPress={() => navigation.navigate("friends")}
+      >
         <Text className="text-base font-bold">Your Friends</Text>
         <View className="flex-row">
           <View className="flex-row items-center justify-center">
