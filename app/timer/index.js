@@ -11,6 +11,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import Sheet from "../../components/Sheet";
+import BreakActivityPollModal from "../../components/timer/BreakActivityPollModal";
 
 // TimerSettingsSheet component handles timer duration configuration
 const TimerSettingsSheet = ({
@@ -147,19 +148,33 @@ const TimerSettingsSheet = ({
   );
 };
 
+const VOTE_DURATION = 30; // 30 seconds for voting
+
+const BREAK_ACTIVITIES = ["Take a walk", "Phone break"];
+
 export default function Page() {
   const router = useRouter();
 
   // Timer state
   const [studyMinutes, setStudyMinutes] = useState(25);
   const [breakMinutes, setBreakMinutes] = useState(5);
+  const [selectedActivity, setSelectedActivity] = useState("");
   const [timeLeft, setTimeLeft] = useState(studyMinutes * 60);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
+  const [isVoting, setIsVoting] = useState(false);
+  const [voteTimeLeft, setVoteTimeLeft] = useState(0);
+  const [voteValues, setVoteValues] = useState(
+    BREAK_ACTIVITIES.reduce((acc, option) => {
+      acc[option] = false;
+      return acc;
+    }, {})
+  );
+  const [showResults, setShowResults] = useState(false);
 
   // Animation and sheet refs
-  const progressAnimation = useRef(new Animated.Value(0)).current;
   const settingsSheetRef = useRef(null);
+  const breakPollSheetRef = useRef(null);
 
   // Timer countdown effect
   useEffect(() => {
@@ -169,13 +184,47 @@ export default function Page() {
         setTimeLeft((time) => time - 1);
       }, 1000);
     } else if (timeLeft === 0) {
-      // Switch between study and break periods
-      setIsBreak((prev) => !prev);
-      setTimeLeft(isBreak ? studyMinutes * 60 : breakMinutes * 60);
+      if (!isBreak) {
+        setIsVoting(true);
+        setVoteTimeLeft(VOTE_DURATION);
+        breakPollSheetRef.current?.present();
+      } else {
+        setIsBreak(false);
+        setTimeLeft(studyMinutes * 60);
+        setIsVoting(false);
+      }
       setIsActive(false);
     }
     return () => clearInterval(intervalId);
-  }, [isActive, timeLeft, isBreak, studyMinutes, breakMinutes]);
+  }, [isActive, timeLeft, isBreak, studyMinutes]);
+
+  // Effect for vote timer
+  useEffect(() => {
+    let intervalId;
+    if (isVoting && voteTimeLeft > 0) {
+      intervalId = setInterval(() => {
+        setVoteTimeLeft((time) => time - 1);
+      }, 1000);
+    } else if (voteTimeLeft === 0 && isVoting) {
+      const selectedActivities = Object.entries(voteValues)
+        .filter(([_, isSelected]) => isSelected)
+        .map(([activity]) => activity);
+
+      const activitiesToChooseFrom =
+        selectedActivities.length > 0 ? selectedActivities : BREAK_ACTIVITIES;
+
+      const randomIndex = Math.floor(
+        Math.random() * activitiesToChooseFrom.length
+      );
+      setSelectedActivity(activitiesToChooseFrom[randomIndex]);
+
+      setIsBreak(true);
+      setTimeLeft(breakMinutes * 60);
+      setIsVoting(false);
+      breakPollSheetRef.current?.dismiss();
+    }
+    return () => clearInterval(intervalId);
+  }, [isVoting, voteTimeLeft, voteValues]);
 
   // Utility function to format time displa
   const formatTime = (seconds) => {
@@ -205,6 +254,12 @@ export default function Page() {
     setBreakMinutes(newBreakMinutes);
     setTimeLeft(isBreak ? newBreakMinutes * 60 : newStudyMinutes * 60);
     setIsActive(false);
+  };
+
+  // Handler for break time when voting completed
+  const handleVoteSubmit = (values, showResults) => {
+    setVoteValues(values);
+    setShowResults(showResults);
   };
 
   return (
@@ -246,15 +301,52 @@ export default function Page() {
       </View>
 
       <View className="flex-1 justify-between items-center py-16 px-6">
-        {/* Title changes based on timer mode */}
-        <Text
-          className={`text-2xl ${
-            isBreak ? "text-dark-background" : "text-background"
-          } mb-8`}
-        >
-          Time to {isBreak ? "take a break" : "get to work"},{" "}
-          {isBreak ? "relax" : "focus"}!
-        </Text>
+        <View className="items-center gap-4">
+          {/* Title changes based on timer mode */}
+          <Text
+            className={`text-2xl text-center ${
+              isBreak ? "text-dark-background" : "text-background"
+            }`}
+          >
+            Time to {isBreak ? "take a break" : "get to work"},{" "}
+            {isBreak ? "relax" : "focus"}!
+          </Text>
+
+          {/* Quick link to go back to break time poll */}
+          {isVoting && (
+            <View className="items-center gap-2">
+              <TouchableOpacity
+                onPress={() => breakPollSheetRef.current?.present()}
+                className={`px-4 py-2 rounded-lg ${
+                  isBreak ? "bg-dark-background/20" : "bg-background/20"
+                }`}
+              >
+                <Text
+                  className={`${
+                    isBreak ? "text-dark-background" : "text-background"
+                  }`}
+                >
+                  Change Vote
+                </Text>
+              </TouchableOpacity>
+              {/* Timer display for how many seconds left till voting finishes */}
+              <Text
+                className={`${
+                  isBreak ? "text-dark-background/75" : "text-background/75"
+                }`}
+              >
+                Break Activity Poll ends in {voteTimeLeft}s
+              </Text>
+            </View>
+          )}
+
+          {/* Show selected activity during break */}
+          {isBreak && selectedActivity && (
+            <Text className="text-xl text-center text-dark-background/75 font-inter-medium">
+              Activity: {selectedActivity}
+            </Text>
+          )}
+        </View>
 
         {/* Timer display */}
         <Text
@@ -270,9 +362,10 @@ export default function Page() {
           {/* Reset button */}
           <TouchableOpacity
             onPress={resetTimer}
+            disabled={isVoting}
             className={`p-6 rounded-full ${
               isBreak ? "bg-dark-background/20" : "bg-background/20"
-            }`}
+            } ${isVoting ? "opacity-50" : ""}`}
           >
             <Feather
               className={`${
@@ -285,9 +378,10 @@ export default function Page() {
           {/* Play/Pause button */}
           <TouchableOpacity
             onPress={toggleTimer}
+            disabled={isVoting}
             className={`p-6 rounded-full ${
               isBreak ? "bg-dark-background" : "bg-yellow-default"
-            }`}
+            } ${isVoting ? "opacity-50" : ""}`}
           >
             <Feather
               className="color-background"
@@ -305,6 +399,17 @@ export default function Page() {
           onSave={handleTimerSettingsSave}
           initialStudyTime={studyMinutes}
           initialBreakTime={breakMinutes}
+        />
+      </Sheet>
+
+      {/* Break Activity Poll Modal */}
+      <Sheet ref={breakPollSheetRef} noExpand>
+        <BreakActivityPollModal
+          sheetRef={breakPollSheetRef}
+          onComplete={handleVoteSubmit}
+          options={BREAK_ACTIVITIES}
+          values={voteValues}
+          showResults={showResults}
         />
       </Sheet>
     </SafeAreaView>
