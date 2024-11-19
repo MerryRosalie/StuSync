@@ -16,7 +16,6 @@ export default function PasswordStep({
         Create a secure password. Must include at least 8 characters with
         uppercase, lowercase, and numbers
       </Text>
-
       <TextInput
         value={password}
         onChangeText={onPasswordChange}
@@ -37,7 +36,6 @@ export default function PasswordStep({
         } bg-background dark:bg-dark-background`}
         placeholderTextColor="#9CA3AF"
       />
-
       {error && <Text className="text-failure-text mt-2">{error}</Text>}
     </>
   );
