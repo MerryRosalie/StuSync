@@ -20,7 +20,7 @@ export default function Page() {
         <Text className="font-inter-bold text-xl dark:text-dark-purple-default">
           Profile
         </Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate("settings")}>
           <Feather name="settings" size={24} color="black" />
         </TouchableOpacity>
       </View>
