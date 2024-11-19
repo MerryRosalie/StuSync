@@ -10,6 +10,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import ModeSwitch from "../../components/ModeSwitch";
+
 export default function SettingsScreen() {
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
@@ -39,6 +40,8 @@ export default function SettingsScreen() {
             Privacy
           </Text>
         </View>
+        {/* radio buttons */}
+        <TouchableOpacity></TouchableOpacity>
       </View>
     </SafeAreaView>
   );
