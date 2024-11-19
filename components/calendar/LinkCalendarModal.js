@@ -26,6 +26,7 @@ export default function LinkCalendarModal({ hideModal }) {
       <TextInput
         className="bg-gray dark:bg-dark-gray p-3 rounded-lg mb-4 border border-gray dark:border-dark-gray text-text-default dark:text-dark-text-default"
         placeholder="Enter Input"
+        placeholderTextColor="#666666"
       />
 
       <View className="flex-row items-center mb-4">

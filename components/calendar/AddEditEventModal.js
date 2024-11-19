@@ -129,6 +129,7 @@ export default function AddEditEventModal({
         onChangeText={setTitle}
         className="bg-gray dark:bg-dark-gray p-3 rounded-lg mb-4 border border-gray dark:border-dark-gray text-text-default dark:text-dark-text-default"
         placeholder="Enter Title"
+        placeholderTextColor="#666666"
       />
 
       {/* Date Selection */}
@@ -198,6 +199,7 @@ export default function AddEditEventModal({
         onChangeText={setDescription}
         className="bg-gray dark:bg-dark-gray p-3 rounded-lg mb-4 border border-gray dark:border-dark-gray text-text-default dark:text-dark-text-default"
         placeholder="Enter Description"
+        placeholderTextColor="#666666"
         numberOfLines={3}
       />
 
