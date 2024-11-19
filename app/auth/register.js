@@ -189,7 +189,7 @@ export default function Register() {
   const handleUsernameStep = async () => {
     const usernameExists = await checkUsernameExists(username);
     if (usernameExists) {
-      setUsernameError("Username already existsr");
+      setUsernameError("Username already exists");
       return;
     }
     setStep(step + 1);
