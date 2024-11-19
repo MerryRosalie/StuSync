@@ -34,6 +34,20 @@ const DUMMY_NOTIFICATIONS = [
     category: 'sessions'
   },
   {
+    id: 10,
+    type: 'session_invite',
+    user: {
+      id: 6,
+      name: 'Emma Wilson',
+      avatar: 'https://avatar.iran.liara.run/public/6'
+    },
+    time: '4PM',
+    date: 'Tomorrow',
+    timestamp: '6 hours ago',
+    requiresAction: true,
+    category: 'sessions'
+  },
+  {
     id: 4,
     type: 'session_invite',
     user: {
@@ -104,20 +118,7 @@ const DUMMY_NOTIFICATIONS = [
     timestamp: '5 hours ago',
     category: 'sessions'
   },
-  {
-    id: 10,
-    type: 'session_invite',
-    user: {
-      id: 6,
-      name: 'Emma Wilson',
-      avatar: 'https://avatar.iran.liara.run/public/6'
-    },
-    time: '4PM',
-    date: 'Tomorrow',
-    timestamp: '6 hours ago',
-    requiresAction: true,
-    category: 'sessions'
-  }
+
 ];
 
 export default function Page() {
@@ -136,10 +137,10 @@ export default function Page() {
     switch (notification.type) {
       case 'friend_request':
         return (
-          <View key={notification.id} className="flex-row items-center p-4 border-b border-gray-100">
-            <Image 
+          <View key={notification.id} className="flex-row items-start p-4">
+            <Image
               source={{ uri: notification.user.avatar }}
-              className="w-10 h-10 rounded-full mr-3"
+              className="w-12 h-12 rounded-full mr-3"
             />
             <View className="flex-1">
               <Text className="dark:text-dark-text-default">
@@ -150,11 +151,11 @@ export default function Page() {
             </View>
             {notification.requiresAction && (
               <View className="flex-row items-center">
-                <TouchableOpacity className="w-8 h-8 rounded-full bg-green mr-2 items-center justify-center">
-                  <Text>✓</Text>
+                <TouchableOpacity className="w-12 h-12 rounded-full bg-success-background mr-2 items-center justify-center">
+                  <Text className="text-success-text text-2xl">✓</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="w-8 h-8 rounded-full bg-red-100 items-center justify-center">
-                  <Text>✕</Text>
+                <TouchableOpacity className="w-12 h-12 rounded-full bg-failure-background  items-center justify-center">
+                  <Text className="text-failure-text text-2xl">✕</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -164,9 +165,9 @@ export default function Page() {
       case 'session_reminder':
       case 'session_location':
         return (
-          <View key={notification.id} className="flex-row items-center p-4 border-b border-gray-100">
-            <View className="w-10 h-10 rounded-full mr-3 bg-purple-100 items-center justify-center">
-              <Text>📚</Text>
+          <View key={notification.id} className="flex-row items-start p-4">
+            <View className="w-12 h-12 rounded-full mr-3 bg-purple-100 items-center justify-center">
+              <Text className="text-2xl">📚</Text>
             </View>
             <View className="flex-1">
               <Text className="dark:text-dark-text-default">
@@ -185,10 +186,10 @@ export default function Page() {
 
       case 'session_invite':
         return (
-          <View key={notification.id} className="flex-row items-center p-4 border-b border-gray-100">
-            <Image 
+          <View key={notification.id} className="flex-row items-start p-4">
+            <Image
               source={{ uri: notification.user.avatar }}
-              className="w-10 h-10 rounded-full mr-3"
+              className="w-12 h-12 rounded-full mr-3"
             />
             <View className="flex-1">
               <Text className="dark:text-dark-text-default">
@@ -201,11 +202,11 @@ export default function Page() {
             </View>
             {notification.requiresAction && (
               <View className="flex-row items-center">
-                <TouchableOpacity className="w-8 h-8 rounded-full bg-green mr-2 items-center justify-center">
-                  <Text>✓</Text>
+                <TouchableOpacity className="w-12 h-12 rounded-full bg-success-background mr-2 items-center justify-center">
+                  <Text className="text-success-text text-2xl">✓</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="w-8 h-8 rounded-full bg-red-100 items-center justify-center">
-                  <Text>✕</Text>
+                <TouchableOpacity className="w-12 h-12 rounded-full bg-failure-background  items-center justify-center">
+                  <Text className="text-failure-text text-2xl">✕</Text>
                 </TouchableOpacity>
               </View>
             )}
@@ -217,7 +218,7 @@ export default function Page() {
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       {/* Header */}
-      <View className="flex-row justify-between items-center px-4 py-3">
+      <View className="flex-row justify-between items-center px-4 pt-2 pb-9">
         <Text className="font-inter-bold text-xl dark:text-dark-text-default">Notifications</Text>
         <TouchableOpacity>
           <Text className="text-purple-600 dark:text-dark-purple-default">Mark all as read</Text>
@@ -225,36 +226,51 @@ export default function Page() {
       </View>
 
       {/* Tabs */}
-      <View className="flex-row border-b border-gray-200 px-4">
-        <TouchableOpacity 
+      <View className="flex-row border-b border-[#DCDCDC] px-4">
+        <TouchableOpacity
           onPress={() => setActiveTab('all')}
           className={`mr-6 pb-2 ${activeTab === 'all' ? 'border-b-2 border-purple-600' : ''}`}
         >
-          <Text className="font-inter-medium dark:text-dark-text-default">
-            All <Text className={activeTab === 'all' ? 'text-purple-600' : ''}>
-              {DUMMY_NOTIFICATIONS.length}
+          <View className="flex-row items-center">
+            <Text className={`font-inter-medium dark:text-dark-text-default ${activeTab === 'all' ? 'text-purple-600' : ''}`}>
+              All
             </Text>
-          </Text>
+            <View className={`ml-1 rounded-full px-2 py-0.5 ${activeTab === 'all' ? 'bg-purple-600' : 'bg-[#EBE5FC]'}`}>
+              <Text className={activeTab === 'all' ? 'text-white' : 'text-purple-600'}>
+                {DUMMY_NOTIFICATIONS.length}
+              </Text>
+            </View>
+          </View>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setActiveTab('sessions')}
           className={`mr-6 pb-2 ${activeTab === 'sessions' ? 'border-b-2 border-purple-600' : ''}`}
         >
-          <Text className="font-inter-medium dark:text-dark-text-default">
-            Sessions <Text className={activeTab === 'sessions' ? 'text-purple-600' : ''}>
-              {DUMMY_NOTIFICATIONS.filter(n => n.type.startsWith('session_')).length}
+          <View className="flex-row items-center">
+            <Text className={`font-inter-medium dark:text-dark-text-default ${activeTab === 'sessions' ? 'text-purple-600' : ''}`}>
+              Sessions
             </Text>
-          </Text>
+            <View className={`ml-1 rounded-full px-2 py-0.5 ${activeTab === 'sessions' ? 'bg-purple-600' : 'bg-[#EBE5FC]'}`}>
+              <Text className={activeTab === 'sessions' ? 'text-white' : 'text-purple-600'}>
+                {DUMMY_NOTIFICATIONS.filter(n => n.type.startsWith('session_')).length}
+              </Text>
+            </View>
+          </View>
         </TouchableOpacity>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => setActiveTab('friends')}
           className={`pb-2 ${activeTab === 'friends' ? 'border-b-2 border-purple-600' : ''}`}
         >
-          <Text className="font-inter-medium dark:text-dark-text-default">
-            Friends <Text className={activeTab === 'friends' ? 'text-purple-600' : ''}>
-              {DUMMY_NOTIFICATIONS.filter(n => n.type.startsWith('friend_')).length}
+          <View className="flex-row items-center">
+            <Text className={`font-inter-medium dark:text-dark-text-default ${activeTab === 'friends' ? 'text-purple-600' : ''}`}>
+              Friends
             </Text>
-          </Text>
+            <View className={`ml-1 rounded-full px-2 py-0.5 ${activeTab === 'friends' ? 'bg-purple-600' : 'bg-[#EBE5FC]'}`}>
+              <Text className={activeTab === 'friends' ? 'text-white' : 'text-purple-600'}>
+                {DUMMY_NOTIFICATIONS.filter(n => n.type.startsWith('friend_')).length}
+              </Text>
+            </View>
+          </View>
         </TouchableOpacity>
       </View>
 
