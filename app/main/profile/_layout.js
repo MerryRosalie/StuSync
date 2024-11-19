@@ -5,8 +5,12 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen
-        name="editprofile"
-        options={{ headerShown: false, tabBarVisible: false }}
+        name="editProfile"
+        options={{
+          headerShown: false,
+          tabBarVisible: false,
+          navigationBarHidden: true,
+        }}
       />
       <Stack.Screen name="settings" options={{ headerShown: false }} />
     </Stack>

@@ -33,13 +33,13 @@ export default function Page() {
         </View>
         <TouchableOpacity
           className="flex-row rounded-xl bg-purple-default p-4 gap-2 items-center w-36"
-          onPress={() => navigation.navigate("editprofile")}
+          onPress={() => navigation.navigate("editProfile")}
         >
           <Feather name="edit-2" size={24} color="white" />
           <Text className="text-base text-white font-inter">Edit Profile</Text>
           <Link
             className="text-text-default dark:text-dark-text-default"
-            href="/editprofile"
+            href="../settings/editprofile"
           ></Link>
         </TouchableOpacity>
       </View>

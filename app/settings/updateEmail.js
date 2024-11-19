@@ -9,12 +9,8 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import ModeSwitch from "../../../components/ModeSwitch";
+import ModeSwitch from "../../components/ModeSwitch";
 
 export default function Settingscreen() {
-  return (
-    <>
-      <ModeSwitch />
-    </>
-  );
+  return <></>;
 }
