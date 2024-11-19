@@ -1,21 +1,32 @@
+// components/RadioButtons.js
+import React from "react";
+import { View, Text, TouchableOpacity } from "react-native";
+
 const RadioButtons = ({ options, selectedValue, onValueChange }) => {
   return (
-    <div className="p-4">
+    <View className="gap-6 w-full p-4">
       {options.map((option) => (
-        <button
+        <TouchableOpacity
           key={option}
-          className="flex flex-row items-center mb-4 w-full text-left"
-          onClick={() => onValueChange(option)}
-          type="button"
+          onPress={() => onValueChange(option)}
+          className="flex-row items-center justify-between"
         >
-          <div className="h-6 w-6 rounded-full border-2 border-gray-400 mr-3 flex items-center justify-center">
+          <Text
+            className={`text-base ${
+              selectedValue === option ? "font-medium" : "font-normal"
+            }`}
+          >
+            {option}
+          </Text>
+          <View className="h-7 w-7 rounded-full border-2 items-center justify-center">
             {selectedValue === option && (
-              <div className="h-4 w-4 rounded-full bg-blue-500" />
+              <View className="h-4 w-4 rounded-full bg-black" />
             )}
-          </div>
-          <span className="text-base">{option}</span>
-        </button>
+          </View>
+        </TouchableOpacity>
       ))}
-    </div>
+    </View>
   );
 };
+
+export default RadioButtons;
