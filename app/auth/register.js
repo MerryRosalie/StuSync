@@ -137,6 +137,11 @@ export default function Register() {
         username: username.trim().toLowerCase(),
         password: password,
         profilePicture: generateProfilePicture(name.trim()),
+        courses: courses,
+        createdAt: new Date().toISOString(),
+        calendar: {
+          events: [],
+        },
         profile: {
           aboutMe: "",
           currentCourses: courses,
@@ -150,9 +155,6 @@ export default function Register() {
         settings: {
           theme: "Light",
           privacy: "FriendsOnly",
-        },
-        calendar: {
-          events: [],
         },
         studySessions: [],
       };
