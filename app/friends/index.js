@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   Image,
 } from "react-native";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import { useUser } from "../../src/contexts/UserContext";
@@ -178,42 +178,40 @@ export default function Page() {
   const buttons = Object.values(FriendsTab);
 
   return (
-    <SafeAreaProvider className="flex-1">
-      <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
-        {/* Header */}
-        <View className="flex-row items-center justify-between mb-3 px-6">
-          <TouchableOpacity className="p-4" onPress={() => router.back()}>
-            <Feather
-              className="color-text-default dark:color-dark-text-default"
-              name="chevron-left"
-              size={24}
-            />
-          </TouchableOpacity>
-          <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
-            Friends List
-          </Text>
-          <TouchableOpacity
-            onPress={() => router.push("/friends/add")}
-            className="p-4"
-          >
-            <Feather
-              className="color-text-default dark:color-dark-text-default"
-              name="user-plus"
-              size={24}
-            />
-          </TouchableOpacity>
-        </View>
-        {/* Tabs */}
-        <Tab
-          buttons={buttons}
-          selectedTab={selectedTab}
-          setSelectedTab={setSelectedTab}
-        />
-        {/* Pages based on selectedTab */}
-        {selectedTab === FriendsTab.All && <AllPage />}
-        {selectedTab === FriendsTab.Incoming && <IncomingPage />}
-        {selectedTab === FriendsTab.Pending && <PendingPage />}
-      </SafeAreaView>
-    </SafeAreaProvider>
+    <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
+      {/* Header */}
+      <View className="flex-row items-center justify-between mb-3 px-6">
+        <TouchableOpacity className="p-4" onPress={() => router.back()}>
+          <Feather
+            className="color-text-default dark:color-dark-text-default"
+            name="chevron-left"
+            size={24}
+          />
+        </TouchableOpacity>
+        <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
+          Friends List
+        </Text>
+        <TouchableOpacity
+          onPress={() => router.push("/friends/add")}
+          className="p-4"
+        >
+          <Feather
+            className="color-text-default dark:color-dark-text-default"
+            name="user-plus"
+            size={24}
+          />
+        </TouchableOpacity>
+      </View>
+      {/* Tabs */}
+      <Tab
+        buttons={buttons}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
+      {/* Pages based on selectedTab */}
+      {selectedTab === FriendsTab.All && <AllPage />}
+      {selectedTab === FriendsTab.Incoming && <IncomingPage />}
+      {selectedTab === FriendsTab.Pending && <PendingPage />}
+    </SafeAreaView>
   );
 }

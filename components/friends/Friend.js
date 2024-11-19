@@ -3,9 +3,11 @@ import Feather from "@expo/vector-icons/Feather";
 import Sheet from "../Sheet";
 import { useRef } from "react";
 import { useUser } from "../../src/contexts/UserContext";
+import { useRouter } from "expo-router";
 
 // Friend component for displaying individual friend cards
 export default function Friend({ user }) {
+  const router = useRouter();
   const { currentUser, addPendingRequest, unfriend } = useUser();
 
   const bottomSheetRef = useRef(null);
@@ -73,7 +75,10 @@ export default function Friend({ user }) {
       name: "Profile",
       icon: (props) => <Feather {...props} name="user" size={24} />,
       warn: false,
-      onPress: () => {},
+      onPress: () => {
+        bottomSheetRef.current?.dismiss();
+        router.navigate(`/profile/${user.uid}`);
+      },
     },
     {
       name: "Mute",
@@ -103,25 +108,30 @@ export default function Friend({ user }) {
 
   return (
     <View className="flex-row items-center gap-2 p-2 flex-2">
-      {/* Profile picture */}
-      <View className="relative">
-        <Image
-          source={{ uri: user.profilePicture }}
-          className="w-12 h-12 rounded-full object-cover"
-          style={{ resizeMode: "cover" }}
-        />
-        <View className="bg-green w-4 h-4 rounded-full absolute right-0 bottom-0" />
-      </View>
+      <TouchableOpacity
+        onPress={() => router.navigate(`/profile/${user.uid}`)}
+        className="flex-1 flex-row items-center gap-2"
+      >
+        {/* Profile picture */}
+        <View className="relative">
+          <Image
+            source={{ uri: user.profilePicture }}
+            className="w-12 h-12 rounded-full object-cover"
+            style={{ resizeMode: "cover" }}
+          />
+          <View className="bg-green w-4 h-4 rounded-full absolute right-0 bottom-0" />
+        </View>
 
-      {/* User info */}
-      <View className="flex-1">
-        <Text className="text-lg text-text-default dark:text-dark-text-default">
-          {user.name}
-        </Text>
-        <Text className="text-sm text-text-default dark:text-dark-text-default">
-          @{user.username}
-        </Text>
-      </View>
+        {/* User info */}
+        <View className="flex-1">
+          <Text className="text-lg text-text-default dark:text-dark-text-default">
+            {user.name}
+          </Text>
+          <Text className="text-sm text-text-default dark:text-dark-text-default">
+            @{user.username}
+          </Text>
+        </View>
+      </TouchableOpacity>
 
       {/* Action buttons */}
       {currentUser.friends.allFriends.includes(user.uid) ? (

@@ -1,9 +1,11 @@
 import { View, Text, Image, TouchableOpacity, Alert } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import { useUser } from "../../src/contexts/UserContext";
+import { useRouter } from "expo-router";
 
 // Request component handles friend request interactions
 export default function Request({ user }) {
+  const router = useRouter();
   const {
     currentUser,
     cancelPendingRequest,
@@ -63,25 +65,30 @@ export default function Request({ user }) {
 
   return (
     <View className="flex-row items-center gap-2 p-2 flex-2">
-      {/* Profile picture with status */}
-      <View className="relative">
-        <Image
-          source={{ uri: user.profilePicture }}
-          className="w-12 h-12 rounded-full object-cover"
-          style={{ resizeMode: "cover" }}
-        />
-        <View className="bg-green w-4 h-4 rounded-full absolute right-0 bottom-0" />
-      </View>
+      <TouchableOpacity
+        onPress={() => router.navigate(`/profile/${user.uid}`)}
+        className="flex-1 flex-row items-center gap-2"
+      >
+        {/* Profile picture with status */}
+        <View className="relative">
+          <Image
+            source={{ uri: user.profilePicture }}
+            className="w-12 h-12 rounded-full object-cover"
+            style={{ resizeMode: "cover" }}
+          />
+          <View className="bg-green w-4 h-4 rounded-full absolute right-0 bottom-0" />
+        </View>
 
-      {/* User info */}
-      <View className="flex-1">
-        <Text className="text-lg text-text-default dark:text-dark-text-default">
-          {user.name}
-        </Text>
-        <Text className="text-sm text-text-default dark:text-dark-text-default">
-          @{user.username}
-        </Text>
-      </View>
+        {/* User info */}
+        <View className="flex-1">
+          <Text className="text-lg text-text-default dark:text-dark-text-default">
+            {user.name}
+          </Text>
+          <Text className="text-sm text-text-default dark:text-dark-text-default">
+            @{user.username}
+          </Text>
+        </View>
+      </TouchableOpacity>
 
       {/* Outgoing request cancel button */}
       {currentUser.friends.pendingRequests.includes(user.uid) && (
