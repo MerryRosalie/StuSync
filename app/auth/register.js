@@ -9,6 +9,7 @@ import { SafeAreaView, View, Text, TouchableOpacity } from "react-native";
 import ProgressBar from "../../components/register/ProgressBar";
 import UsernameStep from "../../components/register/steps/UsernameStep";
 import Feather from "@expo/vector-icons/Feather";
+import { generateProfilePicture } from "../../src/Schema";
 
 export default function Register() {
   const router = useRouter();
@@ -135,6 +136,7 @@ export default function Register() {
         email: email.trim().toLowerCase(),
         username: username.trim().toLowerCase(),
         password: password,
+        profilePicture: generateProfilePicture(name.trim()),
         courses: courses,
         createdAt: new Date().toISOString(),
         calendar: {

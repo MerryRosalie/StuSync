@@ -106,6 +106,200 @@ export const UserProvider = ({ children }) => {
     ? userStore.users[userStore.activeUser]
     : null;
 
+  const addPendingRequest = async (uid) => {
+    try {
+      const newUserStore = { ...userStore };
+      if (currentUser && newUserStore.users[uid]) {
+        // Check if request already exists
+        if (
+          newUserStore.users[
+            newUserStore.activeUser
+          ].friends.pendingRequests.includes(uid)
+        ) {
+          throw new Error("Friend request already sent");
+        }
+
+        // Check if they're already friends
+        if (
+          newUserStore.users[
+            newUserStore.activeUser
+          ].friends.allFriends.includes(uid)
+        ) {
+          throw new Error("Users are already friends");
+        }
+
+        // Add users to list of pending requests
+        const newPendingRequests = Array.from(
+          new Set([
+            ...newUserStore.users[newUserStore.activeUser].friends
+              .pendingRequests,
+            uid,
+          ])
+        );
+        newUserStore.users[newUserStore.activeUser].friends.pendingRequests =
+          newPendingRequests;
+
+        // Add current user to list of incoming requests
+        const newIncomingRequests = Array.from(
+          new Set([
+            ...newUserStore.users[uid].friends.incomingRequests,
+            currentUser.uid,
+          ])
+        );
+        newUserStore.users[uid].friends.incomingRequests = newIncomingRequests;
+
+        await saveUserStore(newUserStore);
+      } else {
+        throw new Error("Error in sending a friend request");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const cancelPendingRequest = async (uid) => {
+    try {
+      const newUserStore = { ...userStore };
+      if (currentUser && newUserStore.users[uid]) {
+        // Remove uid from current user's pending requests
+        newUserStore.users[currentUser.uid].friends.pendingRequests =
+          newUserStore.users[currentUser.uid].friends.pendingRequests.filter(
+            (id) => id !== uid
+          );
+
+        // Remove current user from target user's incoming requests
+        newUserStore.users[uid].friends.incomingRequests = newUserStore.users[
+          uid
+        ].friends.incomingRequests.filter((id) => id !== currentUser.uid);
+
+        await saveUserStore(newUserStore);
+      } else {
+        throw new Error("Error in canceling friend request");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const acceptIncomingRequest = async (uid) => {
+    try {
+      const newUserStore = { ...userStore };
+      if (currentUser && newUserStore.users[uid]) {
+        // Verify request exists
+        if (
+          !newUserStore.users[
+            currentUser.uid
+          ].friends.incomingRequests.includes(uid)
+        ) {
+          throw new Error("No pending request found");
+        }
+
+        // Check if already friends
+        if (
+          newUserStore.users[currentUser.uid].friends.allFriends.includes(uid)
+        ) {
+          throw new Error("Users are already friends");
+        }
+
+        // Remove uid from current user's incoming requests
+        newUserStore.users[currentUser.uid].friends.incomingRequests =
+          newUserStore.users[currentUser.uid].friends.incomingRequests.filter(
+            (id) => id !== uid
+          );
+
+        // Remove current user from sender's pending requests
+        newUserStore.users[uid].friends.pendingRequests = newUserStore.users[
+          uid
+        ].friends.pendingRequests.filter((id) => id !== currentUser.uid);
+
+        // Add to both users' friends lists (using Set to prevent duplicates)
+        newUserStore.users[currentUser.uid].friends.allFriends = Array.from(
+          new Set([
+            ...newUserStore.users[currentUser.uid].friends.allFriends,
+            uid,
+          ])
+        );
+
+        newUserStore.users[uid].friends.allFriends = Array.from(
+          new Set([
+            ...newUserStore.users[uid].friends.allFriends,
+            currentUser.uid,
+          ])
+        );
+
+        await saveUserStore(newUserStore);
+      } else {
+        throw new Error("Error in accepting friend request");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const denyIncomingRequest = async (uid) => {
+    try {
+      const newUserStore = { ...userStore };
+      if (currentUser && newUserStore.users[uid]) {
+        // Verify request exists
+        if (
+          !newUserStore.users[
+            currentUser.uid
+          ].friends.incomingRequests.includes(uid)
+        ) {
+          throw new Error("No pending request found");
+        }
+
+        // Remove uid from current user's incoming requests
+        newUserStore.users[currentUser.uid].friends.incomingRequests =
+          newUserStore.users[currentUser.uid].friends.incomingRequests.filter(
+            (id) => id !== uid
+          );
+
+        // Remove current user from sender's pending requests
+        newUserStore.users[uid].friends.pendingRequests = newUserStore.users[
+          uid
+        ].friends.pendingRequests.filter((id) => id !== currentUser.uid);
+
+        await saveUserStore(newUserStore);
+      } else {
+        throw new Error("Error in denying friend request");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const unfriend = async (uid) => {
+    try {
+      const newUserStore = { ...userStore };
+      if (currentUser && newUserStore.users[uid]) {
+        // Verify they are actually friends
+        if (
+          !newUserStore.users[currentUser.uid].friends.allFriends.includes(uid)
+        ) {
+          throw new Error("Users are not friends");
+        }
+
+        // Remove uid from current user's friends list
+        newUserStore.users[currentUser.uid].friends.allFriends =
+          newUserStore.users[currentUser.uid].friends.allFriends.filter(
+            (id) => id !== uid
+          );
+
+        // Remove current user from target user's allFriends
+        newUserStore.users[uid].friends.allFriends = newUserStore.users[
+          uid
+        ].friends.allFriends.filter((id) => id !== currentUser.uid);
+
+        await saveUserStore(newUserStore);
+      } else {
+        throw new Error("Error in unfriending user");
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const login = async (email, password) => {
     try {
       const user = Object.values(userStore.users).find(
@@ -151,6 +345,11 @@ export const UserProvider = ({ children }) => {
         login,
         checkEmailExists,
         checkUsernameExists,
+        addPendingRequest,
+        cancelPendingRequest,
+        acceptIncomingRequest,
+        denyIncomingRequest,
+        unfriend,
       }}
     >
       {children}
