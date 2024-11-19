@@ -68,16 +68,16 @@ const ChatBubble = ({ mode, chat, onSwipe }) => {
       },
       // Handle swipe movement
       onPanResponderMove: (_, gestureState) => {
-        if (gestureState.dx > 0) {
+        if (gestureState.dx < 0) {
           translateX.setValue(gestureState.dx);
         }
       },
       // Handle swipe release
       onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx > 20) {
+        if (gestureState.dx < -20) {
           // Animate to swipe position
           Animated.spring(translateX, {
-            toValue: 60,
+            toValue: -60,
             useNativeDriver: true,
           }).start();
           // Reply to this chat
@@ -226,7 +226,7 @@ const ChatBubble = ({ mode, chat, onSwipe }) => {
 
           {/* Reply icon for affordance */}
           <Entypo
-            className="absolute top-1/2 -translate-y-1/2 -left-16 color-text-default dark:color-dark-text-default bg-text-dimmed dark:bg-dark-text-dimmed p-2 rounded-full"
+            className="absolute top-1/2 -translate-y-1/2 -right-16 color-background dark:color-dark-background bg-purple-default dark:bg-dark-purple-default p-2 rounded-full"
             name="reply"
             size={16}
           />
@@ -623,6 +623,7 @@ export default function Page() {
               value={message}
               onChangeText={(text) => setMessage(text)}
               multiline
+              textAlignVertical="center" // For IOS support
             />
             <TouchableOpacity onPress={() => uploadImage()} className="p-4">
               <Feather
