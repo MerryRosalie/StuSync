@@ -1,13 +1,97 @@
 import { Text, View, ScrollView, TouchableOpacity, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useUser } from "../../../src/contexts/UserContext";
+import { ChatTemplate, TimerTemplate, FriendsTemplate, ProfileTemplate, SettingsTemplate, CalendarTemplate } from "../../../src/Schema";
+
+
+const MOCK_USERS = {
+  'user123': {
+    uid: 'user123',
+    name: 'Lauren Smith',
+    email: 'lauren@test.com',
+    username: 'laurensmith',
+    password: 'password123',
+    profilePicture: 'https://avatar.iran.liara.run/public/1',
+    profile: {
+      ...ProfileTemplate,
+      aboutMe: "Computer Science Student",
+      currentCourses: ["COMP1511", "MATH1141"],
+      memberSince: "2024-01",
+    },
+    friends: {
+      ...FriendsTemplate,
+      incomingRequests: [],
+      pendingRequests: [],
+      allFriends: [],
+    },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+  'user456': {
+    uid: 'user456',
+    name: 'Emma Wilson',
+    email: 'emma@test.com',
+    username: 'emmawilson',
+    password: 'password456',
+    profilePicture: 'https://avatar.iran.liara.run/public/6',
+    profile: {
+      ...ProfileTemplate,
+      aboutMe: "Engineering Student",
+      currentCourses: ["ENGG1000", "PHYS1121"],
+      memberSince: "2024-01",
+    },
+    friends: { ...FriendsTemplate },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+  'user789': {
+    uid: 'user789',
+    name: 'Michael Chen',
+    email: 'michael@test.com',
+    username: 'michaelchen',
+    password: 'password789',
+    profilePicture: 'https://avatar.iran.liara.run/public/3',
+    profile: {
+      ...ProfileTemplate,
+      aboutMe: "Mathematics Student",
+      currentCourses: ["MATH1141", "MATH1241"],
+      memberSince: "2024-01",
+    },
+    friends: { ...FriendsTemplate },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+  'user101': {
+    uid: 'user101',
+    name: 'Sarah Johnson',
+    email: 'sarah@test.com',
+    username: 'sarahjohnson',
+    password: 'password101',
+    profilePicture: 'https://avatar.iran.liara.run/public/4',
+    profile: {
+      ...ProfileTemplate,
+      aboutMe: "Physics Student",
+      currentCourses: ["PHYS1121", "MATH1141"],
+      memberSince: "2024-01",
+    },
+    friends: { ...FriendsTemplate },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+};
+
 
 const DUMMY_NOTIFICATIONS = [
   {
     id: 1,
     type: 'friend_request',
     user: {
-      id: 1,
+      uid: 'user123',
       name: 'Lauren Smith',
       avatar: 'https://avatar.iran.liara.run/public/1'
     },
@@ -17,121 +101,198 @@ const DUMMY_NOTIFICATIONS = [
     category: 'friends'
   },
   {
-    id: 2,
-    type: 'session_reminder',
-    sessionName: 'Quokka',
-    time: '5:30PM',
-    date: 'Today',
-    timestamp: '30 mins ago',
-    category: 'sessions'
-  },
-  {
     id: 3,
-    type: 'session_location',
-    sessionName: 'Quokka',
-    location: 'RM 402 Main Library UNSW',
-    timestamp: '1 hour ago',
-    category: 'sessions'
-  },
-  {
-    id: 10,
-    type: 'session_invite',
+    type: 'friend_request',
     user: {
-      id: 6,
-      name: 'Emma Wilson',
-      avatar: 'https://avatar.iran.liara.run/public/6'
+      uid: 'user101',
+      name: 'Sarah Johnson',
+      avatar: 'https://avatar.iran.liara.run/public/4'
     },
-    time: '4PM',
-    date: 'Tomorrow',
-    timestamp: '6 hours ago',
+    message: 'sent you a friend request',
+    timestamp: '15 mins ago',
     requiresAction: true,
-    category: 'sessions'
+    category: 'friends'
   },
   {
     id: 4,
     type: 'session_invite',
     user: {
-      id: 2,
-      name: 'Amy Smith',
-      avatar: 'https://avatar.iran.liara.run/public/2'
+      uid: 'user456',
+      name: 'Emma Wilson',
+      avatar: 'https://avatar.iran.liara.run/public/6'
     },
-    time: '3PM',
-    date: 'Today',
-    timestamp: '2 hours ago',
-    requiresAction: true,
-    category: 'sessions'
-  },
-  {
-    id: 5,
-    type: 'friend_request',
-    user: {
-      id: 3,
-      name: 'Peter Tran',
-      avatar: 'https://avatar.iran.liara.run/public/3'
-    },
-    message: 'sent you a friend request',
-    timestamp: '3 hours ago',
-    requiresAction: true,
-    category: 'friends'
-  },
-  {
-    id: 6,
-    type: 'session_invite',
-    user: {
-      id: 4,
-      name: 'Sarah Johnson',
-      avatar: 'https://avatar.iran.liara.run/public/4'
-    },
-    time: '2PM',
+    time: '4:00 PM',
     date: 'Tomorrow',
-    timestamp: '3 hours ago',
+    location: 'Main Library',
+    timestamp: '20 mins ago',
     requiresAction: true,
     category: 'sessions'
   },
   {
     id: 7,
     type: 'session_location',
-    sessionName: 'Physics Study Group',
-    location: 'Physics Building Room 205',
-    timestamp: '4 hours ago',
+    sessionName: 'MATH1141 Study Group',
+    location: 'Room 205, Mathematics Building',
+    timestamp: '30 mins ago',
     category: 'sessions'
   },
   {
     id: 8,
-    type: 'friend_request',
-    user: {
-      id: 5,
-      name: 'Michael Chang',
-      avatar: 'https://avatar.iran.liara.run/public/5'
-    },
-    message: 'sent you a friend request',
-    timestamp: '5 hours ago',
-    requiresAction: true,
-    category: 'friends'
-  },
-  {
-    id: 9,
-    type: 'session_reminder',
-    sessionName: 'Chemistry Lab Prep',
-    time: '11:00AM',
-    date: 'Tomorrow',
-    timestamp: '5 hours ago',
+    type: 'session_location',
+    sessionName: 'Physics Group Study',
+    location: 'Physics Library, Level 2',
+    timestamp: '1 hour ago',
     category: 'sessions'
   },
-
+  {
+    id: 6,
+    type: 'session_invite',
+    user: {
+      uid: 'user123',
+      name: 'Lauren Smith',
+      avatar: 'https://avatar.iran.liara.run/public/1'
+    },
+    time: '10:00 AM',
+    date: 'Saturday',
+    location: 'Science Building',
+    timestamp: '2 hours ago',
+    requiresAction: true,
+    category: 'sessions'
+  },
+  {
+    id: 11,
+    type: 'session_reminder',
+    sessionName: 'Physics Group Study',
+    time: '11:00 AM',
+    date: 'Tomorrow',
+    timestamp: '2 hours ago',
+    category: 'sessions'
+  }
 ];
 
 export default function Page() {
+  const { acceptIncomingRequest, denyIncomingRequest, currentUser, addUser } = useUser();
   const [activeTab, setActiveTab] = useState('all');
+  const [notifications, setNotifications] = useState(DUMMY_NOTIFICATIONS);
+
+
+  const initializeMockUsers = async () => {
+    try {
+      for (const user of Object.values(MOCK_USERS)) {
+        await addUser(user);
+      }
+      console.log('Mock users initialized');
+    } catch (error) {
+      console.error('Error initializing mock users:', error);
+    }
+  };
+
+  useEffect(() => {
+    initializeMockUsers();
+  }, []);
+
+  const removeNotification = (notificationId) => {
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
+  };
+
+  const handleAcceptRequest = async (uid, notificationId) => {
+    try {
+      
+      // add the friend request to the database
+      const targetUser = MOCK_USERS[uid];
+      if (!targetUser) throw new Error('User not found');
+      
+      // update the current user's incoming requests
+      const updatedCurrentUser = {
+        ...currentUser,
+        friends: {
+          ...currentUser.friends,
+          incomingRequests: [...currentUser.friends.incomingRequests, uid]
+        }
+      };
+      await addUser(updatedCurrentUser);
+
+      // update the target user's pending requests
+      const updatedTargetUser = {
+        ...targetUser,
+        friends: {
+          ...targetUser.friends,
+          pendingRequests: [...targetUser.friends.pendingRequests, currentUser.uid]
+        }
+      };
+      await addUser(updatedTargetUser);
+
+      // accept the request
+      await acceptIncomingRequest(uid);
+      removeNotification(notificationId);
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+    }
+  };
+
+  const handleDenyRequest = async (uid, notificationId) => {
+    try {
+      await denyIncomingRequest(uid);
+      removeNotification(notificationId);
+    } catch (error) {
+      console.error('Error denying friend request:', error);
+    }
+  };
+
+  const handleAcceptSession = async (sessionData, notificationId) => {
+    try {
+      const newSession = {
+        sessionId: `session_${Date.now()}`,
+        date: sessionData.date,
+        time: sessionData.time,
+        location: sessionData.location || '',
+        members: [currentUser.uid, sessionData.user.uid],
+        chat: ChatTemplate,
+        timer: TimerTemplate,
+      };
+
+      // update both users with the new session
+      const updatedCurrentUser = {
+        ...currentUser,
+        studySessions: [...currentUser.studySessions, newSession]
+      };
+      await addUser(updatedCurrentUser);
+
+      const targetUser = MOCK_USERS[sessionData.user.uid];
+      if (targetUser) {
+        const updatedTargetUser = {
+          ...targetUser,
+          studySessions: [...targetUser.studySessions, newSession]
+        };
+        await addUser(updatedTargetUser);
+      }
+
+      removeNotification(notificationId);
+    } catch (error) {
+      console.error('Error accepting session invite:', error);
+    }
+  };
+
+  const handleDenySession = async (sessionData, notificationId) => {
+    try {
+      removeNotification(notificationId);
+    } catch (error) {
+      console.error('Error denying session invite:', error);
+    }
+  };
 
   const filteredNotifications = useMemo(() => {
-    if (activeTab === 'all') return DUMMY_NOTIFICATIONS;
-    return DUMMY_NOTIFICATIONS.filter(notification => {
+    if (activeTab === 'all') return notifications;
+    return notifications.filter(notification => {
       if (activeTab === 'friends') return notification.type.startsWith('friend_');
       if (activeTab === 'sessions') return notification.type.startsWith('session_');
       return true;
     });
-  }, [activeTab]);
+  }, [activeTab, notifications]);
+
+  const handleMarkAllAsRead = () => {
+    setNotifications([]);
+  };
 
   const renderNotification = (notification) => {
     switch (notification.type) {
@@ -151,10 +312,16 @@ export default function Page() {
             </View>
             {notification.requiresAction && (
               <View className="flex-row items-center">
-                <TouchableOpacity className="w-12 h-12 rounded-full bg-success-background dark:bg-dark-success-background mr-2 items-center justify-center">
+                <TouchableOpacity 
+                  onPress={() => handleAcceptRequest(notification.user.uid, notification.id)}
+                  className="w-12 h-12 rounded-full bg-success-background dark:bg-dark-success-background mr-2 items-center justify-center"
+                >
                   <Text className="text-success-text dark:text-dark-success-text text-2xl">✓</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="w-12 h-12 rounded-full bg-failure-background dark:bg-dark-alert-background  items-center justify-center">
+                <TouchableOpacity 
+                  onPress={() => handleDenyRequest(notification.user.uid, notification.id)}
+                  className="w-12 h-12 rounded-full bg-failure-background dark:bg-dark-alert-background items-center justify-center"
+                >
                   <Text className="text-failure-text dark:text-dark-alert-text text-2xl">✕</Text>
                 </TouchableOpacity>
               </View>
@@ -201,14 +368,20 @@ export default function Page() {
               <Text className="text-gray-500 text-sm dark:text-dark-text-default">{notification.timestamp}</Text>
             </View>
             {notification.requiresAction && (
-               <View className="flex-row items-center">
-               <TouchableOpacity className="w-12 h-12 rounded-full bg-success-background dark:bg-dark-success-background mr-2 items-center justify-center">
-                 <Text className="text-success-text dark:text-dark-success-text text-2xl">✓</Text>
-               </TouchableOpacity>
-               <TouchableOpacity className="w-12 h-12 rounded-full bg-failure-background dark:bg-dark-alert-background  items-center justify-center">
-                 <Text className="text-failure-text dark:text-dark-alert-text text-2xl">✕</Text>
-               </TouchableOpacity>
-             </View>
+              <View className="flex-row items-center">
+                <TouchableOpacity 
+                  onPress={() => handleAcceptSession(notification, notification.id)}
+                  className="w-12 h-12 rounded-full bg-success-background dark:bg-dark-success-background mr-2 items-center justify-center"
+                >
+                  <Text className="text-success-text dark:text-dark-success-text text-2xl">✓</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  onPress={() => handleDenySession(notification, notification.id)}
+                  className="w-12 h-12 rounded-full bg-failure-background dark:bg-dark-alert-background items-center justify-center"
+                >
+                  <Text className="text-failure-text dark:text-dark-alert-text text-2xl">✕</Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         );
@@ -220,7 +393,7 @@ export default function Page() {
       {/* Header */}
       <View className="flex-row justify-between items-center px-4 pt-2 pb-9">
         <Text className="font-inter-bold text-xl dark:text-dark-text-default">Notifications</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleMarkAllAsRead}>
           <Text className="text-purple-600 dark:text-dark-purple-default">Mark all as read</Text>
         </TouchableOpacity>
       </View>
@@ -237,7 +410,7 @@ export default function Page() {
             </Text>
             <View className={`ml-1 rounded-full px-2 py-0.5 ${activeTab === 'all' ? 'bg-purple-600' : 'bg-[#EBE5FC] dark:bg-dark-purple-secondary'}`}>
               <Text className={activeTab === 'all' ? 'text-white' : 'text-purple-600 dark:text-white'}>
-                {DUMMY_NOTIFICATIONS.length}
+                {notifications.length}
               </Text>
             </View>
           </View>
@@ -252,7 +425,7 @@ export default function Page() {
             </Text>
             <View className={`ml-1 rounded-full px-2 py-0.5 ${activeTab === 'sessions' ? 'bg-purple-600' : 'bg-[#EBE5FC] dark:bg-dark-purple-secondary'}`}>
               <Text className={activeTab === 'sessions' ? 'text-white' : 'text-purple-600 dark:text-white'}>
-                {DUMMY_NOTIFICATIONS.filter(n => n.type.startsWith('session_')).length}
+                {notifications.filter(n => n.type.startsWith('session_')).length}
               </Text>
             </View>
           </View>
@@ -267,7 +440,7 @@ export default function Page() {
             </Text>
             <View className={`ml-1 rounded-full px-2 py-0.5 ${activeTab === 'friends' ? 'bg-purple-600' : 'bg-[#EBE5FC] dark:bg-dark-purple-secondary'}`}>
               <Text className={activeTab === 'friends' ? 'text-white' : 'text-purple-600 dark:text-white'}>
-                {DUMMY_NOTIFICATIONS.filter(n => n.type.startsWith('friend_')).length}
+                {notifications.filter(n => n.type.startsWith('friend_')).length}
               </Text>
             </View>
           </View>
