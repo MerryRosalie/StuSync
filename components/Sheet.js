@@ -1,7 +1,11 @@
-import React, { forwardRef, useMemo } from "react";
-import { BottomSheetModal, BottomSheetBackdrop } from "@gorhom/bottom-sheet";
-import { View, useColorScheme } from "react-native";
-import { BottomSheetScrollView } from "@gorhom/bottom-sheet";
+import React, { forwardRef, useMemo, useState } from "react";
+import {
+  BottomSheetModal,
+  BottomSheetBackdrop,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
+import { TouchableOpacity, View, useColorScheme, Text } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   interpolateColor,
@@ -9,6 +13,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useCallback } from "react";
 
+// Custom background component for the bottom sheet
 // Retrieved from https://gorhom.dev/react-native-bottom-sheet/custom-background
 const CustomBackground = ({ style, animatedIndex, targetColor }) => {
   const containerAnimatedStyle = useAnimatedStyle(() => ({
@@ -28,10 +33,28 @@ const CustomBackground = ({ style, animatedIndex, targetColor }) => {
   return <Animated.View pointerEvents="none" style={containerStyle} />;
 };
 
+// Sheet Component - A customizable bottom sheet
 const Sheet = forwardRef(({ children, noExpand }, ref) => {
   const colorScheme = useColorScheme();
-  const snapPoints = useMemo(() => ["100%"], []);
+  const [contentHeight, setContentHeight] = useState(0);
 
+  // Calculate snap points based on content height
+  const snapPoints = useMemo(() => {
+    if (contentHeight) {
+      const height = Math.min(contentHeight + 8, 600);
+      return [height, "100%"];
+    } else {
+      return ["100%"];
+    }
+  }, [contentHeight]);
+
+  // Measure content height on layout
+  const onLayoutContent = useCallback((event) => {
+    const { height } = event.nativeEvent.layout;
+    setContentHeight(height);
+  }, []);
+
+  // Custom backdrop component
   const renderBackdrop = useMemo(
     () => (props) => (
       <BottomSheetBackdrop
@@ -44,6 +67,7 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
     []
   );
 
+  // Theme configuration
   const theme = useMemo(
     () => ({
       background: colorScheme === "dark" ? "#121212" : "#FFFFFF",
@@ -52,6 +76,7 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
     [colorScheme]
   );
 
+  // Custom background component setup
   const background = useCallback(
     ({ style, animatedIndex }) => (
       <CustomBackground
@@ -73,6 +98,7 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
       backgroundComponent={background}
       enableContentPanningGesture={noExpand ? false : true}
       enableHandlePanningGesture={noExpand ? false : true}
+      enableDynamicSizing
       handleComponent={() =>
         !noExpand && (
           <View className="self-center">
@@ -81,9 +107,18 @@ const Sheet = forwardRef(({ children, noExpand }, ref) => {
         )
       }
     >
-      <BottomSheetScrollView className="flex-1">
-        <View className="flex-1 p-6">{children}</View>
-      </BottomSheetScrollView>
+      <BottomSheetView className="flex-1">
+        <ScrollView
+          className="flex-1"
+          bounces={false}
+          overScrollMode="never"
+          simultaneousHandlers={ref}
+        >
+          <View className="flex-1 p-6" onLayout={onLayoutContent}>
+            {children}
+          </View>
+        </ScrollView>
+      </BottomSheetView>
     </BottomSheetModal>
   );
 });

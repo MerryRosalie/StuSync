@@ -8,12 +8,16 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { cssInterop } from "nativewind";
 import Feather from "@expo/vector-icons/Feather";
+import Entypo from "@expo/vector-icons/Entypo";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import "react-native-reanimated";
 
 import "../global.css";
 import { StatusBar } from "expo-status-bar";
+import { UserProvider } from "../src/contexts/UserContext";
+import { ChatProvider } from "../src/contexts/ChatContext";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -31,6 +35,12 @@ SplashScreen.preventAutoHideAsync();
 
 // Enable icon to be coloured with nativewind
 cssInterop(Feather, {
+  className: {
+    target: "style",
+    nativeStyleToProp: { height: true, width: true, size: true },
+  },
+});
+cssInterop(Entypo, {
   className: {
     target: "style",
     nativeStyleToProp: { height: true, width: true, size: true },
@@ -55,7 +65,15 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNavigation />;
+  return (
+    <SafeAreaProvider>
+      <UserProvider>
+        <ChatProvider>
+          <RootLayoutNavigation />
+        </ChatProvider>
+      </UserProvider>
+    </SafeAreaProvider>
+  );
 }
 
 function RootLayoutNavigation() {

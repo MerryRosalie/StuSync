@@ -11,9 +11,14 @@ export const TimerTemplate = {
 };
 
 export const TextTemplate = {
+  messageId: "",
   message: "",
   senderUid: "",
   timestamp: "",
+  voiceUri: null,
+  reply: null,
+  images: [],
+  poll: false,
 };
 
 export const ChatTemplate = {
@@ -66,6 +71,7 @@ export const UserTemplate = {
   email: "",
   username: "",
   password: "",
+  profilePicture: "",
   profile: ProfileTemplate,
   friends: FriendsTemplate,
   settings: SettingsTemplate,
@@ -96,4 +102,8 @@ export const isValidUser = (user) => {
   } catch (error) {
     return false;
   }
+};
+
+export const generateProfilePicture = (name) => {
+  return `https://ui-avatars.com/api/?name=${name}&background=random`;
 };
