@@ -133,6 +133,12 @@ export const UserProvider = ({ children }) => {
     );
   };
 
+  const checkUsernameExists = (username) => {
+    return Object.values(userStore.users).some(
+      (user) => user.username.toLowerCase() === username.toLowerCase()
+    );
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -144,6 +150,7 @@ export const UserProvider = ({ children }) => {
         isLoading,
         login,
         checkEmailExists,
+        checkUsernameExists,
       }}
     >
       {children}

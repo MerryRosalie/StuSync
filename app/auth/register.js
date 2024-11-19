@@ -7,13 +7,17 @@ import EmailStep from "../../components/register/steps/EmailStep";
 import CoursesStep from "../../components/register/steps/CoursesStep";
 import { SafeAreaView, View, Text, TouchableOpacity } from "react-native";
 import ProgressBar from "../../components/register/ProgressBar";
-import { Link } from "expo-router";
+import UsernameStep from "../../components/register/steps/UsernameStep";
+import Feather from "@expo/vector-icons/Feather";
 
 export default function Register() {
   const router = useRouter();
-  const { addUser, setCurrentUser, checkEmailExists } = useUser();
+  const { addUser, setCurrentUser, checkEmailExists, checkUsernameExists } =
+    useUser();
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
   const [password, setPassword] = useState("");
@@ -54,6 +58,19 @@ export default function Register() {
     return "";
   };
 
+  const validateUsername = (username) => {
+    if (!username.trim()) {
+      return "Username is required";
+    }
+    if (username.length < 3 || username.length > 20) {
+      return "Username must be between 3-20 characters";
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
+      return "Username can only contain letters, numbers, and underscores";
+    }
+    return "";
+  };
+
   // If no errors, set email
   const handleEmailChange = (text) => {
     setEmail(text);
@@ -72,6 +89,8 @@ export default function Register() {
       case 3:
         return name.trim().length >= 2;
       case 4:
+        return username.trim().length > 0 && !usernameError;
+      case 5:
         return true;
     }
   };
@@ -86,6 +105,12 @@ export default function Register() {
   const handleConfirmPasswordChange = (text) => {
     setConfirmPassword(text);
     setPasswordError(validatePassword(password, text));
+  };
+
+  // If no errors set username
+  const handleUsernameChange = (text) => {
+    setUsername(text);
+    setUsernameError(validateUsername(text));
   };
 
   // If course input is not empty add course to courses
@@ -108,6 +133,7 @@ export default function Register() {
         uid: Date.now().toString(),
         name: name.trim(),
         email: email.trim().toLowerCase(),
+        username: username.trim().toLowerCase(),
         password: password,
         courses: courses,
         createdAt: new Date().toISOString(),
@@ -159,6 +185,16 @@ export default function Register() {
     setStep(step + 1);
   };
 
+  // Add username check before proceeding
+  const handleUsernameStep = async () => {
+    const usernameExists = await checkUsernameExists(username);
+    if (usernameExists) {
+      setUsernameError("Username already existsr");
+      return;
+    }
+    setStep(step + 1);
+  };
+
   // Render the current step
   const renderStep = () => {
     switch (step) {
@@ -184,6 +220,14 @@ export default function Register() {
         return <NameStep value={name} onChangeText={setName} />;
       case 4:
         return (
+          <UsernameStep
+            value={username}
+            onChangeText={handleUsernameChange}
+            error={usernameError}
+          />
+        );
+      case 5:
+        return (
           <CoursesStep
             courses={courses}
             onAddCourse={addCourse}
@@ -198,16 +242,18 @@ export default function Register() {
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       <View className="flex-1">
-        <View className="pt-4">
+        <View className="py-4 mt-8">
           <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
-            <Text className="text-2xl text-text-default dark:text-dark-text-default">
-              ←
-            </Text>
+            <Feather
+              name="arrow-left"
+              size={24}
+              className="color-text-default dark:color-dark-text-default"
+            />
           </TouchableOpacity>
-          <ProgressBar currentStep={step} totalSteps={4} />
+          <ProgressBar currentStep={step} totalSteps={5} />
         </View>
 
-        <View className="flex-1 px-5 pt-8">
+        <View className="flex-1 px-5 mt-2">
           {renderStep()}
 
           <View className="absolute bottom-8 left-5 right-5">
@@ -215,13 +261,15 @@ export default function Register() {
               className={`w-full py-4 rounded-xl ${
                 canProceed()
                   ? "bg-purple-default dark:bg-dark-purple-default"
-                  : "bg-purple-default/50 dark:bg-dark-purple-default/50"
+                  : "bg-text-dimmed dark:bg-dark-text-dimmed"
               }`}
               disabled={!canProceed()}
               onPress={() => {
                 if (step === 1) {
                   handleEmailStep();
-                } else if (step < 4) {
+                } else if (step === 4) {
+                  handleUsernameStep();
+                } else if (step < 5) {
                   setStep((prev) => prev + 1);
                 } else {
                   handleRegister();
@@ -229,7 +277,7 @@ export default function Register() {
               }}
             >
               <Text className="text-background dark:text-dark-text-default font-semibold text-center text-lg">
-                {step === 4 ? "Get Started" : "Next"}
+                {step === 5 ? "Get Started" : "Next"}
               </Text>
             </TouchableOpacity>
           </View>

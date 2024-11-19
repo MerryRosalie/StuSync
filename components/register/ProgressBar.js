@@ -1,9 +1,9 @@
 import { View } from "react-native";
 
-export default function ProgressBar({ currentStep }) {
+export default function ProgressBar({ currentStep, totalSteps }) {
   return (
     <View className="flex-row h-1.5 space-x-1 mx-4">
-      {[1, 2, 3, 4].map((index) => (
+      {Array.from({ length: totalSteps }, (_, i) => i + 1).map((index) => (
         <View
           key={index}
           className={`h-full rounded-full flex-1 mx-1 ${

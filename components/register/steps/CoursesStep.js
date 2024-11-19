@@ -31,10 +31,14 @@ export default function CoursesStep({
           onPress={onAddCourse}
           disabled={!courseInput.trim()}
           className={`mt-2 p-3 rounded-xl ${
-            courseInput.trim() ? "bg-purple-600" : "bg-gray-300"
+            courseInput.trim()
+              ? "bg-purple-tertiary/25 dark:bg-dark-purple-tertiary/25 border border-purple-default dark:border-dark-purple-default"
+              : "bg-gray-300"
           } items-center`}
         >
-          <Text className="text-white font-semibold">Add Course</Text>
+          <Text className="text-purple-default dark:text-dark-purple-default font-semibold">
+            Add Course
+          </Text>
         </TouchableOpacity>
       </View>
 
