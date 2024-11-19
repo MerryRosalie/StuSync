@@ -2,7 +2,7 @@ import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
-import Friend from "../../components/Friend";
+import Friend from "../../components/friends/Friend";
 
 export default function Page() {
   const router = useRouter();
