@@ -44,10 +44,10 @@ export default function Page() {
         <View>
           <Text className="text-base font-bold mb-1">Current Courses</Text>
           <View className="flex-row gap-2">
-            <Text className="bg-purple-secondary rounded-full px-4 py-2 text-purple-default text-base font-semibold w-28">
+            <Text className="bg-purple-secondary rounded-full px-4 py-2 text-purple-default text-base font-semibold">
               COMP6991
             </Text>
-            <Text className="bg-purple-secondary rounded-full px-4 py-2 text-purple-default text-base font-semibold w-28">
+            <Text className="bg-purple-secondary rounded-full px-4 py-2 text-purple-default text-base font-semibold">
               COMP4511
             </Text>
           </View>
