@@ -4,11 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PreviousStudySessCard from "../../../components/PreviousStudySessCard";
 import Feather from "@expo/vector-icons/Feather";
 import ProfileIcon from "../../../components/ProfileIcon";
-import { useNavigation } from "@react-navigation/native";
-import { Link } from "expo-router";
+// import { useNavigation } from "@react-navigation/native";
+import { Link, useRouter, navigation } from "expo-router";
 
 export default function Page() {
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
+  const router = useRouter();
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 justify-around pb-32">
@@ -44,18 +45,20 @@ export default function Page() {
         </TouchableOpacity>
         <ScrollView horizontal>
           <View className="gap-6 flex-row">
-            <ProfileIcon />
-            <ProfileIcon />
-            <ProfileIcon />
-            <ProfileIcon />
-            <ProfileIcon />
-            <ProfileIcon />
+            <ProfileIcon size={"20"} />
+            <ProfileIcon size={"20"} />
+            <ProfileIcon size={"20"} />
+            <ProfileIcon size={"20"} />
+            <ProfileIcon size={"20"} />
           </View>
         </ScrollView>
       </View>
       {/* past study sessions */}
       <View className="gap-3">
-        <TouchableOpacity className="flex-row justify-between">
+        <TouchableOpacity
+          className="flex-row justify-between"
+          onPress={() => router.navigate("/history/overview")}
+        >
           <Text className="text-left text-xl font-semibold">
             Past Study Sessions
           </Text>
@@ -83,6 +86,12 @@ export default function Page() {
         href="/auth/login"
       >
         Go to Signin
+      </Link>
+      <Link
+        className="text-text-default dark:text-dark-text-default"
+        href="/history"
+      >
+        Go to History
       </Link>
     </SafeAreaView>
   );
