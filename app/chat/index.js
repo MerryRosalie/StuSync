@@ -284,7 +284,7 @@ export default function ChatPage() {
   const kickAMemberSheetRef = useRef(null);
 
   // Chat States
-  const [chats, setChats] = useState(activeSession.chat.messages || []);
+  const [chats, setChats] = useState(activeSession?.chat?.messages || []);
   const [message, setMessage] = useState("");
   const [images, setImages] = useState([]);
   const [reply, setReply] = useState(undefined);
@@ -293,7 +293,7 @@ export default function ChatPage() {
   // UI States
   const [showPollOptions, setShowPollOptions] = useState(false);
   const [showLocationPoll, setShowLocationPoll] = useState(
-    sessionStatus.locationPollActive
+    sessionStatus?.locationPollActive
   );
 
   // Poll States
@@ -316,6 +316,13 @@ export default function ChatPage() {
   const members = useMemo(() => activeSession?.members || [], [activeSession]);
 
   // Effects
+  // Route to home if user hasn't accepted a session
+  useEffect(() => {
+    if (!activeSession) {
+      router.replace("/main/home");
+    }
+  }, [activeSession]);
+
   // Watch for timer completion
   useEffect(() => {
     if (
@@ -334,7 +341,7 @@ export default function ChatPage() {
       );
       const finalLocation = locationsToChooseFrom[randomIndex];
 
-      if (!activeSession.location) {
+      if (!activeSession?.location) {
         handleLocationSelected(finalLocation);
       }
       locationSheetRef.current?.dismiss();
@@ -353,7 +360,7 @@ export default function ChatPage() {
         false,
         false
       );
-      insertChat(newChat, activeSession.sessionId);
+      insertChat(newChat, activeSession?.sessionId);
     }
   }, [voiceUri]);
 
@@ -372,7 +379,7 @@ export default function ChatPage() {
         true,
         false
       );
-      insertChat(newChat, activeSession.sessionId);
+      insertChat(newChat, activeSession?.sessionId);
     }
   }, [proposedEndTime]);
 
@@ -388,9 +395,29 @@ export default function ChatPage() {
         true,
         false
       );
-      insertChat(newChat, activeSession.sessionId);
+      insertChat(newChat, activeSession?.sessionId);
     }
   }, [memberKicking]);
+
+  // Effect to add message about location
+  useEffect(() => {
+    const sendMessage = async () => {
+      if (showLocationPoll && activeSession?.location) {
+        const chatMessage = generateChatInstance(
+          `📍 Location decided: ${activeSession?.location}! Click below to start the study session!`,
+          currentUser.uid,
+          null,
+          null,
+          [],
+          false,
+          true
+        );
+        await insertChat(chatMessage, activeSession?.sessionId);
+        setShowLocationPoll(false);
+      }
+    };
+    sendMessage();
+  }, [activeSession?.location]);
 
   // Handler when vote changes
   const handleLocationVote = (values, showResults) => {
@@ -401,18 +428,7 @@ export default function ChatPage() {
   // Handler for location selection
   const handleLocationSelected = async (location) => {
     try {
-      const chatMessage = generateChatInstance(
-        `📍 Location decided: ${location}! Click below to start the study session!`,
-        currentUser.uid,
-        null,
-        null,
-        [],
-        false,
-        true
-      );
       await setSessionLocation(location);
-      await insertChat(chatMessage, activeSession.sessionId);
-      setShowLocationPoll(false);
     } catch (error) {
       console.error("Error in handleLocationSelected:", error);
     }
@@ -491,6 +507,8 @@ export default function ChatPage() {
     });
   };
 
+  if (!activeSession) return null;
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       {/* Header */}
@@ -498,7 +516,7 @@ export default function ChatPage() {
         {/* Back button */}
         <TouchableOpacity
           className="p-4"
-          onPress={() => router.navigate("/main/home")}
+          onPress={() => router.replace("/main/home")}
         >
           <Feather
             className="color-text-default dark:color-dark-text-default"
@@ -742,7 +760,7 @@ export default function ChatPage() {
                   false,
                   false
                 );
-                insertChat(newChat, activeSession.sessionId);
+                insertChat(newChat, activeSession?.sessionId);
               }}
               className="p-4 bg-purple-default dark:bg-dark-purple-default rounded-full"
             >

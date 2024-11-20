@@ -205,7 +205,7 @@ export default function Page() {
         onClose={() => setShowJoinedBanner(false)}
         onPress={() => {
           setShowJoinedBanner(false);
-          router.push("/chat");
+          router.replace("/chat");
         }}
         title="Joined a study session"
         message="Tap here to navigate to the study session"

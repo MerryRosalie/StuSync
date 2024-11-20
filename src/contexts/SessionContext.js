@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "./UserContext";
-import { useRouter } from "expo-router";
 
-const VOTE_DURATION = 30; // BETA: 30 seconds for voting
+const VOTE_DURATION = 10; // BETA: 30 seconds for voting
 
 const SessionContext = createContext({});
 
@@ -43,7 +42,7 @@ export function SessionProvider({ children }) {
         }));
       }
     }
-  }, [currentUser]);
+  }, [currentUser?.studySessions]);
 
   // Location poll timer effect
   useEffect(() => {
@@ -114,20 +113,20 @@ export function SessionProvider({ children }) {
       const updatedSession = {
         ...activeSession,
         timer: {
-          ...activeSession.timer,
+          ...activeSession?.timer,
           studyDuration,
           breakDuration,
         },
       };
 
       await Promise.all(
-        activeSession.members.map(async (memberId) => {
+        activeSession?.members.map(async (memberId) => {
           const user = allUsers[memberId];
           if (user) {
             const updatedUser = {
               ...user,
               studySessions: user.studySessions.map((session) =>
-                session.sessionId === activeSession.sessionId
+                session.sessionId === activeSession?.sessionId
                   ? updatedSession
                   : session
               ),
@@ -148,48 +147,63 @@ export function SessionProvider({ children }) {
     }
   };
 
+  useEffect(() => {
+    console.log("Updated activeSession:", activeSession);
+  }, [activeSession]);
+
+  useEffect(() => {
+    console.log("Updated sessionStatus:", sessionStatus);
+  }, [sessionStatus]);
+
   // Set location after poll
   const setSessionLocation = async (location) => {
+    console.log("Location set to", location);
     try {
-      // Create the updated session object
       const updatedSession = {
         ...activeSession,
-        location,
-        chat: {
-          ...activeSession.chat,
-          messages: [...activeSession.chat.messages], // Preserve existing chat messages
-        },
+        location: location, // Ensure location is set correctly
       };
 
-      // First update the local state
+      // Update local state first
       setActiveSession(updatedSession);
-      setSessionStatus((prev) => ({
-        ...prev,
-        selectedLocation: location,
-        locationPollActive: false,
-      }));
 
-      // Then update all members' data
+      setSessionStatus((prev) => {
+        return {
+          ...prev,
+          selectedLocation: location,
+          locationPollActive: false,
+        };
+      });
+
+      // Update all members' data with the new session
       await Promise.all(
-        activeSession.members.map(async (memberId) => {
+        activeSession?.members.map(async (memberId) => {
           const user = allUsers[memberId];
           if (!user) return;
 
-          // Find and update the specific session in user's sessions
-          const userUpdatedSessions = user.studySessions.map((session) =>
-            session.sessionId === activeSession.sessionId
-              ? updatedSession
-              : session
-          );
-
           const updatedUser = {
             ...user,
-            studySessions: userUpdatedSessions,
+            studySessions: user.studySessions.map((session) =>
+              session.sessionId === activeSession?.sessionId
+                ? updatedSession
+                : session
+            ),
           };
 
           await editUser(updatedUser.uid, updatedUser);
         })
       );
+
+      // Force refresh current user's session
+      const updatedCurrentUser = {
+        ...currentUser,
+        studySessions: currentUser.studySessions.map((session) =>
+          session.sessionId === activeSession?.sessionId
+            ? updatedSession
+            : session
+        ),
+      };
+      await editUser(currentUser.uid, updatedCurrentUser);
     } catch (error) {
       console.error("Error setting session location:", error);
       throw error;
@@ -198,6 +212,7 @@ export function SessionProvider({ children }) {
 
   // Start the location poll
   const startLocationPoll = () => {
+    console.log("Location Poll starts");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: true,
@@ -207,6 +222,7 @@ export function SessionProvider({ children }) {
 
   // Start the pomodoro timer
   const startPomodoroTimer = () => {
+    console.log("Pomodoro timer starts");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: false,
@@ -216,6 +232,7 @@ export function SessionProvider({ children }) {
 
   // Start the break timer
   const startBreakTimer = () => {
+    console.log("Break time starts");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: false,
@@ -225,6 +242,7 @@ export function SessionProvider({ children }) {
   };
 
   const readyToEndSession = () => {
+    console.log("Session is Ending");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: false,
@@ -243,13 +261,13 @@ export function SessionProvider({ children }) {
       };
 
       await Promise.all(
-        activeSession.members.map(async (memberId) => {
+        activeSession?.members.map(async (memberId) => {
           const user = allUsers[memberId];
           if (user) {
             const updatedUser = {
               ...user,
               studySessions: user.studySessions.map((session) =>
-                session.sessionId === activeSession.sessionId
+                session.sessionId === activeSession?.sessionId
                   ? updatedSession
                   : session
               ),
@@ -288,7 +306,7 @@ export function SessionProvider({ children }) {
       // Create updated session with current user removed from members
       const updatedSession = {
         ...activeSession,
-        members: activeSession.members.filter(
+        members: activeSession?.members.filter(
           (memberId) => memberId !== currentUser.uid
         ),
       };
@@ -300,7 +318,7 @@ export function SessionProvider({ children }) {
 
       // Update the session for all remaining members
       await Promise.all(
-        activeSession.members.map(async (memberId) => {
+        activeSession?.members.map(async (memberId) => {
           // Skip the leaving user
           if (memberId === currentUser.uid) return;
 
@@ -309,7 +327,7 @@ export function SessionProvider({ children }) {
             const updatedUser = {
               ...user,
               studySessions: user.studySessions.map((session) =>
-                session.sessionId === activeSession.sessionId
+                session.sessionId === activeSession?.sessionId
                   ? updatedSession
                   : session
               ),
@@ -329,7 +347,7 @@ export function SessionProvider({ children }) {
       const updatedCurrentUser = {
         ...currentUser,
         studySessions: currentUser.studySessions.map((session) =>
-          session.sessionId === activeSession.sessionId
+          session.sessionId === activeSession?.sessionId
             ? leavingUserSession
             : session
         ),
@@ -363,7 +381,7 @@ export function SessionProvider({ children }) {
   const addChatToSession = async (chat, sessionId) => {
     try {
       // Validate sessionId matches active session
-      if (sessionId !== activeSession.sessionId) {
+      if (sessionId !== activeSession?.sessionId) {
         console.warn("Attempting to add chat to inactive session");
         return;
       }
@@ -372,20 +390,22 @@ export function SessionProvider({ children }) {
       const updatedSession = {
         ...activeSession,
         chat: {
-          ...activeSession.chat,
-          messages: [...activeSession.chat.messages, chat],
+          messages: [...activeSession?.chat.messages, chat],
         },
       };
 
+      // Update local state first
+      setActiveSession(updatedSession);
+
       // Update to all members
       await Promise.all(
-        activeSession.members.map(async (memberId) => {
+        activeSession?.members.map(async (memberId) => {
           const user = allUsers[memberId];
           if (user) {
             const updatedUser = {
               ...user,
               studySessions: user.studySessions.map((session) =>
-                session.sessionId === activeSession.sessionId
+                session.sessionId === activeSession?.sessionId
                   ? updatedSession
                   : session
               ),
@@ -395,7 +415,16 @@ export function SessionProvider({ children }) {
         })
       );
 
-      setActiveSession(updatedSession);
+      // Update current user to ensure consistency
+      const updatedCurrentUser = {
+        ...currentUser,
+        studySessions: currentUser.studySessions.map((session) =>
+          session.sessionId === activeSession?.sessionId
+            ? updatedSession
+            : session
+        ),
+      };
+      await editUser(currentUser.uid, updatedCurrentUser);
     } catch (error) {
       console.error("Error adding chat to session:", error);
     }

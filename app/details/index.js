@@ -6,6 +6,7 @@ import Friend from "../../components/friends/Friend";
 import { useSession } from "../../src/contexts/SessionContext";
 import { useUser } from "../../src/contexts/UserContext";
 import { addHours, format, parse } from "date-fns";
+import { useEffect } from "react";
 
 const addTwoHours = (timeString) => {
   const date = parse(timeString, "h:mm a", new Date());
@@ -25,6 +26,13 @@ export default function DetailsPage() {
     leaveSession,
   } = useSession();
 
+  // Route to home if user hasn't accepted a session
+  useEffect(() => {
+    if (!activeSession) {
+      router.replace("/main/home");
+    }
+  }, [activeSession]);
+
   const handleStartPomodoroTimer = () => {
     startPomodoroTimer();
     router.push("/timer");
@@ -32,13 +40,15 @@ export default function DetailsPage() {
 
   const handleEndSession = () => {
     endSession();
-    router.navigate("/main/home");
+    router.replace("/main/home");
   };
 
   const handleLeaveSession = () => {
     leaveSession();
-    router.navigate("/main/home");
+    router.replace("/main/home");
   };
+
+  if (!activeSession) return null;
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
@@ -62,9 +72,9 @@ export default function DetailsPage() {
             Date
           </Text>
           <Text className="text-text-default dark:text-dark-text-default">
-            {activeSession.date}
+            {activeSession?.date}
             {", "}
-            {activeSession.time}
+            {activeSession?.time}
           </Text>
         </View>
         {/* Time Information */}
@@ -75,7 +85,7 @@ export default function DetailsPage() {
           <View className="flex-row justify-between">
             <View>
               <Text className="font-bold text-xl text-text-default dark:text-dark-text-default">
-                {activeSession.time}
+                {activeSession?.time}
               </Text>
               <Text className="text-text-default dark:text-dark-text-default">
                 Start Time
@@ -83,7 +93,7 @@ export default function DetailsPage() {
             </View>
             <View>
               <Text className="font-bold text-xl text-text-default dark:text-dark-text-default">
-                {addTwoHours(activeSession.time)}
+                {addTwoHours(activeSession?.time)}
               </Text>
               <Text className="text-text-default dark:text-dark-text-default">
                 Start Time
@@ -99,10 +109,10 @@ export default function DetailsPage() {
             </Text>
             <Text
               className={`text-text-default dark:text-dark-text-default ${
-                !activeSession && "opacity-50"
+                !activeSession && "opacity-75"
               }`}
             >
-              {activeSession ? activeSession.location : "Voting in progress"}
+              {activeSession ? activeSession?.location : "Voting in progress"}
             </Text>
           </View>
 
@@ -119,7 +129,7 @@ export default function DetailsPage() {
           <Text className="font-bold text-text-default dark:text-dark-text-default">
             Members
           </Text>
-          {activeSession.members
+          {activeSession?.members
             .filter((uid) => currentUser.uid !== uid)
             .map((uid) => allUsers[uid])
             .sort((a, b) => a.name.localeCompare(b.name))
@@ -133,7 +143,7 @@ export default function DetailsPage() {
           !sessionStatus.isEnding && (
             <TouchableOpacity
               disabled={
-                activeSession.locationPollActive ||
+                activeSession?.locationPollActive ||
                 sessionStatus.pomodoroActive ||
                 sessionStatus.breakActive
               }
@@ -156,14 +166,14 @@ export default function DetailsPage() {
           sessionStatus.isEnding && (
             <TouchableOpacity
               onPress={handleEndSession}
-              className="flex-row mt-4 justify-center items-center gap-2 bg-failure-text dark:bg-dark-alert-background disabled:bg-text-dimmed dark:disabled:bg-dark-text-dimmed py-3 px-4 rounded-xl"
+              className="flex-row mt-4 justify-center items-center gap-2 bg-failure-text dark:bg-dark-alert-background py-3 px-4 rounded-xl"
             >
               <Feather
-                className="text-dark-alert-text dark:text-failure-text"
+                className="text-background dark:text-failure-text"
                 name="stop-circle"
                 size={24}
               />
-              <Text className="text-dark-alert-text dark:text-failure-text">
+              <Text className="text-background dark:text-failure-text">
                 End Study Session
               </Text>
             </TouchableOpacity>
@@ -171,7 +181,7 @@ export default function DetailsPage() {
         {/* Go back to Pomodoro timer/break time */}
         {(sessionStatus.pomodoroActive || sessionStatus.breakActive) && (
           <TouchableOpacity
-            onPress={() => router.navigate("/timer")}
+            onPress={() => router.push("/timer")}
             className="flex-row mt-4 justify-center items-center gap-2 border border-purple-default dark:border-dark-purple-default disabled:bg-purple-default/25 dark:disabled:bg-dark-purple-default/25 py-3 px-4 rounded-xl"
           >
             <Feather
@@ -190,14 +200,14 @@ export default function DetailsPage() {
         {/* Leave Study Session */}
         <TouchableOpacity
           onPress={handleLeaveSession}
-          className="flex-row mt-4 justify-center items-center gap-2 border border-alert-text dark:border-dark-alert-text py-3 px-4 rounded-xl"
+          className="flex-row mt-4 justify-center items-center gap-2 border border-failure-text dark:border-dark-alert-text py-3 px-4 rounded-xl"
         >
           <Feather
-            className="color-alert-text dark:color-dark-alert-text"
+            className="color-failure-text dark:color-dark-alert-text"
             name="log-out"
             size={24}
           />
-          <Text className="color-alert-text dark:color-dark-alert-text">
+          <Text className="text-failure-text dark:text-dark-alert-text">
             Leave Study Session
           </Text>
         </TouchableOpacity>

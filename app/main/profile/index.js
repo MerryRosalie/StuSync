@@ -31,7 +31,7 @@ export default function Page() {
         <Text className="font-inter-bold text-xl text-text-default dark:text-dark-text-default">
           Your Profile
         </Text>
-        <TouchableOpacity onPress={() => router.replace("/settings")}>
+        <TouchableOpacity onPress={() => router.push("/settings")}>
           <Feather
             name="settings"
             size={24}
@@ -56,7 +56,7 @@ export default function Page() {
         </View>
         <TouchableOpacity
           className="flex-row rounded-xl bg-purple-default dark:bg-dark-purple-default p-4 gap-2 items-center w-36"
-          onPress={() => router.navigate("/settings/editProfile")}
+          onPress={() => router.push("/settings/editProfile")}
         >
           <Feather
             name="edit-2"
@@ -106,7 +106,7 @@ export default function Page() {
       </View>
       <TouchableOpacity
         className="flex-row justify-between w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40 p-4 items-center"
-        onPress={() => router.navigate("/friends")}
+        onPress={() => router.push("/friends")}
       >
         <Text className="text-text-default h-8 align-middle dark:text-dark-text-default font-inter-bold">
           Your Friends
