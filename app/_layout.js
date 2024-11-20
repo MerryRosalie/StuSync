@@ -16,8 +16,8 @@ import "react-native-reanimated";
 import "../global.css";
 import { StatusBar } from "expo-status-bar";
 import { UserProvider } from "../src/contexts/UserContext";
-import { ChatProvider } from "../src/contexts/ChatContext";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { SessionProvider } from "../src/contexts/SessionContext";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -68,9 +68,9 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <UserProvider>
-        <ChatProvider>
+        <SessionProvider>
           <RootLayoutNavigation />
-        </ChatProvider>
+        </SessionProvider>
       </UserProvider>
     </SafeAreaProvider>
   );

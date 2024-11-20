@@ -15,7 +15,7 @@ export default function SessionInviteNotification({
   };
 
   return (
-    <View className="flex-row items-start p-4">
+    <View className="flex-row items-start py-3 px-4">
       <Image
         source={{ uri: user.profilePicture }}
         className="w-12 h-12 rounded-full mr-3"

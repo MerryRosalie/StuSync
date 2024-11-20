@@ -11,7 +11,6 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import ModeSwitch from "../../components/ModeSwitch";
 import RadioButtons from "../../components/RadioButtons";
-import { useNavigation } from "@react-navigation/native";
 import { useUser } from "../../src/contexts/UserContext";
 
 export default function SettingsScreen() {
@@ -19,7 +18,6 @@ export default function SettingsScreen() {
   const options = ["Friends only", "Friends and course mates"];
   const router = useRouter();
   const { logout } = useUser();
-  const navigation = useNavigation();
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
@@ -27,7 +25,7 @@ export default function SettingsScreen() {
       <View className="w-full flex-row items-center justify-center relative mb-3">
         <TouchableOpacity
           className="absolute left-0 pl-0 p-4"
-          onPress={() => navigation.navigate("profile")}
+          onPress={() => router.replace("/main/profile")}
         >
           <Feather
             className="color-text-default dark:color-dark-text-default"
@@ -59,7 +57,7 @@ export default function SettingsScreen() {
       {/* manage account */}
       <TouchableOpacity
         className="flex-row justify-between w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40 p-4 items-center"
-        onPress={() => navigation.navigate("account")}
+        onPress={() => router.replace("/settings/account")}
       >
         <View className="gap-4 flex-row items-center">
           <Feather name="user" size={24} className="dark:text-white" />
@@ -74,7 +72,7 @@ export default function SettingsScreen() {
         className="flex-row w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40 p-4 items-center"
         onPress={() => {
           logout();
-          router.navigate("login");
+          router.replace("/auth/login");
         }}
       >
         <Feather name="log-out" size={24} color="#FF8F85" />

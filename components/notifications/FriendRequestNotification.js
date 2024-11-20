@@ -9,7 +9,7 @@ export default function FriendRequestNotification({
   const { allUsers } = useUser();
   const user = allUsers[notification.uid];
   return (
-    <View className="flex-row items-start p-4">
+    <View className="flex-row items-start py-3 px-4">
       <Image
         source={{ uri: user.profilePicture }}
         className="w-12 h-12 rounded-full mr-3"
@@ -26,7 +26,7 @@ export default function FriendRequestNotification({
       {notification.requiresAction && (
         <View className="flex-row items-center">
           <TouchableOpacity
-            onPress={() => onAccept(notification.uid, notification.id)}
+            onPress={() => onAccept(user.uid, notification.id)}
             className="w-11 h-11 rounded-full bg-success-background dark:bg-dark-success-background mr-2 items-center justify-center"
           >
             <Text className="text-success-text dark:text-dark-success-text text-2xl">
@@ -34,7 +34,7 @@ export default function FriendRequestNotification({
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => onDeny(notification.uid, notification.id)}
+            onPress={() => onDeny(user.uid, notification.id)}
             className="w-11 h-11 rounded-full bg-failure-background dark:bg-dark-alert-background items-center justify-center"
           >
             <Text className="text-failure-text dark:text-dark-alert-text text-2xl">

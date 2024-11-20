@@ -1,14 +1,14 @@
 import { View, TouchableOpacity, Text } from "react-native";
 import Poll from "../chat/poll/Poll";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 
-export default function BreakActivityPollModal({
+const BreakActivityPollModal = ({
   sheetRef,
   onComplete,
   options,
   values,
   showResults,
-}) {
+}) => {
   const readyToSubmit = useMemo(
     () => Object.values(values || {}).some((value) => value),
     [values]
@@ -69,4 +69,6 @@ export default function BreakActivityPollModal({
       )}
     </View>
   );
-}
+};
+
+export default memo(BreakActivityPollModal);
