@@ -31,32 +31,36 @@ export default function AccountScreen() {
           Account
         </Text>
       </View>
-      <View className="w-full border border-gray rounded-2xl justify-between">
+      <View className="justify-between w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40">
         <TouchableOpacity
           className="w-full flex-row rounded-2xl items-center justify-between p-4"
           onPress={() => navigation.navigate("updateEmail")}
         >
           <View className="gap-4 flex-row items-center">
-            <Feather name="mail" size={24} color="black" />
-            <Text className="text-base font-semibold">Update Email</Text>
+            <Feather name="mail" size={24} className="dark:text-white" />
+            <Text className="text-base font-semibold dark:text-white">
+              Update Email
+            </Text>
           </View>
-          <Feather name="chevron-right" size={24} color="black" />
+          <Feather name="chevron-right" size={24} className="dark:text-white" />
         </TouchableOpacity>
-        <View className="border-b border-gray mx-4 gap-2" />
+        <View className="border-b border-gray mx-4 gap-2 dark:border-white" />
         <TouchableOpacity
           className="w-full flex-row rounded-2xl items-center justify-between p-4"
           onPress={() => navigation.navigate("changePassword")}
         >
           <View className="gap-4 flex-row items-center">
-            <Feather name="key" size={24} color="black" />
-            <Text className="text-base font-semibold">Change Password</Text>
+            <Feather name="key" size={24} className="dark:text-white" />
+            <Text className="text-base font-semibold dark:text-white">
+              Change Password
+            </Text>
           </View>
-          <Feather name="chevron-right" size={24} color="black" />
+          <Feather name="chevron-right" size={24} className="dark:text-white" />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity className="w-full flex-row border border-alert-text rounded-2xl items-center p-4">
+      <TouchableOpacity className="flex-row p-4 items-center w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40">
         <Feather name="log-out" size={24} color="#FF8F85" />
-        <Text className="ml-4 text-base text-alert-text font-semibold">
+        <Text className="ml-4 text-base text-[#FF8F85] font-semibold ">
           Delete Account
         </Text>
       </TouchableOpacity>

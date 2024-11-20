@@ -12,15 +12,15 @@ const RadioButtons = ({ options, selectedValue, onValueChange }) => {
           className="flex-row items-center justify-between"
         >
           <Text
-            className={`text-base ${
+            className={`text-base dark:text-white ${
               selectedValue === option ? "font-medium" : "font-normal"
             }`}
           >
             {option}
           </Text>
-          <View className="h-7 w-7 rounded-full border-2 items-center justify-center">
+          <View className="h-7 w-7 rounded-full border-2 dark:border-white items-center justify-center">
             {selectedValue === option && (
-              <View className="h-4 w-4 rounded-full bg-black" />
+              <View className="h-4 w-4 rounded-full bg-black dark:bg-white" />
             )}
           </View>
         </TouchableOpacity>

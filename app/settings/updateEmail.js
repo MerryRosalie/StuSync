@@ -11,10 +11,19 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Button from "../../components/Button";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function updateEmail() {
-  const [newEmail, setNewEmail] = useState("");
+  const {
+    currentUser,
+    addUser,
+    setCurrentUser,
+    checkUsernameExists,
+    updateEmail,
+  } = useUser();
+  const [newEmail, setNewEmail] = useState(currentUser.email);
   const [error, setError] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const router = useRouter();
 
@@ -22,20 +31,45 @@ export default function updateEmail() {
 
   const validEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(email) || newEmail === currentUser.email) {
       return false;
     }
     return true;
   };
 
-  const handleSave = () => {
-    // validate the new email
+  const handleSave = async () => {
+    // if (!isFormValid()) return;
     if (!validEmail(newEmail)) {
       setError(true);
-      // TODO: add it to the database
-    } else {
-      setError(false);
-      navigation.navigate("account");
+      return;
+    }
+
+    console.log("helo");
+    setError(false);
+    setIsLoading(true);
+    try {
+      console.log("success");
+      await updateEmail(newEmail);
+      // // Create updated user object
+      // const updatedUser = {
+      //   ...currentUser,
+      //   email: newEmail,
+      // };
+
+      // // Save updated user
+      // await addUser(updatedUser);
+      // // Update current user
+      // await setCurrentUser(currentUser.uid);
+      // Back
+      router.back();
+    } catch (error) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: "Failed to save changes. Please try again.",
+      }));
+      console.error("Failed to update email:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -53,18 +87,21 @@ export default function updateEmail() {
             size={24}
           />
         </TouchableOpacity>
-        <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
+        <Text className="font-inter-bold text-text-default dark:text-dark-text-default ">
           Update Email
         </Text>
       </View>
       <View className="justify-between w-full flex-1">
         <View className="gap-2 w-full">
-          <Text className="text-base font-semibold">Email</Text>
+          <Text className="text-base font-semibold  text-text-default dark:text-dark-text-default">
+            Email
+          </Text>
           <TextInput
             className={`${
-              error ? "border-red-500 border-2" : "border border-gray"
-            } border border-gray rounded-xl items-center p-4`}
+              error ? "border-red-500" : "border border-gray"
+            } border border-gray rounded-xl items-center p-4 text-text-default dark:text-dark-text-default`}
             placeholder="Email"
+            placeholderTextColor="#9CA3AF"
             onChangeText={(e) => {
               setNewEmail(e);
             }}

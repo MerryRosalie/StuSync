@@ -40,11 +40,11 @@ export default function SettingsScreen() {
       </View>
       <ModeSwitch />
       {/* privacy settings */}
-      <View className="w-full border border-gray rounded-2xl justify-between p-4">
+      <View className="justify-between w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40 p-4">
         {/* heading */}
         <View className="flex-row gap-2 items-center">
-          <Feather name="eye" size={24} color="black" />
-          <Text className="text-base font-semibold justify-between">
+          <Feather name="eye" size={24} className="dark:text-white" />
+          <Text className="text-base font-semibold justify-between dark:text-white">
             Privacy
           </Text>
         </View>
@@ -57,19 +57,21 @@ export default function SettingsScreen() {
       </View>
       {/* manage account */}
       <TouchableOpacity
-        className="w-full flex-row border border-gray rounded-2xl items-center justify-between p-4"
+        className="flex-row justify-between w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40 p-4 items-center"
         onPress={() => navigation.navigate("account")}
       >
         <View className="gap-4 flex-row items-center">
-          <Feather name="user" size={24} color="black" />
-          <Text className="text-base font-semibold">Manage Account</Text>
+          <Feather name="user" size={24} className="dark:text-white" />
+          <Text className="text-base font-semibold dark:text-white ">
+            Manage Account
+          </Text>
         </View>
-        <Feather name="chevron-right" size={24} color="black" />
+        <Feather name="chevron-right" size={24} className="dark:text-white" />
       </TouchableOpacity>
       {/* logout */}
-      <TouchableOpacity className="w-full flex-row border border-alert-text rounded-2xl items-center p-4">
+      <TouchableOpacity className="flex-row w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40 p-4 items-center">
         <Feather name="log-out" size={24} color="#FF8F85" />
-        <Text className="ml-4 text-base text-alert-text font-semibold">
+        <Text className="ml-4 text-base text-[#FF8F85] font-semibold">
           Logout
         </Text>
       </TouchableOpacity>

@@ -333,6 +333,30 @@ export const UserProvider = ({ children }) => {
     );
   };
 
+  const updateUserEmail = async (newEmail) => {
+    try {
+      if (!currentUser) {
+        throw new Error("No user is currently logged in");
+      }
+
+      // Check if new email already exists
+      if (checkEmailExists(newEmail)) {
+        throw new Error("Email already in use");
+      }
+
+      const newUserStore = { ...userStore };
+      newUserStore.users[currentUser.uid] = {
+        ...newUserStore.users[currentUser.uid],
+        email: newEmail,
+      };
+
+      await saveUserStore(newUserStore);
+      return newUserStore.users[currentUser.uid];
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -350,6 +374,7 @@ export const UserProvider = ({ children }) => {
         acceptIncomingRequest,
         denyIncomingRequest,
         unfriend,
+        updateUserEmail,
       }}
     >
       {children}

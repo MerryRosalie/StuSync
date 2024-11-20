@@ -74,14 +74,15 @@ export default function ChangePasswordScreen() {
         <View className="w-full gap-4">
           {/* current password */}
           <View className="gap-2">
-            <Text className="text-base font-semibold">Current Password</Text>
+            <Text className="text-base font-semibold  text-text-default dark:text-dark-text-default">
+              Current Password
+            </Text>
             <TextInput
               className={`${
-                error === "current"
-                  ? "border-red-500 border-2"
-                  : "border border-gray"
-              } border border-gray rounded-xl items-center p-4`}
+                error === "current" ? "border-red-500" : "border border-gray"
+              } border border-gray rounded-xl items-center p-4 text-text-default dark:text-dark-text-default`}
               placeholder="Enter current password"
+              placeholderTextColor="#9CA3AF"
               secureTextEntry
               onChangeText={(e) => {
                 setCurrentPassword(e);
@@ -97,14 +98,15 @@ export default function ChangePasswordScreen() {
 
           {/* new password */}
           <View className="gap-2">
-            <Text className="text-base font-semibold">New Password</Text>
+            <Text className="text-base font-semibold  text-text-default dark:text-dark-text-default">
+              New Password
+            </Text>
             <TextInput
               className={`${
-                error === "password"
-                  ? "border-red-500 border-2"
-                  : "border border-gray"
-              } border border-gray rounded-xl items-center p-4`}
+                error === "password" ? "border-red-500" : "border border-gray"
+              } border border-gray rounded-xl items-center p-4 text-text-default dark:text-dark-text-default`}
               placeholder="Enter new password"
+              placeholderTextColor="#9CA3AF"
               secureTextEntry
               onChangeText={(e) => {
                 setNewPassword(e);
@@ -114,16 +116,15 @@ export default function ChangePasswordScreen() {
           </View>
           {/* confirm password */}
           <View className="gap-2">
-            <Text className="text-base font-semibold">
+            <Text className="text-base font-semibold text-text-default dark:text-dark-text-default">
               Confirm New Password
             </Text>
             <TextInput
               className={`${
-                error === "password"
-                  ? "border-red-500 border-2"
-                  : "border border-gray"
-              } border border-gray rounded-xl items-center p-4`}
+                error === "password" ? "border-red-500" : "border border-gray"
+              } border border-gray rounded-xl items-center p-4 text-text-default dark:text-dark-text-default`}
               placeholder="Confirm new password"
+              placeholderTextColor="#9CA3AF"
               secureTextEntry
               onChangeText={(e) => {
                 setConfirmPassword(e);
