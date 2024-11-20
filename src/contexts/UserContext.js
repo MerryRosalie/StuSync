@@ -357,6 +357,25 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const updateUserPassword = async (currentPassword, newPassword) => {
+    try {
+      if (!currentUser) {
+        throw new Error("No user is currently logged in");
+      }
+
+      const newUserStore = { ...userStore };
+      newUserStore.users[currentUser.uid] = {
+        ...newUserStore.users[currentUser.uid],
+        password: newPassword,
+      };
+
+      await saveUserStore(newUserStore);
+      return newUserStore.users[currentUser.uid];
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -375,6 +394,7 @@ export const UserProvider = ({ children }) => {
         denyIncomingRequest,
         unfriend,
         updateUserEmail,
+        updateUserPassword,
       }}
     >
       {children}

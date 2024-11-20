@@ -14,13 +14,7 @@ import Button from "../../components/Button";
 import { useUser } from "../../src/contexts/UserContext";
 
 export default function updateEmail() {
-  const {
-    currentUser,
-    addUser,
-    setCurrentUser,
-    checkUsernameExists,
-    updateUserEmail,
-  } = useUser();
+  const { currentUser, updateUserEmail } = useUser();
   const [newEmail, setNewEmail] = useState(currentUser.email);
   const [error, setError] = useState(false);
   const [errors, setErrors] = useState({});

@@ -11,8 +11,11 @@ import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import Button from "../../components/Button";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function ChangePasswordScreen() {
+  const { currentUser, updateUserPassword } = useUser();
+
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -20,14 +23,25 @@ export default function ChangePasswordScreen() {
 
   const router = useRouter();
 
-  const navigation = useNavigation();
+  const handleSave = async () => {
+    // Verify current password
+    if (currentUser.password !== currentPassword) {
+      setError("Current password is incorrect");
+      return;
+    }
 
-  const handleSave = () => {
-    // TODO: check for current passowrd
-    if (validatePassword(newPassword, confirmPassword) !== "") {
-      setError("password");
-    } else {
-      navigation.navigate("account");
+    // validate new password
+    setError(validatePassword(newPassword, confirmPassword));
+
+    if (error !== "") {
+      return;
+    }
+
+    try {
+      await updateUserPassword(currentPassword, newPassword);
+      router.back();
+    } catch (error) {
+      console.error("Failed to change password:", error);
     }
   };
 
@@ -79,7 +93,7 @@ export default function ChangePasswordScreen() {
             </Text>
             <TextInput
               className={`${
-                error === "current" ? "border-red-500" : "border border-gray"
+                error ? "border-red-500" : "border border-gray"
               } border border-gray rounded-xl items-center p-4 text-text-default dark:text-dark-text-default`}
               placeholder="Enter current password"
               placeholderTextColor="#9CA3AF"
@@ -89,11 +103,6 @@ export default function ChangePasswordScreen() {
               }}
               value={currentPassword}
             />
-            {error === "current" && (
-              <Text className="text-red-500">
-                Current password does not match
-              </Text>
-            )}
           </View>
 
           {/* new password */}
@@ -103,7 +112,7 @@ export default function ChangePasswordScreen() {
             </Text>
             <TextInput
               className={`${
-                error === "password" ? "border-red-500" : "border border-gray"
+                error ? "border-red-500" : "border border-gray"
               } border border-gray rounded-xl items-center p-4 text-text-default dark:text-dark-text-default`}
               placeholder="Enter new password"
               placeholderTextColor="#9CA3AF"
@@ -121,7 +130,7 @@ export default function ChangePasswordScreen() {
             </Text>
             <TextInput
               className={`${
-                error === "password" ? "border-red-500" : "border border-gray"
+                error ? "border-red-500" : "border border-gray"
               } border border-gray rounded-xl items-center p-4 text-text-default dark:text-dark-text-default`}
               placeholder="Confirm new password"
               placeholderTextColor="#9CA3AF"
@@ -132,11 +141,7 @@ export default function ChangePasswordScreen() {
               value={confirmPassword}
             />
           </View>
-          {error === "password" && (
-            <Text className="text-red-500">
-              {validatePassword(newPassword, confirmPassword)}
-            </Text>
-          )}
+          {error !== "" && <Text className="text-red-500">{error}</Text>}
         </View>
         <Button text="SAVE CHANGES" handleOnPress={handleSave} />
       </View>
