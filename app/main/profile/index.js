@@ -46,8 +46,8 @@ export default function Page() {
           source={{
             uri:
               currentUser.profilePicture === ""
-                ? currentUser.profilePicture
-                : "https://avatar.iran.liara.run/public/1",
+                ? "https://avatar.iran.liara.run/public/1"
+                : currentUser.profilePicture,
           }}
           className="w-32 h-32 rounded-full"
           resizeMode="cover"
