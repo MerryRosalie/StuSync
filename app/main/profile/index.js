@@ -117,8 +117,9 @@ export default function Page() {
             {currentUser.friends.allFriends
               .map((uid) => allUsers[uid])
               .slice(0, 3)
-              .map((friend) => (
+              .map((friend, index) => (
                 <Image
+                  key={index}
                   source={{ uri: friend.profilePicture }}
                   className="w-8 h-8 object-cover rounded-full border border-background dark:border-dark-background"
                   style={{ resizeMode: "cover" }}

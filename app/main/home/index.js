@@ -6,6 +6,8 @@ import Feather from "@expo/vector-icons/Feather";
 import ProfileIcon from "../../../components/ProfileIcon";
 import { useRouter } from "expo-router";
 import { Link } from "expo-router";
+import glasses from "../../../assets/glasses.png";
+import girl from "../../../assets/girl.png";
 
 export default function Page() {
   const router = useRouter();
