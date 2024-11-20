@@ -19,11 +19,12 @@ export default function updateEmail() {
     addUser,
     setCurrentUser,
     checkUsernameExists,
-    updateEmail,
+    updateUserEmail,
   } = useUser();
   const [newEmail, setNewEmail] = useState(currentUser.email);
   const [error, setError] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
@@ -38,29 +39,15 @@ export default function updateEmail() {
   };
 
   const handleSave = async () => {
-    // if (!isFormValid()) return;
     if (!validEmail(newEmail)) {
       setError(true);
       return;
     }
 
-    console.log("helo");
     setError(false);
     setIsLoading(true);
     try {
-      console.log("success");
-      await updateEmail(newEmail);
-      // // Create updated user object
-      // const updatedUser = {
-      //   ...currentUser,
-      //   email: newEmail,
-      // };
-
-      // // Save updated user
-      // await addUser(updatedUser);
-      // // Update current user
-      // await setCurrentUser(currentUser.uid);
-      // Back
+      await updateUserEmail(newEmail);
       router.back();
     } catch (error) {
       setErrors((prev) => ({
