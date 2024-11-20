@@ -6,6 +6,7 @@ export default function CoursesStep({
   onRemoveCourse,
   courseInput,
   setCourseInput,
+  error,
 }) {
   return (
     <>
@@ -23,10 +24,13 @@ export default function CoursesStep({
           onChangeText={setCourseInput}
           onSubmitEditing={onAddCourse}
           placeholder="Type course code..."
-          className="w-full p-4 rounded-xl border border-gray dark:border-gray-700  text-text-default dark:text-dark-text-default"
+          className={`w-full p-4 rounded-xl border ${
+            error ? "border-red-500" : "border-gray dark:border-gray-700"
+          } text-text-default dark:text-dark-text-default`}
           placeholderTextColor="#9CA3AF"
           autoCapitalize="characters"
         />
+        {error && <Text className="text-red-500 mt-1 text-sm">{error}</Text>}
         <TouchableOpacity
           onPress={onAddCourse}
           disabled={!courseInput.trim()}
