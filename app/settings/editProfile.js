@@ -39,8 +39,8 @@ export default function EditProfileScreen() {
     if (!name.trim()) {
       return "Name is required";
     }
-    if (name.trim().length < 2) {
-      return "Name must be at least 2 characters long";
+    if (username.length < 2 || username.length > 70) {
+      return "Name must be between 2-70 characters";
     }
     return "";
   };

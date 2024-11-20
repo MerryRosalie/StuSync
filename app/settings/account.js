@@ -12,8 +12,6 @@ import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 export default function AccountScreen() {
-  const router = useRouter();
-
   const navigation = useNavigation();
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
