@@ -19,7 +19,7 @@ export default function Page() {
 
       <ModeSwitch /> */}
       <View>
-        <Text className="text-left text-lg font-medium">Welcome back👋🏻</Text>
+        <Text className="text-left text-lg font-medium">Welcome back</Text>
         <Text className="text-left text-2xl font-semibold">Username</Text>
       </View>
       {/* active study sess */}
