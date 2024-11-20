@@ -9,26 +9,78 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import MultiSelectTextInput from "react-native-multi-select-text-input";
+import Button from "../../../components/Button";
+import { useUser, addUser } from "../../../src/contexts/UserContext";
 
 export default function EditProfilecreen() {
-  const [name, setName] = useState("Christine Phung");
-  const [username, setUsername] = useState("khr1s_");
-  const [aboutMe, setAboutMe] = useState("I love studying");
-  const [currentCourses, setCurrentCourses] = useState(["COMP6991"]);
-
+  const { currentUser, addUser } = useUser();
+  const [name, setName] = useState(currentUser.name);
+  const [username, setUsername] = useState(currentUser.username);
+  const [aboutMe, setAboutMe] = useState(currentUser.profile.aboutMe);
+  const [currentCourses, setCurrentCourses] = useState(
+    currentUser.profile.currentCourses
+  );
+  const [course, setCourse] = useState("");
   const router = useRouter();
 
   const addCourse = () => {
-    if (courseInput.trim()) {
-      setCourses([...courses, courseInput.trim().toUpperCase()]);
-      setCourseInput("");
+    if (course.trim()) {
+      setCurrentCourses([...currentCourses, course.trim().toUpperCase()]);
+      setCourse("");
     }
   };
 
   const handleRemoveCourse = (course) => {
     setCurrentCourses(currentCourses.filter((c) => c !== course));
   };
+
+  // Save event to user data
+  //  const handleSave = async () => {
+  //   try {
+  //     const eventStartTime = new Date(selectedDate);
+  //     eventStartTime.setHours(startTime.getHours());
+  //     eventStartTime.setMinutes(startTime.getMinutes());
+
+  //     const eventEndTime = new Date(selectedDate);
+  //     eventEndTime.setHours(endTime.getHours());
+  //     eventEndTime.setMinutes(endTime.getMinutes());
+
+  //     if (eventEndTime < eventStartTime) {
+  //       eventEndTime.setDate(eventEndTime.getDate() + 1);
+  //     }
+
+  //     const newEvent = {
+  //       eventId: event?.eventId || Date.now().toString(),
+  //       title,
+  //       date: selectedDate.toISOString(),
+  //       startTime: eventStartTime.toISOString(),
+  //       endTime: eventEndTime.toISOString(),
+  //       description,
+  //     };
+
+  //     let updatedEvents;
+  //     if (event) {
+  //       updatedEvents = currentUser.calendar.events.map((e) =>
+  //         e.eventId === event.eventId ? newEvent : e
+  //       );
+  //     } else {
+  //       updatedEvents = [...currentUser.calendar.events, newEvent];
+  //     }
+
+  //     await addUser({
+  //       ...currentUser,
+  //       calendar: {
+  //         ...currentUser.calendar,
+  //         events: updatedEvents,
+  //       },
+  //     });
+
+  //     onEventUpdate(updatedEvents);
+  //     hideModal();
+  //   } catch (error) {
+  //     console.error("Failed to save event:", error);
+  //   }
+  // };
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
@@ -93,18 +145,38 @@ export default function EditProfilecreen() {
           />
         </View>
         {/* courses input */}
+
         <View className="gap-2">
           <Text className="text-base font-semibold">Current Courses</Text>
-          <TextInput
-            className="border border-gray rounded-xl items-center p-4"
-            placeholder="Enter username"
-            onChangeText={(e) => {
-              setUsername(e);
-            }}
-            value={course}
-          />
+          <View className="flex-row w-full gap-2">
+            <TextInput
+              className="flex-1 border border-gray rounded-xl items-center p-4 "
+              placeholder="Enter course code"
+              onChangeText={(e) => {
+                setCourse(e);
+              }}
+              value={course}
+            />
+            <TouchableOpacity
+              className="p-4 bg-purple-secondary border rounded-xl border-purple-default"
+              onPress={addCourse}
+            >
+              <Text className="text-purple-default text-semibold">ADD</Text>
+            </TouchableOpacity>
+          </View>
+          <View className="flex-row flex-wrap gap-2">
+            {currentCourses.map((course, index) => (
+              <TouchableOpacity
+                key={index}
+                onPress={() => handleRemoveCourse(course)}
+                className="bg-purple-100 rounded-full px-4 py-2 flex-row items-center"
+              >
+                <Text className="text-purple-600 mr-2">{course}</Text>
+                <Text className="text-purple-600">×</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
-        <MultiSelectTextInput />
       </View>
     </SafeAreaView>
   );
