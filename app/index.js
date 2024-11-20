@@ -18,9 +18,11 @@ export default function Page() {
     }
   };
 
+  // handleClearStorage();
+
   return (
     <UserProvider>
-      <Redirect href="/auth/login" />
+      <Redirect href="/auth/register" />
     </UserProvider>
   );
 }

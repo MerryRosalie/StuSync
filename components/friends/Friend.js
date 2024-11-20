@@ -124,10 +124,10 @@ export default function Friend({ user }) {
 
         {/* User info */}
         <View className="flex-1">
-          <Text className="text-lg text-text-default dark:text-dark-text-default">
+          <Text className="text-lg text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
             {user.name}
           </Text>
-          <Text className="text-sm text-text-default dark:text-dark-text-default">
+          <Text className="text-sm text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
             @{user.username}
           </Text>
         </View>
