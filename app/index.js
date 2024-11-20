@@ -1,5 +1,7 @@
 import { Redirect } from "expo-router";
 import { UserProvider } from "../src/contexts/UserContext";
+import { useUser } from "../src/contexts/UserContext";
+import { useChats } from "../src/contexts/ChatContext";
 
 export default function Page() {
   const { clearStorage } = useUser();
