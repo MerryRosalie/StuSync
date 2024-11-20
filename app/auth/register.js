@@ -26,6 +26,7 @@ export default function Register() {
   const [passwordError, setPasswordError] = useState("");
   const [courses, setCourses] = useState([]);
   const [courseInput, setCourseInput] = useState("");
+  const [courseError, setCourseError] = useState("");
 
   // Ensure email matches regex
   const validateEmail = (email) => {
@@ -114,11 +115,23 @@ export default function Register() {
     setUsernameError(validateUsername(text));
   };
 
-  // If course input is not empty add course to courses
+  // Add course validation function
+  const validateCourse = (course) => {
+    const courseRegex = /^[A-Za-z]{4}\d{4}$/;
+    return courseRegex.test(course);
+  };
+
+  // Add course to courses if course is invalid display error
   const addCourse = () => {
     if (courseInput.trim()) {
-      setCourses([...courses, courseInput.trim().toUpperCase()]);
+      const formattedCourse = courseInput.trim().toUpperCase();
+      if (!validateCourse(formattedCourse)) {
+        setCourseError("Course does not exist enter a valid UNSW course code");
+        return;
+      }
+      setCourses([...courses, formattedCourse]);
       setCourseInput("");
+      setCourseError("");
     }
   };
 
@@ -136,7 +149,7 @@ export default function Register() {
         email: email.trim().toLowerCase(),
         username: username.trim().toLowerCase(),
         password: password,
-        profilePicture: generateProfilePicture(name.trim()),
+        profilePicture: "",
         calendar: {
           events: [],
         },
@@ -299,6 +312,7 @@ export default function Register() {
             onRemoveCourse={removeCourse}
             courseInput={courseInput}
             setCourseInput={setCourseInput}
+            error={courseError}
           />
         );
     }

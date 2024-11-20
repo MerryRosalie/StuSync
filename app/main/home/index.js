@@ -4,11 +4,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PreviousStudySessCard from "../../../components/PreviousStudySessCard";
 import Feather from "@expo/vector-icons/Feather";
 import ProfileIcon from "../../../components/ProfileIcon";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import { Link } from "expo-router";
 
 export default function Page() {
-  const navigation = useNavigation();
+  const navigation = useRouter();
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 justify-around pb-32">
@@ -24,7 +24,7 @@ export default function Page() {
       {/* active study sess */}
       <TouchableOpacity
         className="bg-purple-default w-full h-40 rounded-2xl p-4 justify-between"
-        onPress={() => navigation.navigate("chat")}
+        onPress={() => router.navigate("chat")}
       >
         <View>
           <Text className="text-white font-semibold text-base">
@@ -37,7 +37,7 @@ export default function Page() {
       <View className="gap-6">
         <TouchableOpacity
           className="flex-row justify-between"
-          onPress={() => navigation.navigate("friends")}
+          onPress={() => router.navigate("friends")}
         >
           <Text className="text-left text-xl font-semibold">{`Friends On Campus! (7)`}</Text>
           <Feather name="chevron-right" size={24} color="black" />

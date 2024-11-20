@@ -66,7 +66,7 @@ export default function Request({ user }) {
   return (
     <View className="flex-row items-center gap-2 p-2 flex-2">
       <TouchableOpacity
-        onPress={() => router.navigate(`/profile/${user.uid}`)}
+        onPress={() => router.navigate(`/user/${user.uid}`)}
         className="flex-1 flex-row items-center gap-2"
       >
         {/* Profile picture with status */}
@@ -81,10 +81,10 @@ export default function Request({ user }) {
 
         {/* User info */}
         <View className="flex-1">
-          <Text className="text-lg text-text-default dark:text-dark-text-default">
+          <Text className="text-lg text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
             {user.name}
           </Text>
-          <Text className="text-sm text-text-default dark:text-dark-text-default">
+          <Text className="text-sm text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
             @{user.username}
           </Text>
         </View>
