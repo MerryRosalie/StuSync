@@ -147,17 +147,8 @@ export function SessionProvider({ children }) {
     }
   };
 
-  useEffect(() => {
-    console.log("Updated activeSession:", activeSession);
-  }, [activeSession]);
-
-  useEffect(() => {
-    console.log("Updated sessionStatus:", sessionStatus);
-  }, [sessionStatus]);
-
   // Set location after poll
   const setSessionLocation = async (location) => {
-    console.log("Location set to", location);
     try {
       const updatedSession = {
         ...activeSession,
@@ -212,7 +203,6 @@ export function SessionProvider({ children }) {
 
   // Start the location poll
   const startLocationPoll = () => {
-    console.log("Location Poll starts");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: true,
@@ -222,7 +212,6 @@ export function SessionProvider({ children }) {
 
   // Start the pomodoro timer
   const startPomodoroTimer = () => {
-    console.log("Pomodoro timer starts");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: false,
@@ -232,7 +221,6 @@ export function SessionProvider({ children }) {
 
   // Start the break timer
   const startBreakTimer = () => {
-    console.log("Break time starts");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: false,
@@ -242,7 +230,6 @@ export function SessionProvider({ children }) {
   };
 
   const readyToEndSession = () => {
-    console.log("Session is Ending");
     setSessionStatus((prev) => ({
       ...prev,
       locationPollActive: false,
