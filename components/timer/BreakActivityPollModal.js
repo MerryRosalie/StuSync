@@ -1,17 +1,16 @@
 import { View, TouchableOpacity, Text } from "react-native";
-import Poll from "./poll/Poll";
-import { useMemo, useState } from "react";
+import Poll from "../chat/poll/Poll";
+import { useMemo } from "react";
 
-// Component which represents the page for location poll
-export default function LocationPollModal({ sheetRef }) {
-  // State to track selected poll options
-  const [values, setValues] = useState({});
-  // State to toggle between voting and results view
-  const [showResults, setShowResults] = useState(false);
-
-  // Memoized value to determine if any option is selected
+export default function BreakActivityPollModal({
+  sheetRef,
+  onComplete,
+  options,
+  values,
+  showResults,
+}) {
   const readyToSubmit = useMemo(
-    () => Object.values(values).some((value) => value),
+    () => Object.values(values || {}).some((value) => value),
     [values]
   );
 
@@ -30,25 +29,26 @@ export default function LocationPollModal({ sheetRef }) {
       {/* Header section with title and description */}
       <View>
         <Text className="font-inter-bold text-center text-lg text-text-default dark:text-dark-text-default">
-          Propose a location
+          What would you like to do during break?
         </Text>
         <Text className="text-text-default text-center dark:text-dark-text-default">
-          Select one or more locations
+          Select one or more activities
         </Text>
       </View>
 
       {/* Poll component */}
       <Poll
-        onChange={(values) => setValues(values)}
+        onChange={(newValues) => onComplete(newValues, showResults)}
         showResults={showResults}
-        options={["Electrical Engineering G03", "Quadrangle G040"]}
+        options={options}
+        values={values}
       />
 
       {/* Conditional rendering of action button */}
       {showResults ? (
         // Remove vote button - shown when viewing results
         <TouchableOpacity
-          onPress={() => setShowResults(false)}
+          onPress={() => onComplete(values, false)}
           className="rounded-lg p-6 border border-purple-default dark:border-dark-purple-default"
         >
           <Text className="font-inter-bold text-purple-default text-center dark:text-dark-purple-default">
@@ -59,11 +59,11 @@ export default function LocationPollModal({ sheetRef }) {
         // Save votes button - shown when voting
         <TouchableOpacity
           disabled={!readyToSubmit}
-          onPress={() => setShowResults(true)}
+          onPress={() => onComplete(values, true)}
           className="rounded-lg bg-purple-default dark:bg-dark-purple-default disabled:bg-purple-default/25 dark:disabled:bg-dark-purple-default/25 p-6"
         >
           <Text className="font-inter-bold text-background text-center dark:text-dark-background">
-            SAVE VOTES
+            VOTE ACTIVITY
           </Text>
         </TouchableOpacity>
       )}
