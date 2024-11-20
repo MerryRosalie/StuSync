@@ -111,7 +111,6 @@ export default function EditProfileScreen() {
 
     setIsLoading(true);
     try {
-      // Create updated user object
       const updatedUser = {
         ...currentUser,
         name: name.trim(),
@@ -124,12 +123,9 @@ export default function EditProfileScreen() {
         },
       };
 
-      // Save updated user
       await addUser(updatedUser);
-      // Update current user
       await setCurrentUser(currentUser.uid);
-      // Back
-      router.back();
+      router.push("main/profile");
     } catch (error) {
       setErrors((prev) => ({
         ...prev,
@@ -191,7 +187,7 @@ export default function EditProfileScreen() {
       <View className="w-full flex-row items-center justify-center relative mb-3">
         <TouchableOpacity
           className="absolute left-0 pl-0 p-4"
-          onPress={() => router.back()}
+          onPress={() => router.push("main/profile")}
         >
           <Feather
             className="color-text-default dark:color-dark-text-default"
