@@ -1,4 +1,5 @@
 import { View, TouchableOpacity, Text } from "react-native";
+import Feather from "@expo/vector-icons/Feather";
 import Poll from "./poll/Poll";
 import { useMemo, useState } from "react";
 
@@ -22,7 +23,12 @@ export default function LocationPollModal({ sheetRef }) {
         onPress={() => sheetRef.current?.dismiss()}
         className="flex-row self-end py-2 items-center gap-2"
       >
-        <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
+        <Feather
+          name="x"
+          size={24}
+          className="color-failure-text dark:color-dark-alert-text"
+        />
+        <Text className="font-inter-bold text-failure-text dark:text-dark-alert-text">
           CLOSE
         </Text>
       </TouchableOpacity>

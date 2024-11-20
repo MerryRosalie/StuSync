@@ -272,7 +272,7 @@ export default function Page() {
                 Current Courses
               </Text>
               <Text className="uppercase text-text-default dark:text-dark-text-default">
-                {user.profile.currentCourses.join(", ")}
+                {user.courses.join(", ")}
               </Text>
             </View>
             <View className="gap-2">
@@ -280,7 +280,7 @@ export default function Page() {
                 Member Since
               </Text>
               <Text className="text-text-default dark:text-dark-text-default">
-                {format(user.profile.memberSince, "MMM d, yyyy")}
+                {format(user.createdAt, "MMM d, yyyy")}
               </Text>
             </View>
           </View>

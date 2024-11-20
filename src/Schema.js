@@ -33,7 +33,6 @@ export const StudySessionTemplate = {
   members: [], // Array of strings (uids)
   chat: ChatTemplate,
   timer: TimerTemplate,
-  active: false,
 };
 
 export const EventTemplate = {
@@ -66,37 +65,18 @@ export const ProfileTemplate = {
   memberSince: "",
 };
 
-export const NotificationTemplate = {
-  id: "",
-  type: "", // "friend_request" | "session_invite" | "session_location" | "session_reminder"
-  user: {
-    uid: "",
-    name: "",
-    avatar: "",
-  },
-  message: "",
-  timestamp: "",
-  requiresAction: false,
-  category: "", // "friends" | "sessions"
-  time: "",
-  date: "",
-  location: "",
-  sessionName: "",
-};
-
 export const UserTemplate = {
   uid: "",
   name: "",
   email: "",
   username: "",
   password: "",
-  profilePicture: "https://ui-avatars.com/api/?background=random",
+  profilePicture: "",
   profile: ProfileTemplate,
   friends: FriendsTemplate,
   settings: SettingsTemplate,
   calendar: CalendarTemplate,
   studySessions: [], // Array of StudySession
-  notifications: [], // Array of Notification
 };
 
 export const UserStoreTemplate = {
@@ -117,8 +97,7 @@ export const isValidUser = (user) => {
       user.friends &&
       user.settings &&
       user.calendar &&
-      Array.isArray(user.studySessions) &&
-      Array.isArray(user.notifications)
+      Array.isArray(user.studySessions)
     );
   } catch (error) {
     return false;

@@ -10,7 +10,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import Button from "../../../components/Button";
-import { useUser } from "../../../src/contexts/UserContext";
+import { useUser, addUser } from "../../../src/contexts/UserContext";
 
 export default function EditProfilecreen() {
   const { currentUser, addUser } = useUser();

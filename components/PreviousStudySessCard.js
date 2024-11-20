@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useColorScheme } from "nativewind";
 import { Switch, TouchableOpacity, Text, View, Pressable } from "react-native";
 
@@ -11,12 +12,17 @@ export default function PreviousStudySessCard({ title, time, friends }) {
   ];
   return (
     // shadow-sm shadow-black
-    <TouchableOpacity className="w-52 h-36 border-2 border-[#EEEEEE] rounded-[12] gap-1 p-4 justify-between">
+    <TouchableOpacity
+      className=" w-52 h-36 border border-[#EEEEEE] rounded-[12] gap-1 p-4 justify-between"
+      onPress={() => {
+        router.navigate("/history");
+      }}
+    >
       <View>
         <Text className="text-sm">{time}</Text>
         <Text className="font-semibold text-base">{title}</Text>
       </View>
-      <View className="flex-row items-center justify-center relative h-8">
+      <View className=" flex-row items-center justify-center relative h-8">
         {/* TODO: fix this with images/profiles */}
         {circles.map((circle, index) => (
           <View
