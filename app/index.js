@@ -20,7 +20,7 @@ export default function Page() {
   // TODO: Change to Auth first
   return (
     <UserProvider>
-      <Redirect href="/auth/register" />
+      <Redirect href="/auth/login" />
     </UserProvider>
   );
 }

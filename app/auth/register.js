@@ -225,7 +225,7 @@ export default function Register() {
 
       await addUser(newUser);
       await setCurrentUser(newUser.uid);
-      router.replace("/");
+      router.replace("/main/home");
     } catch (error) {
       console.error("Registration error:", error);
     }
@@ -244,8 +244,7 @@ export default function Register() {
   const handleEmailStep = async () => {
     const emailExists = await checkEmailExists(email);
     if (emailExists) {
-      // Use the correct navigation method for Expo Router
-      router.push(`/auth/login?email=${encodeURIComponent(email)}`);
+      setEmailError("An account is already associated with this email");
       return;
     }
     setStep(step + 1);
@@ -309,15 +308,13 @@ export default function Register() {
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       <View className="flex-1">
         <View className="py-4 mt-8">
-          {step > 1 && (
-            <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
-              <Feather
-                name="arrow-left"
-                size={24}
-                className="color-text-default dark:color-dark-text-default"
-              />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
+            <Feather
+              name="arrow-left"
+              size={24}
+              className="color-text-default dark:color-dark-text-default"
+            />
+          </TouchableOpacity>
           <ProgressBar currentStep={step} totalSteps={5} />
         </View>
 

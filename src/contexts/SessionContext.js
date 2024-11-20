@@ -1,15 +1,13 @@
-// src/contexts/SessionContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "./UserContext";
 import { useRouter } from "expo-router";
 
-const VOTE_DURATION = 10; // 60 seconds for voting
+const VOTE_DURATION = 30; // BETA: 30 seconds for voting
 
 const SessionContext = createContext({});
 
 export function SessionProvider({ children }) {
-  const { currentUser, userStore, editUser, allUsers } = useUser();
-  const router = useRouter();
+  const { currentUser, editUser, allUsers } = useUser();
 
   const [activeSession, setActiveSession] = useState(null);
   const [sessionStatus, setSessionStatus] = useState({
@@ -18,9 +16,8 @@ export function SessionProvider({ children }) {
     locationPollActive: false, // Location poll is currently active
     locationPollTimeLeft: VOTE_DURATION, // Time left on the location poll
     pomodoroActive: false, // Pomodoro timer is currently active
-    pomodoroTimeLeft: 25 * 60, // Time left on the pomodoro timer
     breakActive: false, // Break timer is currently active
-    breakTimeLeft: 5 * 60, // Time left on the break timer
+    isEnding: false,
     timer: {
       studyDuration: 25 * 60,
       breakDuration: 5 * 60,
@@ -62,13 +59,6 @@ export function SessionProvider({ children }) {
     return () => clearInterval(intervalId);
   }, [sessionStatus.locationPollActive, sessionStatus.selectedLocation]);
 
-  // Debug timer
-  useEffect(() => {
-    console.log("location poll", sessionStatus.locationPollTimeLeft);
-    console.log("pomodoro timer", sessionStatus.pomodoroTimeLeft);
-    console.log("break time", sessionStatus.breakTimeLeft);
-  }, [sessionStatus]);
-
   // Start a new session
   const startSession = async (sessionData) => {
     try {
@@ -80,7 +70,6 @@ export function SessionProvider({ children }) {
         members: sessionData.members,
         chat: {
           messages: [],
-          locationPollActive: true,
         },
         timer: {
           studyDuration: 25 * 60,
@@ -165,7 +154,11 @@ export function SessionProvider({ children }) {
       // Create the updated session object
       const updatedSession = {
         ...activeSession,
-        location, // Ensure we're setting the location directly
+        location,
+        chat: {
+          ...activeSession.chat,
+          messages: [...activeSession.chat.messages], // Preserve existing chat messages
+        },
       };
 
       // First update the local state
@@ -197,8 +190,6 @@ export function SessionProvider({ children }) {
           await editUser(updatedUser.uid, updatedUser);
         })
       );
-
-      console.log("Final activeSession state:", updatedSession);
     } catch (error) {
       console.error("Error setting session location:", error);
       throw error;
@@ -220,11 +211,6 @@ export function SessionProvider({ children }) {
       ...prev,
       locationPollActive: false,
       pomodoroActive: true,
-      pomodoroTimeLeft: 25 * 60,
-      timerSettings: {
-        studyDuration: 25 * 60,
-        breakDuration: 5 * 60,
-      },
     }));
   };
 
@@ -234,13 +220,17 @@ export function SessionProvider({ children }) {
       ...prev,
       locationPollActive: false,
       pomodoroActive: false,
-      pomodoroTimeLeft: 25 * 60,
       breakActive: true,
-      breakTimeLeft: 5 * 60,
-      timerSettings: {
-        studyDuration: 25 * 60,
-        breakDuration: 5 * 60,
-      },
+    }));
+  };
+
+  const readyToEndSession = () => {
+    setSessionStatus((prev) => ({
+      ...prev,
+      locationPollActive: false,
+      pomodoroActive: false,
+      breakActive: false,
+      isEnding: true,
     }));
   };
 
@@ -276,19 +266,138 @@ export function SessionProvider({ children }) {
         locationPollActive: false, // Location poll is currently active
         locationPollTimeLeft: VOTE_DURATION, // Time left on the location poll
         pomodoroActive: false, // Pomodoro timer is currently active
-        pomodoroTimeLeft: 25 * 60, // Time left on the pomodoro timer
         breakActive: false, // Break timer is currently active
-        breakTimeLeft: 5 * 60, // Time left on the break timer
+        isEnding: false,
+        timer: {
+          studyDuration: 25 * 60,
+          breakDuration: 5 * 60,
+        },
+      });
+    } catch (error) {
+      console.error("Error ending session:", error);
+      throw error;
+    }
+  };
+
+  const leaveSession = async () => {
+    try {
+      if (!activeSession) {
+        throw new Error("No active session to leave");
+      }
+
+      // Create updated session with current user removed from members
+      const updatedSession = {
+        ...activeSession,
+        members: activeSession.members.filter(
+          (memberId) => memberId !== currentUser.uid
+        ),
+      };
+
+      // If this was the last member, mark session as inactive
+      if (updatedSession.members.length === 0) {
+        updatedSession.active = false;
+      }
+
+      // Update the session for all remaining members
+      await Promise.all(
+        activeSession.members.map(async (memberId) => {
+          // Skip the leaving user
+          if (memberId === currentUser.uid) return;
+
+          const user = allUsers[memberId];
+          if (user) {
+            const updatedUser = {
+              ...user,
+              studySessions: user.studySessions.map((session) =>
+                session.sessionId === activeSession.sessionId
+                  ? updatedSession
+                  : session
+              ),
+            };
+            await editUser(updatedUser.uid, updatedUser);
+          }
+        })
+      );
+
+      // Update the leaving user's session list
+      // Mark the session as inactive for the leaving user
+      const leavingUserSession = {
+        ...activeSession,
+        active: false,
+      };
+
+      const updatedCurrentUser = {
+        ...currentUser,
+        studySessions: currentUser.studySessions.map((session) =>
+          session.sessionId === activeSession.sessionId
+            ? leavingUserSession
+            : session
+        ),
+      };
+
+      await editUser(currentUser.uid, updatedCurrentUser);
+
+      // Reset local state
+      setActiveSession(null);
+      setSessionStatus({
+        isActive: false,
+        selectedLocation: null,
+        locationPollActive: false,
+        locationPollTimeLeft: VOTE_DURATION,
+        pomodoroActive: false,
+        breakActive: false,
+        isEnding: false,
         timer: {
           studyDuration: 25 * 60,
           breakDuration: 5 * 60,
         },
       });
 
-      router.push("/home");
+      return true;
     } catch (error) {
-      console.error("Error ending session:", error);
+      console.error("Error leaving session:", error);
       throw error;
+    }
+  };
+
+  const addChatToSession = async (chat, sessionId) => {
+    try {
+      // Validate sessionId matches active session
+      if (sessionId !== activeSession.sessionId) {
+        console.warn("Attempting to add chat to inactive session");
+        return;
+      }
+
+      // Create updated session with new chat
+      const updatedSession = {
+        ...activeSession,
+        chat: {
+          ...activeSession.chat,
+          messages: [...activeSession.chat.messages, chat],
+        },
+      };
+
+      // Update to all members
+      await Promise.all(
+        activeSession.members.map(async (memberId) => {
+          const user = allUsers[memberId];
+          if (user) {
+            const updatedUser = {
+              ...user,
+              studySessions: user.studySessions.map((session) =>
+                session.sessionId === activeSession.sessionId
+                  ? updatedSession
+                  : session
+              ),
+            };
+            await editUser(updatedUser.uid, updatedUser);
+          }
+        })
+      );
+
+      setActiveSession(updatedSession);
+    } catch (error) {
+      console.error("Error adding chat to session:", error);
     }
   };
 
@@ -303,7 +412,10 @@ export function SessionProvider({ children }) {
         startLocationPoll,
         startPomodoroTimer,
         startBreakTimer,
+        readyToEndSession,
         endSession,
+        leaveSession,
+        addChatToSession,
       }}
     >
       {children}

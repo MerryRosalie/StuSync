@@ -12,6 +12,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import Sheet from "../../components/Sheet";
 import BreakActivityPollModal from "../../components/timer/BreakActivityPollModal";
+import { useSession } from "../../src/contexts/SessionContext";
 
 // TimerSettingsSheet component handles timer duration configuration
 const TimerSettingsSheet = ({
@@ -21,8 +22,12 @@ const TimerSettingsSheet = ({
   initialBreakTime,
 }) => {
   // State for form inputs and validation
-  const [studyDuration, setStudyDuration] = useState(String(initialStudyTime));
-  const [breakDuration, setBreakDuration] = useState(String(initialBreakTime));
+  const [studyDuration, setStudyDuration] = useState(
+    String(initialStudyTime / 60)
+  );
+  const [breakDuration, setBreakDuration] = useState(
+    String(initialBreakTime / 60)
+  );
   const [studyError, setStudyError] = useState("");
   const [breakError, setBreakError] = useState("");
 
@@ -86,7 +91,7 @@ const TimerSettingsSheet = ({
           placeholder="Enter Input"
           keyboardType="numeric"
           maxLength={2}
-          className={`p-4 bg-text-dimmed dark:bg-dark-text-dimmed rounded-lg text-text-default dark:text-dark-text-default border ${
+          className={`p-4 bg-text-dimmed dark:bg-dark-text-dimmed rounded-lg text-text-default dark:text-dark-text-default placeholder:text-text-default/50 dark:placeholder:text-dark-text-default/50 border ${
             studyError ? "border-red-500" : "border-transparent"
           }`}
         />
@@ -109,7 +114,7 @@ const TimerSettingsSheet = ({
           placeholder="Enter Input"
           keyboardType="numeric"
           maxLength={2}
-          className={`p-4 bg-text-dimmed dark:bg-dark-text-dimmed rounded-lg text-text-default dark:text-dark-text-default border ${
+          className={`p-4 bg-text-dimmed dark:bg-dark-text-dimmed rounded-lg text-text-default dark:text-dark-text-default placeholder:text-text-default/50 dark:placeholder:text-dark-text-default/50 border ${
             breakError ? "border-red-500" : "border-transparent"
           }`}
         />
@@ -123,7 +128,7 @@ const TimerSettingsSheet = ({
       <TouchableOpacity
         onPress={() => {
           if (isFormValid) {
-            onSave(parseInt(studyDuration), parseInt(breakDuration));
+            onSave(parseInt(studyDuration * 60), parseInt(breakDuration * 60));
             sheetRef.current?.dismiss();
           }
         }}
@@ -148,18 +153,29 @@ const TimerSettingsSheet = ({
   );
 };
 
-const VOTE_DURATION = 30; // 30 seconds for voting
+const VOTE_DURATION = 30; // BETA: 30 seconds for voting
 
 const BREAK_ACTIVITIES = ["Take a walk", "Phone break"];
 
 export default function Page() {
+  const {
+    activeSession,
+    updateTimerSettings,
+    startPomodoroTimer,
+    startBreakTimer,
+    readyToEndSession,
+  } = useSession();
   const router = useRouter();
 
   // Timer state
-  const [studyMinutes, setStudyMinutes] = useState(25);
-  const [breakMinutes, setBreakMinutes] = useState(5);
+  const [studyMinutes, setStudyMinutes] = useState(
+    activeSession ? activeSession.timer.studyDuration : 25 * 60
+  );
+  const [breakMinutes, setBreakMinutes] = useState(
+    activeSession ? activeSession.timer.breakDuration : 5 * 60
+  );
   const [selectedActivity, setSelectedActivity] = useState("");
-  const [timeLeft, setTimeLeft] = useState(studyMinutes * 60);
+  const [timeLeft, setTimeLeft] = useState(studyMinutes);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
@@ -178,6 +194,15 @@ export default function Page() {
   const settingsSheetRef = useRef(null);
   const breakPollSheetRef = useRef(null);
 
+  // Add cleanup when navigating away
+  useEffect(() => {
+    return () => {
+      if (breakPollSheetRef.current) {
+        breakPollSheetRef.current.dismiss();
+      }
+    };
+  }, []);
+
   // Timer countdown effect
   useEffect(() => {
     let intervalId;
@@ -187,13 +212,13 @@ export default function Page() {
       }, 1000);
     } else if (timeLeft === 0) {
       if (!isBreak) {
+        // Break time polling
         setIsVoting(true);
         setVoteTimeLeft(VOTE_DURATION);
         breakPollSheetRef.current?.present();
       } else {
-        setIsBreak(false);
-        setTimeLeft(studyMinutes * 60);
-        setIsVoting(false);
+        readyToEndSession();
+        router.navigate("/details");
       }
       setIsActive(false);
     }
@@ -221,12 +246,24 @@ export default function Page() {
       setSelectedActivity(activitiesToChooseFrom[randomIndex]);
 
       setIsBreak(true);
-      setTimeLeft(breakMinutes * 60);
+      setTimeLeft(breakMinutes);
       setIsVoting(false);
+
+      breakPollSheetRef.current?.dismiss();
+    } else {
       breakPollSheetRef.current?.dismiss();
     }
     return () => clearInterval(intervalId);
   }, [isVoting, voteTimeLeft, voteValues]);
+
+  // Start timer according to the state
+  useEffect(() => {
+    if (isBreak && activeSession.breakActive && !isVoting) {
+      startBreakTimer();
+    } else if (!isBreak && activeSession.pomodoroActive && !isVoting) {
+      startPomodoroTimer();
+    }
+  }, [isBreak, isVoting]);
 
   // Utility function to format time display
   const formatTime = (seconds) => {
@@ -244,9 +281,9 @@ export default function Page() {
   const resetTimer = () => {
     setIsActive(false);
     if (isBreak) {
-      setTimeLeft(breakMinutes * 60);
+      setTimeLeft(breakMinutes);
     } else {
-      setTimeLeft(studyMinutes * 60);
+      setTimeLeft(studyMinutes);
     }
   };
 
@@ -254,7 +291,8 @@ export default function Page() {
   const handleTimerSettingsSave = (newStudyMinutes, newBreakMinutes) => {
     setStudyMinutes(newStudyMinutes);
     setBreakMinutes(newBreakMinutes);
-    setTimeLeft(isBreak ? newBreakMinutes * 60 : newStudyMinutes * 60);
+    updateTimerSettings(newStudyMinutes, newBreakMinutes);
+    setTimeLeft(isBreak ? newBreakMinutes : newStudyMinutes);
     setIsActive(false);
   };
 
@@ -272,7 +310,7 @@ export default function Page() {
     >
       <View className="flex-row items-center justify-between mb-3 px-6">
         {/* Header with back button */}
-        <TouchableOpacity className="p-4" onPress={() => router.back()}>
+        <TouchableOpacity className="p-4" onPress={() => router.push("/chat")}>
           <Feather
             className={`${
               isBreak ? "color-dark-background" : "color-background"

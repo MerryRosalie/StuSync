@@ -13,18 +13,32 @@ const addTwoHours = (timeString) => {
   return format(newDate, "h:mm a");
 };
 
-export default function Page() {
+export default function DetailsPage() {
   const router = useRouter();
 
   const { currentUser, allUsers } = useUser();
-  const { activeSession, sessionStatus, startPomodoroTimer } = useSession();
+  const {
+    activeSession,
+    sessionStatus,
+    startPomodoroTimer,
+    endSession,
+    leaveSession,
+  } = useSession();
 
   const handleStartPomodoroTimer = () => {
     startPomodoroTimer();
     router.push("/timer");
   };
 
-  console.log("sessionDetails", currentUser.studySessions[0]);
+  const handleEndSession = () => {
+    endSession();
+    router.navigate("/main/home");
+  };
+
+  const handleLeaveSession = () => {
+    leaveSession();
+    router.navigate("/main/home");
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
@@ -78,23 +92,20 @@ export default function Page() {
           </View>
         </View>
         {/* Location Information */}
-        <View className="p-4 mt-4 rounded-2xl flex-row justify-between items-center border border-text-dimmed dark:border-dark-text-dimmed">
-          <View className="flex-1">
+        <View className="p-4 mt-4 rounded-2xl flex-row gap-2 justify-between items-center border border-text-dimmed dark:border-dark-text-dimmed">
+          <View>
             <Text className="font-bold text-text-default dark:text-dark-text-default">
               Location
             </Text>
-            {sessionStatus.locationPollActive && (
-              <Text className="text-text-default/50 dark:text-dark-text-default/50">
-                Voting in progress
-              </Text>
-            )}
+            <Text
+              className={`text-text-default dark:text-dark-text-default ${
+                !activeSession && "opacity-50"
+              }`}
+            >
+              {activeSession ? activeSession.location : "Voting in progress"}
+            </Text>
           </View>
 
-          {activeSession.location && (
-            <Text className="flex-1 text-right line-clamp-1 text-ellipsis text-text-default dark:text-dark-text-default">
-              {activeSession.location}
-            </Text>
-          )}
           {sessionStatus.locationPollActive && (
             <TouchableOpacity className="bg-purple-secondary dark:bg-dark-purple-secondary py-3 px-4 rounded-xl">
               <Text className="text-purple-default dark:text-dark-purple-default">
@@ -117,22 +128,70 @@ export default function Page() {
             ))}
         </View>
         {/* Start Study Session */}
-        <TouchableOpacity
-          disabled={!activeSession.location}
-          onPress={handleStartPomodoroTimer}
-          className="flex-row mt-4 justify-center items-center gap-2 bg-purple-secondary dark:bg-dark-purple-secondary disabled:bg-purple-default/25 dark:disabled:bg-dark-purple-default/25 py-3 px-4 rounded-xl"
-        >
-          <Feather
-            className="text-purple-default dark:text-dark-purple-default"
-            name="play"
-            size={24}
-          />
-          <Text className="text-purple-default dark:text-dark-purple-default">
-            Start Study Session
-          </Text>
-        </TouchableOpacity>
+        {!sessionStatus.pomodoroActive &&
+          !sessionStatus.breakActive &&
+          !sessionStatus.isEnding && (
+            <TouchableOpacity
+              disabled={
+                activeSession.locationPollActive ||
+                sessionStatus.pomodoroActive ||
+                sessionStatus.breakActive
+              }
+              onPress={handleStartPomodoroTimer}
+              className="flex-row mt-4 justify-center items-center gap-2 bg-purple-default dark:bg-dark-purple-default disabled:bg-text-dimmed dark:disabled:bg-dark-text-dimmed py-3 px-4 rounded-xl"
+            >
+              <Feather
+                className="text-background dark:text-dark-background"
+                name="play"
+                size={24}
+              />
+              <Text className="text-background dark:text-dark-background">
+                Start Study Session
+              </Text>
+            </TouchableOpacity>
+          )}
+        {/* End Study Session */}
+        {!sessionStatus.pomodoroActive &&
+          !sessionStatus.breakActive &&
+          sessionStatus.isEnding && (
+            <TouchableOpacity
+              onPress={handleEndSession}
+              className="flex-row mt-4 justify-center items-center gap-2 bg-failure-text dark:bg-dark-alert-background disabled:bg-text-dimmed dark:disabled:bg-dark-text-dimmed py-3 px-4 rounded-xl"
+            >
+              <Feather
+                className="text-dark-alert-text dark:text-failure-text"
+                name="stop-circle"
+                size={24}
+              />
+              <Text className="text-dark-alert-text dark:text-failure-text">
+                End Study Session
+              </Text>
+            </TouchableOpacity>
+          )}
+        {/* Go back to Pomodoro timer/break time */}
+        {(sessionStatus.pomodoroActive || sessionStatus.breakActive) && (
+          <TouchableOpacity
+            onPress={() => router.navigate("/timer")}
+            className="flex-row mt-4 justify-center items-center gap-2 border border-purple-default dark:border-dark-purple-default disabled:bg-purple-default/25 dark:disabled:bg-dark-purple-default/25 py-3 px-4 rounded-xl"
+          >
+            <Feather
+              className="text-purple-default dark:text-dark-purple-default"
+              name="play"
+              size={24}
+            />
+            <Text className="text-purple-default dark:text-dark-purple-default">
+              "Go back to"{" "}
+              {sessionStatus.pomodoroActive && !sessionStatus.breakActive
+                ? "Pomodoro Timer"
+                : "Break Time"}
+            </Text>
+          </TouchableOpacity>
+        )}
         {/* Leave Study Session */}
-        <TouchableOpacity className="flex-row mt-4 justify-center items-center gap-2 border border-alert-text dark:border-dark-alert-text py-3 px-4 rounded-xl">
+        <TouchableOpacity
+          onPress={handleLeaveSession}
+          className="flex-row mt-4 justify-center items-center gap-2 border border-alert-text dark:border-dark-alert-text py-3 px-4 rounded-xl"
+        >
           <Feather
             className="color-alert-text dark:color-dark-alert-text"
             name="log-out"

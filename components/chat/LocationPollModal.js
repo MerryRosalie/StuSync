@@ -1,17 +1,15 @@
-// components/chat/LocationPollModal.js
 import { View, TouchableOpacity, Text } from "react-native";
 import Poll from "./poll/Poll";
-import { useMemo } from "react";
+import { useMemo, memo } from "react";
 import { useSession } from "../../src/contexts/SessionContext";
 
-export default function LocationPollModal({
+const LocationPollModal = ({
   sheetRef,
   onComplete,
   options,
   values,
   showResults,
-  locationPollTimeLeft,
-}) {
+}) => {
   const { sessionStatus } = useSession();
 
   const readyToSubmit = useMemo(
@@ -69,4 +67,6 @@ export default function LocationPollModal({
       )}
     </View>
   );
-}
+};
+
+export default memo(LocationPollModal);

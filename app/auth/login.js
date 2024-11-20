@@ -48,7 +48,7 @@ export default function Page() {
 
     try {
       await login(email, password);
-      router.replace("/");
+      router.replace("/main/home");
     } catch (err) {
       setError(err.message);
     } finally {

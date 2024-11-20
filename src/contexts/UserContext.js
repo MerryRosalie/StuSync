@@ -196,19 +196,6 @@ export const UserProvider = ({ children }) => {
       newUserStore.users[uid] = {
         ...newUserStore.users[uid],
         ...updates,
-        // Handle nested updates
-        studySessions: Array.isArray(updates.studySessions)
-          ? updates.studySessions
-          : newUserStore.users[uid].studySessions,
-        profile: updates.profile
-          ? { ...newUserStore.users[uid].profile, ...updates.profile }
-          : newUserStore.users[uid].profile,
-        friends: updates.friends
-          ? { ...newUserStore.users[uid].friends, ...updates.friends }
-          : newUserStore.users[uid].friends,
-        settings: updates.settings
-          ? { ...newUserStore.users[uid].settings, ...updates.settings }
-          : newUserStore.users[uid].settings,
       };
 
       await saveUserStore(newUserStore);
@@ -496,58 +483,6 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  // Add chat to a session
-  const addChatToSession = async (chat, sessionId) => {
-    try {
-      const newUserStore = { ...userStore };
-      if (currentUser && newUserStore.users[currentUser.uid]) {
-        const currentUserData = newUserStore.users[currentUser.uid];
-        const sessionIndex = currentUserData.studySessions.findIndex(
-          (session) => session.sessionId === sessionId
-        );
-
-        if (sessionIndex !== -1) {
-          // Add chat to the current user's session
-          currentUserData.studySessions[sessionIndex].chat.messages = [
-            ...currentUserData.studySessions[sessionIndex].chat.messages,
-            chat,
-          ];
-
-          // Get all session members
-          const sessionMembers =
-            currentUserData.studySessions[sessionIndex].members;
-
-          // Update the chat for all session members
-          for (const memberId of sessionMembers) {
-            if (memberId !== currentUser.uid && newUserStore.users[memberId]) {
-              const memberUser = newUserStore.users[memberId];
-              const memberSessionIndex = memberUser.studySessions.findIndex(
-                (session) => session.sessionId === sessionId
-              );
-
-              if (memberSessionIndex !== -1) {
-                memberUser.studySessions[memberSessionIndex].chat.messages = [
-                  ...memberUser.studySessions[memberSessionIndex].chat.messages,
-                  chat,
-                ];
-              }
-            }
-          }
-
-          await saveUserStore(newUserStore);
-          return chat;
-        } else {
-          throw new Error("Session not found");
-        }
-      } else {
-        throw new Error("Current user not found");
-      }
-    } catch (error) {
-      console.error("Error adding chat:", error);
-      throw error;
-    }
-  };
-
   return (
     <UserContext.Provider
       value={{
@@ -567,7 +502,6 @@ export const UserProvider = ({ children }) => {
         denyIncomingRequest,
         unfriend,
         clearStorage,
-        addChatToSession,
       }}
     >
       {children}

@@ -20,20 +20,13 @@ export default function Poll({
       }, {})
   );
 
-  // Update votes when propValues changes
-  useEffect(() => {
-    if (propValues) {
-      setVotes(propValues);
-    }
-  }, [propValues]);
-
   // State for adding new poll options
   const [newLocation, setNewLocation] = useState("");
   const [isAdding, setIsAdding] = useState(false);
 
   // Determine if new option can be submitted
   const readyToSubmit = useMemo(
-    () => isAdding && newLocation,
+    () => isAdding && newLocation.trim().length > 0,
     [newLocation, isAdding]
   );
 

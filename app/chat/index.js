@@ -46,7 +46,7 @@ const generateChatInstance = (
     messageId: Date.now().toString(),
     message,
     senderUid,
-    timestamp: Date.now().toString(),
+    timestamp: new Date().toISOString(),
     voiceUri,
     reply,
     images,
@@ -255,7 +255,7 @@ const ChatBubble = ({ mode: propMode, chat, onSwipe }) => {
                   : "text-background/50 dark:text-dark-background/50"
               } ml-auto`}
             >
-              {format(new Date(chat.timestamp * 1000), "p")}
+              {format(new Date(chat.timestamp), "p")}
             </Text>
           </View>
 
@@ -271,10 +271,11 @@ const ChatBubble = ({ mode: propMode, chat, onSwipe }) => {
   );
 };
 
-export default function Page() {
+export default function ChatPage() {
   const router = useRouter();
-  const { currentUser, allUsers, addChatToSession } = useUser();
-  const { activeSession, sessionStatus, setSessionLocation } = useSession();
+  const { currentUser, allUsers } = useUser();
+  const { activeSession, sessionStatus, setSessionLocation, addChatToSession } =
+    useSession();
 
   // Refs
   const scrollView = useRef(null);
@@ -283,9 +284,7 @@ export default function Page() {
   const kickAMemberSheetRef = useRef(null);
 
   // Chat States
-  const [chats, setChats] = useState(
-    currentUser.studySessions[0].chat.messages
-  );
+  const [chats, setChats] = useState(activeSession.chat.messages || []);
   const [message, setMessage] = useState("");
   const [images, setImages] = useState([]);
   const [reply, setReply] = useState(undefined);
@@ -335,7 +334,9 @@ export default function Page() {
       );
       const finalLocation = locationsToChooseFrom[randomIndex];
 
-      handleLocationSelected(finalLocation);
+      if (!activeSession.location) {
+        handleLocationSelected(finalLocation);
+      }
       locationSheetRef.current?.dismiss();
     }
   }, [sessionStatus.locationPollTimeLeft]);
@@ -352,7 +353,7 @@ export default function Page() {
         false,
         false
       );
-      insertChat(newChat, currentUser.studySessions[0].sessionId);
+      insertChat(newChat, activeSession.sessionId);
     }
   }, [voiceUri]);
 
@@ -371,7 +372,7 @@ export default function Page() {
         true,
         false
       );
-      insertChat(newChat, currentUser.studySessions[0].sessionId);
+      insertChat(newChat, activeSession.sessionId);
     }
   }, [proposedEndTime]);
 
@@ -387,7 +388,7 @@ export default function Page() {
         true,
         false
       );
-      insertChat(newChat, currentUser.studySessions[0].sessionId);
+      insertChat(newChat, activeSession.sessionId);
     }
   }, [memberKicking]);
 
@@ -398,19 +399,23 @@ export default function Page() {
   };
 
   // Handler for location selection
-  const handleLocationSelected = (location) => {
-    setSessionLocation(location);
-    setShowLocationPoll(false);
-    const newChat = generateChatInstance(
-      `📍 Location decided: ${location}\n\nClick below to start the study session!`,
-      currentUser.uid,
-      null,
-      null,
-      [],
-      false,
-      true
-    );
-    insertChat(newChat, currentUser.studySessions[0].sessionId);
+  const handleLocationSelected = async (location) => {
+    try {
+      const chatMessage = generateChatInstance(
+        `📍 Location decided: ${location}! Click below to start the study session!`,
+        currentUser.uid,
+        null,
+        null,
+        [],
+        false,
+        true
+      );
+      await setSessionLocation(location);
+      await insertChat(chatMessage, activeSession.sessionId);
+      setShowLocationPoll(false);
+    } catch (error) {
+      console.error("Error in handleLocationSelected:", error);
+    }
   };
 
   // Handler for sheet modal
@@ -429,13 +434,14 @@ export default function Page() {
   };
 
   // Function to add a chat to the chats array
-  const insertChat = (chat, sessionId) => {
-    setChats((prevChats) => {
-      const newChats = [...prevChats, chat];
-      return newChats;
-    });
-    addChatToSession(chat, sessionId); // Save to AsyncStorage
-    resetMessage();
+  const insertChat = async (chat, sessionId) => {
+    try {
+      await addChatToSession(chat, sessionId);
+      setChats((prevChats) => [...prevChats, chat]);
+      resetMessage();
+    } catch (error) {
+      console.error("Error in insertChat:", error);
+    }
   };
 
   // Function to reset message
@@ -736,7 +742,7 @@ export default function Page() {
                   false,
                   false
                 );
-                insertChat(newChat, currentUser.studySessions[0].sessionId);
+                insertChat(newChat, activeSession.sessionId);
               }}
               className="p-4 bg-purple-default dark:bg-dark-purple-default rounded-full"
             >
