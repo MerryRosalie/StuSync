@@ -160,11 +160,11 @@ export default function Page() {
           <View className="bg-green w-6 h-6 rounded-full absolute right-1 bottom-1" />
         </View>
         {/* User info */}
-        <View className="self-center mt-3">
-          <Text className="text-lg font-inter-bold text-center text-text-default dark:text-dark-text-default">
+        <View className="self-center mt-3 px-6">
+          <Text className="text-lg font-inter-bold text-center text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
             {user.name}
           </Text>
-          <Text className="text-sm text-center text-text-default dark:text-dark-text-default">
+          <Text className="text-sm text-center text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
             @{user.username}
           </Text>
         </View>

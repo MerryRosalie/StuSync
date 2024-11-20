@@ -68,7 +68,7 @@ export default function Page() {
       <View className="gap-6">
         <TouchableOpacity
           className="flex-row justify-between"
-          onPress={() => navigation.navigate("friends")}
+          onPress={() => router.navigate("friends")}
         >
           <Text className="text-left text-xl font-semibold">{`Friends`}</Text>
           <View className="flex-row items-center">
