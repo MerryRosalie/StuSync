@@ -21,20 +21,35 @@ export default function Page() {
       </View>
       {/* active study sess */}
       <TouchableOpacity
-        className="bg-purple-default w-full h-40 rounded-2xl p-4 justify-between overflow-hidden"
+        className="bg-purple-default w-full h-40 rounded-2xl p-4 items-end overflow-hidden"
         onPress={() => router.navigate("chat")}
       >
         <Image
           source={glasses}
-          className="h-5/6 w-[100%] absolute right-[-20%] top-10"
+          className="w-1/2 h-3/4 bg-bottom bottom-2 absolute"
           resizeMode="contain"
         />
         <View className="absolute justify-between h-full left-4 top-4">
-          <View>
-            <Text className="text-white font-semibold text-base">
-              COMP1511 studymaxxing!!
-            </Text>
-            <Text className="text-white text-base">QUADG035</Text>
+          <View className="flex-row w-full justify-between items-top">
+            <View className="w-1/2">
+              <Text className="text-white font-semibold text-base">
+                COMP1511 studymaxxing!!
+              </Text>
+              <Text className="text-white text-base">QUADG035</Text>
+            </View>
+            {/* top right info */}
+            <View className="gap-2 items-top h-7 flex-row">
+              {/* study session status */}
+              <View className="bg-white flex-row items-center px-3 py-1 rounded-full">
+                <View className="w-4 h-4 bg-green rounded-full mr-2" />
+                <Text className="text-black text-sm">Studying</Text>
+              </View>
+              <Feather
+                name="arrow-up-right"
+                size={24}
+                className="bg-white rounded-full text-purple-default"
+              />
+            </View>
           </View>
           <Text className="text-white font-semibold text-2xl">13 DEC 12PM</Text>
         </View>
