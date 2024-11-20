@@ -1,4 +1,4 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Image } from "react-native";
 import ModeSwitch from "../../../components/ModeSwitch";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link } from "expo-router";
@@ -14,6 +14,7 @@ export default function Page() {
     { color: "bg-blue-500", label: "Circle 3" },
     { color: "bg-yellow-500", label: "Circle 4" },
   ];
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
       <View className="flex-row justify-between  w-full">
@@ -26,7 +27,10 @@ export default function Page() {
       </View>
       {/* profile pic */}
       <View className="gap-4 items-center">
-        <View className="w-32 h-32 bg-cyan-500 rounded-full"></View>
+        <Image
+          source={{ uri: "https://avatar.iran.liara.run/public/1" }}
+          className="w-32 h-32 rounded-full"
+        />
         <View className="gap-2 items-center">
           <Text className="font-semibold text-xl ">Christine Phung</Text>
           <Text className="text-sm">@khr1s_</Text>
