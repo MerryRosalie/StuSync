@@ -10,8 +10,20 @@ import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function AccountScreen() {
+  const { removeUser, currentUser } = useUser();
+
+  const handleDeleteAccount = async () => {
+    try {
+      await removeUser(currentUser.uid);
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Error removing user:", error);
+    }
+  };
+
   const navigation = useNavigation();
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
@@ -58,8 +70,11 @@ export default function AccountScreen() {
           <Feather name="chevron-right" size={24} className="dark:text-white" />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity className="flex-row p-4 items-center w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40">
-        <Feather name="log-out" size={24} color="#FF8F85" />
+      <TouchableOpacity
+        className="flex-row p-4 items-center w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40"
+        onPress={handleDeleteAccount}
+      >
+        <Feather name="trash-2" size={24} color="#FF8F85" />
         <Text className="ml-4 text-base text-[#FF8F85] font-semibold ">
           Delete Account
         </Text>

@@ -321,6 +321,20 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const logout = async () => {
+    try {
+      const newUserStore = {
+        ...userStore,
+        activeUser: null,
+      };
+
+      await saveUserStore(newUserStore);
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const checkEmailExists = (email) => {
     return Object.values(userStore.users).some(
       (user) => user.email.toLowerCase() === email.toLowerCase()
@@ -386,6 +400,7 @@ export const UserProvider = ({ children }) => {
         removeUser,
         isLoading,
         login,
+        logout,
         checkEmailExists,
         checkUsernameExists,
         addPendingRequest,

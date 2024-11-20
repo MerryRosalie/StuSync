@@ -24,7 +24,7 @@ export default function Page() {
       {/* active study sess */}
       <TouchableOpacity
         className="bg-purple-default w-full h-40 rounded-2xl p-4 justify-between"
-        onPress={() => navigation.navigate("chat")}
+        onPress={() => router.navigate("chat")}
       >
         <View>
           <Text className="text-white font-semibold text-base">
@@ -37,7 +37,7 @@ export default function Page() {
       <View className="gap-6">
         <TouchableOpacity
           className="flex-row justify-between"
-          onPress={() => navigation.navigate("friends")}
+          onPress={() => router.navigate("friends")}
         >
           <Text className="text-left text-xl font-semibold">{`Friends On Campus! (7)`}</Text>
           <Feather name="chevron-right" size={24} color="black" />
