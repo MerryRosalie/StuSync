@@ -27,6 +27,7 @@ export default function Register() {
   const [passwordError, setPasswordError] = useState("");
   const [courses, setCourses] = useState([]);
   const [courseInput, setCourseInput] = useState("");
+  const [courseError, setCourseError] = useState("");
 
   // Ensure email matches regex
   const validateEmail = (email) => {
@@ -115,11 +116,23 @@ export default function Register() {
     setUsernameError(validateUsername(text));
   };
 
-  // If course input is not empty add course to courses
+  // Add course validation function
+  const validateCourse = (course) => {
+    const courseRegex = /^[A-Za-z]{4}\d{4}$/;
+    return courseRegex.test(course);
+  };
+
+  // Add course to courses if course is invalid display error
   const addCourse = () => {
     if (courseInput.trim()) {
-      setCourses([...courses, courseInput.trim().toUpperCase()]);
+      const formattedCourse = courseInput.trim().toUpperCase();
+      if (!validateCourse(formattedCourse)) {
+        setCourseError("Course does not exist enter a valid UNSW course code");
+        return;
+      }
+      setCourses([...courses, formattedCourse]);
       setCourseInput("");
+      setCourseError("");
     }
   };
 
@@ -228,7 +241,7 @@ export default function Register() {
 
       await addUser(newUser);
       await setCurrentUser(newUser.uid);
-      router.replace("/");
+      router.replace("/main/home");
     } catch (error) {
       console.error("Registration error:", error);
     }
@@ -303,6 +316,7 @@ export default function Register() {
             onRemoveCourse={removeCourse}
             courseInput={courseInput}
             setCourseInput={setCourseInput}
+            error={courseError}
           />
         );
     }
@@ -312,13 +326,15 @@ export default function Register() {
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       <View className="flex-1">
         <View className="py-4 mt-8">
-          <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
-            <Feather
-              name="arrow-left"
-              size={24}
-              className="color-text-default dark:color-dark-text-default"
-            />
-          </TouchableOpacity>
+          {step > 1 && (
+            <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
+              <Feather
+                name="arrow-left"
+                size={24}
+                className="color-text-default dark:color-dark-text-default"
+              />
+            </TouchableOpacity>
+          )}
           <ProgressBar currentStep={step} totalSteps={5} />
         </View>
 

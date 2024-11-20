@@ -18,10 +18,9 @@ export default function Page() {
     }
   };
 
-  // TODO: Change to Auth first
   return (
     <UserProvider>
-      <Redirect href="/main/home" />
+      <Redirect href="/auth/register" />
     </UserProvider>
   );
 }

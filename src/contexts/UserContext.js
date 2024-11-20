@@ -431,6 +431,20 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const logout = async () => {
+    try {
+      const newUserStore = {
+        ...userStore,
+        activeUser: null,
+      };
+
+      await saveUserStore(newUserStore);
+      return true;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const checkEmailExists = (email) => {
     return Object.values(userStore.users).some(
       (user) => user.email.toLowerCase() === email.toLowerCase()
@@ -441,6 +455,49 @@ export const UserProvider = ({ children }) => {
     return Object.values(userStore.users).some(
       (user) => user.username.toLowerCase() === username.toLowerCase()
     );
+  };
+
+  const updateUserEmail = async (newEmail) => {
+    try {
+      if (!currentUser) {
+        throw new Error("No user is currently logged in");
+      }
+
+      // Check if new email already exists
+      if (checkEmailExists(newEmail)) {
+        throw new Error("Email already in use");
+      }
+
+      const newUserStore = { ...userStore };
+      newUserStore.users[currentUser.uid] = {
+        ...newUserStore.users[currentUser.uid],
+        email: newEmail,
+      };
+
+      await saveUserStore(newUserStore);
+      return newUserStore.users[currentUser.uid];
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateUserPassword = async (currentPassword, newPassword) => {
+    try {
+      if (!currentUser) {
+        throw new Error("No user is currently logged in");
+      }
+
+      const newUserStore = { ...userStore };
+      newUserStore.users[currentUser.uid] = {
+        ...newUserStore.users[currentUser.uid],
+        password: newPassword,
+      };
+
+      await saveUserStore(newUserStore);
+      return newUserStore.users[currentUser.uid];
+    } catch (error) {
+      throw error;
+    }
   };
 
   const clearStorage = async () => {
@@ -465,6 +522,7 @@ export const UserProvider = ({ children }) => {
         removeUser,
         isLoading,
         login,
+        logout,
         checkEmailExists,
         checkUsernameExists,
         addPendingRequest,
@@ -472,6 +530,8 @@ export const UserProvider = ({ children }) => {
         acceptIncomingRequest,
         denyIncomingRequest,
         unfriend,
+        updateUserEmail,
+        updateUserPassword,
         clearStorage,
       }}
     >

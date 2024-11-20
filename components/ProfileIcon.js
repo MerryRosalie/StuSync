@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Image } from "react-native";
 
-export default function ProfileIcon({ imgUri, status }) {
+export default function ProfileIcon({ imgUri, status, size }) {
   return (
-    <View className="relative w-20 h-20">
+    <View className={`relative w-${size} h-${size}`}>
       {/* Profile Icon */}
       <View className="w-full h-full rounded-full overflow-hidden">
         {/* <Image source={{ uri: imageUri }} className="w-full h-full" /> */}
@@ -11,7 +11,7 @@ export default function ProfileIcon({ imgUri, status }) {
       </View>
       {/* Status Indicator */}
       <View
-        className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-red-500`}
+        className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-green`}
       />
     </View>
   );
