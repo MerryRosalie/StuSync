@@ -25,6 +25,7 @@ export default function Page() {
     { color: "bg-blue-500", label: "Circle 3" },
     { color: "bg-yellow-500", label: "Circle 4" },
   ];
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
       <View className="flex-row justify-between  w-full">
@@ -42,7 +43,12 @@ export default function Page() {
       {/* profile pic */}
       <View className="gap-4 items-center">
         <Image
-          source={{ uri: currentUser.profilePicture }}
+          source={{
+            uri:
+              currentUser.profilePicture === ""
+                ? currentUser.profilePicture
+                : "https://avatar.iran.liara.run/public/1",
+          }}
           className="w-32 h-32 rounded-full"
           resizeMode="cover"
         />

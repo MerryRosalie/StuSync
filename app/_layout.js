@@ -81,8 +81,14 @@ function RootLayoutNavigation() {
     <GestureHandlerRootView className="flex-1">
       <BottomSheetModalProvider>
         <Stack initialRouteName="main" screenOptions={{ headerShown: false }}>
-          {/* // TODO: Change to Auth first */}
-          <Stack.Screen name="auth" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="auth"
+            options={{
+              headerShown: false,
+              gestureEnabled: false,
+              gestureDirection: "horizontal",
+            }}
+          />
           <Stack.Screen name="main" options={{ headerShown: false }} />
           <Stack.Screen name="friends" options={{ headerShown: false }} />
         </Stack>

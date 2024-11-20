@@ -49,7 +49,7 @@ export default function AccountScreen() {
           </View>
           <Feather name="chevron-right" size={24} className="dark:text-white" />
         </TouchableOpacity>
-        <View className="border-b border-gray mx-4 gap-2 dark:border-white" />
+        <View className="border-b border-gray mx-4 gap-2 dark:border-dark-text-dimmed" />
         <TouchableOpacity
           className="w-full flex-row rounded-2xl items-center justify-between p-4"
           onPress={() => router.navigate("/settings/changePassword")}
