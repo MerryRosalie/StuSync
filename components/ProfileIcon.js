@@ -11,7 +11,7 @@ export default function ProfileIcon({ imgUri, status, size }) {
       </View>
       {/* Status Indicator */}
       <View
-        className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-red-500`}
+        className={`absolute bottom-0 right-0 w-6 h-6 rounded-full border-2 border-white bg-green`}
       />
     </View>
   );

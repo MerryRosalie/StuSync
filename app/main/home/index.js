@@ -4,20 +4,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PreviousStudySessCard from "../../../components/PreviousStudySessCard";
 import Feather from "@expo/vector-icons/Feather";
 import ProfileIcon from "../../../components/ProfileIcon";
-// import { useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { Link, useRouter } from "expo-router";
 import glasses from "../../../assets/glasses.png";
 import girl from "../../../assets/girl.png";
 
 export default function Page() {
+  const navigation = useNavigation();
+
   const router = useRouter();
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 justify-around pb-32">
-      {/* <Text className="font-inter-bold text-xl text-purple-default dark:text-dark-purple-default">
-        Home Page
-      </Text>
-
-      <ModeSwitch /> */}
       <View>
         <Text className="text-left text-lg font-medium">Welcome back</Text>
         <Text className="text-left text-2xl font-semibold">Username</Text>
@@ -37,7 +34,7 @@ export default function Page() {
             <Text className="text-white font-semibold text-base">
               COMP1511 studymaxxing!!
             </Text>
-            <Text className="text-white text-base">QUADG</Text>
+            <Text className="text-white text-base">QUADG035</Text>
           </View>
           <Text className="text-white font-semibold text-2xl">13 DEC 12PM</Text>
         </View>
@@ -73,8 +70,11 @@ export default function Page() {
           className="flex-row justify-between"
           onPress={() => navigation.navigate("friends")}
         >
-          <Text className="text-left text-xl font-semibold">{`Friends On Campus! (7)`}</Text>
-          <Feather name="chevron-right" size={24} color="black" />
+          <Text className="text-left text-xl font-semibold">{`Friends`}</Text>
+          <View className="flex-row items-center">
+            <Text className="text-left text-base text-green">{`(7)`}</Text>
+            <Feather name="chevron-right" size={24} color="black" />
+          </View>
         </TouchableOpacity>
         <ScrollView horizontal>
           <View className="gap-6 flex-row">
@@ -116,21 +116,9 @@ export default function Page() {
       </View>
       <Link
         className="text-text-default dark:text-dark-text-default"
-        href="/auth/login"
-      >
-        Go to Signin
-      </Link>
-      <Link
-        className="text-text-default dark:text-dark-text-default"
         href="/timer"
       >
         Go to Timer
-      </Link>
-      <Link
-        className="text-text-default dark:text-dark-text-default"
-        href="/history"
-      >
-        Go to History
       </Link>
     </SafeAreaView>
   );

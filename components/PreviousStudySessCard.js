@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { useColorScheme } from "nativewind";
 import { Switch, TouchableOpacity, Text, View, Pressable } from "react-native";
 
@@ -11,7 +12,12 @@ export default function PreviousStudySessCard({ title, time, friends }) {
   ];
   return (
     // shadow-sm shadow-black
-    <TouchableOpacity className=" w-52 h-36 border border-[#EEEEEE] rounded-[12] gap-1 p-4 justify-between">
+    <TouchableOpacity
+      className=" w-52 h-36 border border-[#EEEEEE] rounded-[12] gap-1 p-4 justify-between"
+      onPress={() => {
+        router.navigate("/history");
+      }}
+    >
       <View>
         <Text className="text-sm">{time}</Text>
         <Text className="font-semibold text-base">{title}</Text>

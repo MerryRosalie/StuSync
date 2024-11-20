@@ -12,6 +12,8 @@ import React, { useState } from "react";
 import { useNavigation } from "expo-router";
 import ProfileIcon from "../../components/ProfileIcon";
 export default function OverviewScreen() {
+  const navigation = useNavigation();
+
   const circles = [
     { color: "bg-red-500", label: "Circle 1" },
     { color: "bg-blue-500", label: "Circle 2" },
@@ -37,11 +39,14 @@ export default function OverviewScreen() {
           Past Study Sessions
         </Text>
       </View>
-      <TouchableOpacity className="rounded-xl border p-4 w-full">
+      <TouchableOpacity
+        className="rounded-xl border p-4 w-full"
+        onPress={() => navigation.navigate("index")}
+      >
         <View className="flex-row items-center justify-between">
           <Text className="text-lg font-medium">COMP1511 grind</Text>
-          <View className="flex-row items-center justify-center relative h-8">
-            {/* TODO: fix this with images/profiles */}
+          {/* <View className="flex-row items-center justify-center relative h-8">
+
             {circles.map((circle, index) => (
               <View
                 key={index}
@@ -51,7 +56,7 @@ export default function OverviewScreen() {
                 }}
               />
             ))}
-          </View>
+          </View> */}
         </View>
         <Text className="text-xs">13 DEC 2PM</Text>
       </TouchableOpacity>
