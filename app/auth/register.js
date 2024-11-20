@@ -162,7 +162,7 @@ export default function Register() {
         },
         friends: {
           allFriends: [],
-          incomingRequests: [],
+          incomingRequests: ["user123", "user101"],
           pendingRequests: [],
         },
         settings: {

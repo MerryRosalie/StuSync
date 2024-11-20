@@ -37,27 +37,7 @@ export default function Page() {
       const targetUser = allUsers[uid];
       if (!targetUser) throw new Error("User not found");
 
-      const updatedCurrentUser = {
-        ...currentUser,
-        friends: {
-          ...currentUser.friends,
-          incomingRequests: [...currentUser.friends.incomingRequests, uid],
-        },
-      };
-      await addUser(updatedCurrentUser);
-
-      const updatedTargetUser = {
-        ...targetUser,
-        friends: {
-          ...targetUser.friends,
-          pendingRequests: [
-            ...targetUser.friends.pendingRequests,
-            currentUser.uid,
-          ],
-        },
-      };
-      await addUser(updatedTargetUser);
-
+      // Remove the local updates and just call acceptIncomingRequest
       await acceptIncomingRequest(uid);
       removeNotification(notificationId);
     } catch (error) {
