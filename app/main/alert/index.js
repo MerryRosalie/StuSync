@@ -121,85 +121,126 @@ export default function Page() {
 
   // Filters the notifications based on the active tab
   const filteredNotifications = useMemo(() => {
-    if (activeTab === "all") return notifications;
-    return notifications.filter((notification) => {
+    if (activeTab === "all") return DUMMY_NOTIFICATIONS;
+    return DUMMY_NOTIFICATIONS.filter((notification) => {
       if (activeTab === "friends")
         return notification.type.startsWith("friend_");
       if (activeTab === "sessions")
         return notification.type.startsWith("session_");
       return true;
     });
-  }, [activeTab, notifications]);
+  }, [activeTab]);
 
-  // Renders the notification based on the type
   const renderNotification = (notification) => {
     switch (notification.type) {
       case "friend_request":
         return (
-          <FriendRequestNotification
+          <View
             key={notification.id}
-            notification={notification}
-            onAccept={handleAcceptRequest}
-            onDeny={handleDenyRequest}
-          />
+            className="flex-row items-center p-4 border-b border-gray-100"
+          >
+            <Image
+              source={{ uri: notification.user.avatar }}
+              className="w-10 h-10 rounded-full mr-3"
+            />
+            <View className="flex-1">
+              <Text className="dark:text-dark-text-default">
+                <Text className="font-inter-bold dark:text-dark-text-default">
+                  {notification.user.name}
+                </Text>
+                <Text> {notification.message}</Text>
+              </Text>
+              <Text className="text-gray-500 text-sm">
+                {notification.timestamp}
+              </Text>
+            </View>
+            {notification.requiresAction && (
+              <View className="flex-row items-center">
+                <TouchableOpacity className="w-8 h-8 rounded-full bg-green mr-2 items-center justify-center">
+                  <Text>✓</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="w-8 h-8 rounded-full bg-red-100 items-center justify-center">
+                  <Text>✕</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         );
 
       case "session_reminder":
       case "session_location":
         return (
-          <SessionReminderNotification
+          <View
             key={notification.id}
-            notification={notification}
-          />
+            className="flex-row items-center p-4 border-b border-gray-100"
+          >
+            <View className="w-10 h-10 rounded-full mr-3 bg-purple-100 items-center justify-center">
+              <Text>📚</Text>
+            </View>
+            <View className="flex-1">
+              <Text className="dark:text-dark-text-default">
+                <Text>Session </Text>
+                <Text className="font-inter-bold dark:text-dark-text-default">
+                  {notification.sessionName}
+                </Text>
+                {notification.type === "session_reminder" ? (
+                  <Text>
+                    {" "}
+                    at {notification.time} {notification.date}
+                  </Text>
+                ) : (
+                  <Text> location set to {notification.location}</Text>
+                )}
+              </Text>
+              <Text className="text-gray-500 text-sm dark:text-dark-text-default">
+                {notification.timestamp}
+              </Text>
+            </View>
+          </View>
         );
 
       case "session_invite":
         return (
-          <SessionInviteNotification
+          <View
             key={notification.id}
-            notification={notification}
-            onAccept={handleAcceptSession}
-            onDeny={handleDenySession}
-            currentUserSessions={currentUser?.studySessions || []}
-          />
+            className="flex-row items-center p-4 border-b border-gray-100"
+          >
+            <Image
+              source={{ uri: notification.user.avatar }}
+              className="w-10 h-10 rounded-full mr-3"
+            />
+            <View className="flex-1">
+              <Text className="dark:text-dark-text-default">
+                <Text className="font-inter-bold dark:text-dark-text-default">
+                  {notification.user.name}
+                </Text>
+                <Text> is having a session at </Text>
+                <Text className="font-inter-bold dark:text-dark-text-default">
+                  {notification.time} {notification.date}
+                </Text>
+                <Text> would you like to join it?</Text>
+              </Text>
+              <Text className="text-gray-500 text-sm dark:text-dark-text-default">
+                {notification.timestamp}
+              </Text>
+            </View>
+            {notification.requiresAction && (
+              <View className="flex-row items-center">
+                <TouchableOpacity className="w-8 h-8 rounded-full bg-green mr-2 items-center justify-center">
+                  <Text>✓</Text>
+                </TouchableOpacity>
+                <TouchableOpacity className="w-8 h-8 rounded-full bg-red-100 items-center justify-center">
+                  <Text>✕</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
         );
     }
   };
 
-  // Updates the current users notifications
-  useEffect(() => {
-    if (currentUser) {
-      const updatedUser = {
-        ...currentUser,
-        notifications: notifications,
-      };
-      addUser(updatedUser);
-    }
-  }, [notifications]);
-
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
-      {/* Joined Banner */}
-      <Alert
-        visible={showJoinedBanner}
-        onClose={() => setShowJoinedBanner(false)}
-        onPress={() => {
-          setShowJoinedBanner(false);
-          router.push("/chat");
-        }}
-        title="Joined a study session"
-        message="Tap here to navigate to the study session"
-      />
-
-      {/* Error Banner */}
-      <Alert
-        visible={showErrorBanner}
-        onClose={() => setShowErrorBanner(false)}
-        onPress={() => setShowErrorBanner(false)}
-        title="Cannot Join Session"
-        message="You already have an active study session. Please complete or leave your current session before joining a new one."
-      />
-
       {/* Header */}
       <View className="flex-row justify-between items-center px-4 pt-2 pb-3 mt-5 mb-2">
         <Text className="font-inter-bold text-xl dark:text-dark-text-default">

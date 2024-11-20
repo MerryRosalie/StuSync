@@ -19,8 +19,12 @@ export default function PreviousStudySessCard({ title, time, friends }) {
       }}
     >
       <View>
-        <Text className="text-sm">{time}</Text>
-        <Text className="font-semibold text-base">{title}</Text>
+        <Text className="text-sm text-text-default dark:text-dark-text-default">
+          {time}
+        </Text>
+        <Text className="font-semibold text-base text-text-default dark:text-dark-text-default">
+          {title}
+        </Text>
       </View>
       <View className=" flex-row items-center justify-center relative h-8">
         {/* TODO: fix this with images/profiles */}
