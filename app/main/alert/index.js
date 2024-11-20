@@ -1,4 +1,4 @@
-import { Text, View, ScrollView, TouchableOpacity, Image } from "react-native";
+import { Text, View, ScrollView, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useMemo, useEffect } from "react";
 import { useUser } from "../../../src/contexts/UserContext";
@@ -8,6 +8,7 @@ import FriendRequestNotification from "../../../components/notifications/FriendR
 import SessionReminderNotification from "../../../components/notifications/SessionReminderNotification";
 import SessionInviteNotification from "../../../components/notifications/SessionInviteNotification";
 import Alert from "../../../components/notifications/Alert";
+import { useSession } from "../../../src/contexts/SessionContext";
 
 export default function Page() {
   const {
@@ -18,6 +19,7 @@ export default function Page() {
     allUsers,
   } = useUser();
   const router = useRouter();
+  const { startSession } = useSession();
   const [activeTab, setActiveTab] = useState("all");
   const [notifications, setNotifications] = useState(
     currentUser?.notifications || []
@@ -91,7 +93,7 @@ export default function Page() {
         date: sessionData.date,
         time: sessionData.time,
         location: sessionData.location || "",
-        members: [currentUser.uid, sessionData.user.uid],
+        members: [currentUser.uid, sessionData.uid],
         chat: ChatTemplate,
         timer: TimerTemplate,
         active: true,
@@ -105,7 +107,7 @@ export default function Page() {
       await addUser(updatedCurrentUser);
 
       // Updates the target users study sessions
-      const targetUser = allUsers[sessionData.user.uid];
+      const targetUser = allUsers[sessionData.uid];
       if (targetUser) {
         const updatedTargetUser = {
           ...targetUser,
@@ -113,6 +115,13 @@ export default function Page() {
         };
         await addUser(updatedTargetUser);
       }
+
+      // Start new session using context
+      await startSession({
+        date: sessionData.date,
+        time: sessionData.time,
+        members: [currentUser.uid, sessionData.uid],
+      });
 
       removeNotification(notificationId);
       setShowJoinedBanner(true);
@@ -216,133 +225,65 @@ export default function Page() {
         <Text className="font-inter-bold text-xl dark:text-dark-text-default">
           Notifications
         </Text>
-        <Text className="text-purple-600 dark:text-dark-purple-default">
+        <Text className="text-purple-default dark:text-dark-purple-default">
           Mark all as read
         </Text>
       </View>
 
       {/* Tabs */}
-      <View className="flex-row border-b border-[#DCDCDC] px-4">
-        {/* All Tab */}
-        <TouchableOpacity
-          onPress={() => setActiveTab("all")}
-          className={`mr-6 pb-2 ${
-            activeTab === "all"
-              ? "border-b-2 border-purple-600 dark:border-dark-purple-tertiary"
-              : ""
-          }`}
-        >
-          <View className="flex-row items-center">
-            <Text
-              className={`font-inter-medium dark:text-dark-text-default ${
-                activeTab === "all"
-                  ? "text-purple-600 dark:text-dark-purple-tertiary"
-                  : ""
-              }`}
-            >
-              All
-            </Text>
-            <View
-              className={`ml-1 rounded-full px-2 py-0.5 ${
-                activeTab === "all"
-                  ? "bg-purple-600"
-                  : "bg-[#EBE5FC] dark:bg-dark-purple-secondary"
-              }`}
-            >
+      <View className="flex-row border-b border-text-dimmed/25 dark:border-dark-text-dimmed/25 px-4">
+        {[
+          { name: "all", length: notifications.length },
+          {
+            name: "sessions",
+            length: notifications.filter((n) => n.type.startsWith("session_"))
+              .length,
+          },
+          {
+            name: "friends",
+            length: notifications.filter((n) => n.type.startsWith("friend_"))
+              .length,
+          },
+        ].map((tab) => (
+          <TouchableOpacity
+            key={tab.name}
+            onPress={() => setActiveTab(tab.name)}
+            className={`mr-6 pb-2 ${
+              activeTab === tab.name
+                ? "border-b-2 border-purple-default dark:border-dark-purple-default"
+                : ""
+            }`}
+          >
+            <View className="flex-row items-center">
               <Text
-                className={
-                  activeTab === "all"
-                    ? "text-white"
-                    : "text-purple-600 dark:text-white"
-                }
+                className={`capitalize font-inter-medium dark:text-dark-text-default ${
+                  activeTab === tab.name
+                    ? "text-purple-default dark:text-dark-purple-default"
+                    : "text-text-default dark:text-dark-text-default"
+                }`}
               >
-                {notifications.length}
+                {tab.name}
               </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
-        {/* Sessions Tab */}
-        <TouchableOpacity
-          onPress={() => setActiveTab("sessions")}
-          className={`mr-6 pb-2 ${
-            activeTab === "sessions"
-              ? "border-b-2 border-purple-600 dark:border-dark-purple-tertiary"
-              : ""
-          }`}
-        >
-          <View className="flex-row items-center">
-            <Text
-              className={`font-inter-medium dark:text-dark-text-default ${
-                activeTab === "sessions"
-                  ? "text-purple-600 dark:text-dark-purple-tertiary"
-                  : ""
-              }`}
-            >
-              Sessions
-            </Text>
-            <View
-              className={`ml-1 rounded-full px-2 py-0.5 ${
-                activeTab === "sessions"
-                  ? "bg-purple-600"
-                  : "bg-[#EBE5FC] dark:bg-dark-purple-secondary"
-              }`}
-            >
-              <Text
-                className={
-                  activeTab === "sessions"
-                    ? "text-white"
-                    : "text-purple-600 dark:text-white"
-                }
+              <View
+                className={`ml-1 rounded-full px-2 py-0.5 ${
+                  activeTab === tab.name
+                    ? "bg-purple-default dark:bg-dark-purple-default"
+                    : "bg-text-dimmed dark:bg-dark-text-dimmed"
+                }`}
               >
-                {
-                  notifications.filter((n) => n.type.startsWith("session_"))
-                    .length
-                }
-              </Text>
+                <Text
+                  className={
+                    activeTab === tab.name
+                      ? "text-background dark:text-dark-background"
+                      : "text-text-default dark:text-dark-text-default"
+                  }
+                >
+                  {tab.length}
+                </Text>
+              </View>
             </View>
-          </View>
-        </TouchableOpacity>
-        {/* Friends Tab */}
-        <TouchableOpacity
-          onPress={() => setActiveTab("friends")}
-          className={`pb-2 ${
-            activeTab === "friends"
-              ? "border-b-2 border-purple-600 dark:border-dark-purple-tertiary"
-              : ""
-          }`}
-        >
-          <View className="flex-row items-center">
-            <Text
-              className={`font-inter-medium dark:text-dark-text-default ${
-                activeTab === "friends"
-                  ? "text-purple-600 dark:text-dark-purple-tertiary"
-                  : ""
-              }`}
-            >
-              Friends
-            </Text>
-            <View
-              className={`ml-1 rounded-full px-2 py-0.5 ${
-                activeTab === "friends"
-                  ? "bg-purple-600"
-                  : "bg-[#EBE5FC] dark:bg-dark-purple-secondary"
-              }`}
-            >
-              <Text
-                className={
-                  activeTab === "friends"
-                    ? "text-white"
-                    : "text-purple-600 dark:text-white"
-                }
-              >
-                {
-                  notifications.filter((n) => n.type.startsWith("friend_"))
-                    .length
-                }
-              </Text>
-            </View>
-          </View>
-        </TouchableOpacity>
+          </TouchableOpacity>
+        ))}
       </View>
 
       {/* Notification List */}

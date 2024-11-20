@@ -163,6 +163,8 @@ export default function Page() {
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [isVoting, setIsVoting] = useState(false);
+
+  // States to handle voting
   const [voteTimeLeft, setVoteTimeLeft] = useState(0);
   const [voteValues, setVoteValues] = useState(
     BREAK_ACTIVITIES.reduce((acc, option) => {
@@ -226,7 +228,7 @@ export default function Page() {
     return () => clearInterval(intervalId);
   }, [isVoting, voteTimeLeft, voteValues]);
 
-  // Utility function to format time displa
+  // Utility function to format time display
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -256,7 +258,7 @@ export default function Page() {
     setIsActive(false);
   };
 
-  // Handler for break time when voting completed
+  // Handler for changing values and showResults
   const handleVoteSubmit = (values, showResults) => {
     setVoteValues(values);
     setShowResults(showResults);

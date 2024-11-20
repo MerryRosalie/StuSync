@@ -2,33 +2,36 @@ import { View, TouchableOpacity, Text } from "react-native";
 import { useState, useCallback } from "react";
 import Feather from "@expo/vector-icons/Feather";
 import { TextInput } from "react-native-gesture-handler";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function KickAMemberModal({ sheetRef, members, onSubmit }) {
-  // State for managing input, selected member and auto-complete suggestion
+  const { currentUser, allUsers } = useUser();
   const [input, setInput] = useState("");
   const [selectedMember, setSelectedMember] = useState(null);
   const [suggestion, setSuggestion] = useState("");
 
-  // Find matching member name based on input text - case sensitive
+  // Find matching member name based on input text - case insensitive for better UX
   const getSuggestion = useCallback(
     (text) => {
       if (!text) return "";
-      const matchingMember = members.find((member) =>
-        member.name.startsWith(text)
-      );
-      return matchingMember ? matchingMember.name : "";
+      const matchingMember = members
+        .filter((uid) => currentUser.uid !== uid)
+        .map((uid) => allUsers[uid])
+        .find((member) =>
+          member.name.toLowerCase().startsWith(text.toLowerCase())
+        );
+      return matchingMember ? matchingMember : null;
     },
-    [members]
+    [members, allUsers, currentUser]
   );
 
   // Handle text input changes and update suggestion/selected member
   const handleChangeText = (text) => {
     setInput(text);
-    const newSuggestion = getSuggestion(text);
-    if (newSuggestion) {
-      setSuggestion(newSuggestion);
-      const member = members.find((m) => m.name === newSuggestion);
-      setSelectedMember(member);
+    const matchingMember = getSuggestion(text);
+    if (matchingMember) {
+      setSuggestion(matchingMember.name);
+      setSelectedMember(matchingMember);
     } else {
       setSuggestion("");
       setSelectedMember(null);
@@ -37,15 +40,23 @@ export default function KickAMemberModal({ sheetRef, members, onSubmit }) {
 
   // Handle keyboard submit - auto-complete the input with suggestion
   const handleSubmitEditing = () => {
-    if (suggestion) {
+    if (suggestion && selectedMember) {
       setInput(suggestion);
+      // Keep the selected member state instead of clearing it
       setSuggestion("");
+    }
+  };
+
+  // Handle kick button press
+  const handleKick = () => {
+    if (selectedMember) {
+      onSubmit(selectedMember);
+      sheetRef.current?.close();
     }
   };
 
   return (
     <View className="gap-4">
-      {/* Header section */}
       <View>
         <Text className="font-inter-bold text-center text-lg text-text-default dark:text-dark-text-default">
           Kick a member
@@ -55,7 +66,6 @@ export default function KickAMemberModal({ sheetRef, members, onSubmit }) {
         </Text>
       </View>
 
-      {/* Search input section */}
       <View className="relative flex-row items-center gap-2 px-4 py-3 border border-text-dimmed dark:border-dark-text-dimmed rounded-lg">
         <Feather
           name="search"
@@ -63,7 +73,6 @@ export default function KickAMemberModal({ sheetRef, members, onSubmit }) {
           className="color-text-default/50 dark:color-dark-text-default/50"
         />
         <View className="flex-1 flex-row">
-          {/* Auto-complete suggestion overlay */}
           {suggestion && input && (
             <TextInput
               className="absolute text-text-default/50 dark:text-dark-text-default/50"
@@ -71,7 +80,6 @@ export default function KickAMemberModal({ sheetRef, members, onSubmit }) {
               editable={false}
             />
           )}
-          {/* Main input field */}
           <TextInput
             placeholder="Search for a member..."
             className="flex-1 text-text-default dark:text-dark-text-default placeholder:text-text-default/50 dark:placeholder:text-dark-text-default/50"
@@ -82,16 +90,10 @@ export default function KickAMemberModal({ sheetRef, members, onSubmit }) {
         </View>
       </View>
 
-      {/* Kick button - enabled only when a member is selected */}
       <TouchableOpacity
         className="rounded-lg bg-purple-default dark:bg-dark-purple-default disabled:bg-purple-default/25 dark:disabled:bg-dark-purple-default/25 p-6"
         disabled={!selectedMember}
-        onPress={() => {
-          if (selectedMember) {
-            onSubmit(selectedMember);
-            sheetRef.current?.close();
-          }
-        }}
+        onPress={handleKick}
       >
         <Text className="font-inter-bold text-background text-center dark:text-dark-background">
           KICK MEMBER

@@ -3,13 +3,33 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import Friend from "../../components/friends/Friend";
+import { useSession } from "../../src/contexts/SessionContext";
+import { useUser } from "../../src/contexts/UserContext";
+import { addHours, format, parse } from "date-fns";
+
+const addTwoHours = (timeString) => {
+  const date = parse(timeString, "h:mm a", new Date());
+  const newDate = addHours(date, 2);
+  return format(newDate, "h:mm a");
+};
 
 export default function Page() {
   const router = useRouter();
+
+  const { currentUser, allUsers } = useUser();
+  const { activeSession, sessionStatus, startPomodoroTimer } = useSession();
+
+  console.log(activeSession, sessionStatus);
+
+  const handleStartPomodoroTimer = () => {
+    startPomodoroTimer();
+    router.push("/timer");
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
-      {/* Header */}
-      <View className="flex-row items-center justify-between mb-3 px-6">
+      {/* Header with back button */}
+      <View className="flex-row items-center relative mb-3">
         <TouchableOpacity className="p-4" onPress={() => router.back()}>
           <Feather
             className="color-text-default dark:color-dark-text-default"
@@ -17,16 +37,9 @@ export default function Page() {
             size={24}
           />
         </TouchableOpacity>
-        <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
+        <Text className="font-inter-bold absolute left-1/2 -translate-x-1/2 text-text-default dark:text-dark-text-default">
           Study Session Details
         </Text>
-        <TouchableOpacity className="p-4">
-          <Feather
-            className="color-text-default dark:color-dark-text-default"
-            name="edit-2"
-            size={24}
-          />
-        </TouchableOpacity>
       </View>
       <ScrollView className="flex-1 px-6 py-2 flex">
         {/* Date Information */}
@@ -35,7 +48,9 @@ export default function Page() {
             Date
           </Text>
           <Text className="text-text-default dark:text-dark-text-default">
-            Monday, 1st January 2024
+            {activeSession.date}
+            {", "}
+            {activeSession.time}
           </Text>
         </View>
         {/* Time Information */}
@@ -46,7 +61,7 @@ export default function Page() {
           <View className="flex-row justify-between">
             <View>
               <Text className="font-bold text-xl text-text-default dark:text-dark-text-default">
-                12:00 PM
+                {activeSession.time}
               </Text>
               <Text className="text-text-default dark:text-dark-text-default">
                 Start Time
@@ -54,7 +69,7 @@ export default function Page() {
             </View>
             <View>
               <Text className="font-bold text-xl text-text-default dark:text-dark-text-default">
-                14:00 PM
+                {addTwoHours(activeSession.time)}
               </Text>
               <Text className="text-text-default dark:text-dark-text-default">
                 Start Time
@@ -64,30 +79,49 @@ export default function Page() {
         </View>
         {/* Location Information */}
         <View className="p-4 mt-4 rounded-2xl flex-row justify-between items-center border border-text-dimmed dark:border-dark-text-dimmed">
-          <View>
+          <View className="flex-1">
             <Text className="font-bold text-text-default dark:text-dark-text-default">
               Location
             </Text>
-            <Text className="text-text-default/50 dark:text-dark-text-default/50">
-              Voting in progress
-            </Text>
+            {sessionStatus.locationPollActive && (
+              <Text className="text-text-default/50 dark:text-dark-text-default/50">
+                Voting in progress
+              </Text>
+            )}
           </View>
-          <TouchableOpacity className="bg-purple-secondary dark:bg-dark-purple-secondary py-3 px-4 rounded-xl">
-            <Text className="text-purple-default dark:text-dark-purple-default">
-              Vote Now
+
+          {currentUser.activeSession[0].location && (
+            <Text className="flex-1 text-right line-clamp-1 text-ellipsis text-text-default dark:text-dark-text-default">
+              {currentUser.activeSession[0].location}
             </Text>
-          </TouchableOpacity>
+          )}
+          {sessionStatus.locationPollActive && (
+            <TouchableOpacity className="bg-purple-secondary dark:bg-dark-purple-secondary py-3 px-4 rounded-xl">
+              <Text className="text-purple-default dark:text-dark-purple-default">
+                Vote Now
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
         {/* Members Information */}
         <View className="p-4 mt-4 rounded-2xl border border-text-dimmed dark:border-dark-text-dimmed">
           <Text className="font-bold text-text-default dark:text-dark-text-default">
             Members
           </Text>
-          <Friend />
-          <Friend />
+          {activeSession.members
+            .filter((uid) => currentUser.uid !== uid)
+            .map((uid) => allUsers[uid])
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((friend) => (
+              <Friend key={friend.uid} user={friend} />
+            ))}
         </View>
         {/* Start Study Session */}
-        <TouchableOpacity className="flex-row mt-4 justify-center items-center gap-2 bg-purple-secondary dark:bg-dark-purple-secondary py-3 px-4 rounded-xl">
+        <TouchableOpacity
+          disabled={!currentUser.activeSession[0].location}
+          onPress={handleStartPomodoroTimer}
+          className="flex-row mt-4 justify-center items-center gap-2 bg-purple-secondary dark:bg-dark-purple-secondary disabled:bg-purple-default/25 dark:disabled:bg-dark-purple-default/25 py-3 px-4 rounded-xl"
+        >
           <Feather
             className="text-purple-default dark:text-dark-purple-default"
             name="play"

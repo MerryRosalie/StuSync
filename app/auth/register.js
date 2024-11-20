@@ -10,7 +10,6 @@ import ProgressBar from "../../components/register/ProgressBar";
 import UsernameStep from "../../components/register/steps/UsernameStep";
 import Feather from "@expo/vector-icons/Feather";
 import { generateProfilePicture } from "../../src/Schema";
-import { ProfileTemplate } from "../../src/Schema";
 
 export default function Register() {
   const router = useRouter();
@@ -182,7 +181,6 @@ export default function Register() {
             uid: "user456",
             time: "4:00 PM",
             date: "Tomorrow",
-            location: "Main Library",
             timestamp: "20 mins ago",
             requiresAction: true,
             category: "sessions",
@@ -209,7 +207,6 @@ export default function Register() {
             uid: "user123",
             time: "10:00 AM",
             date: "Saturday",
-            location: "Science Building",
             timestamp: "2 hours ago",
             requiresAction: true,
             category: "sessions",

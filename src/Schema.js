@@ -19,6 +19,7 @@ export const TextTemplate = {
   reply: null,
   images: [],
   poll: false,
+  button: false,
 };
 
 export const ChatTemplate = {
