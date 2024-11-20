@@ -1,15 +1,13 @@
 import { Text, TouchableOpacity, View, Image } from "react-native";
 import ModeSwitch from "../../../components/ModeSwitch";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Link } from "expo-router";
-import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 import Feather from "@expo/vector-icons/Feather";
 import { useUser } from "../../../src/contexts/UserContext";
 
 export default function Page() {
   const { currentUser } = useUser();
-  console.log(currentUser);
-  const navigation = useNavigation();
+  const router = useRouter();
 
   const formatDate = (memberSince) => {
     const date = new Date(memberSince);
@@ -33,7 +31,7 @@ export default function Page() {
         <Text className="font-inter-bold text-xl dark:text-dark-purple-default">
           Profile
         </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("settings")}>
+        <TouchableOpacity onPress={() => router.navigate("settings")}>
           <Feather name="settings" size={24} color="black" />
         </TouchableOpacity>
       </View>
@@ -50,14 +48,10 @@ export default function Page() {
         </View>
         <TouchableOpacity
           className="flex-row rounded-xl bg-purple-default p-4 gap-2 items-center w-36"
-          onPress={() => navigation.navigate("editProfile")}
+          onPress={() => router.navigate("/settings/editProfile")}
         >
           <Feather name="edit-2" size={24} color="white" />
           <Text className="text-base text-white font-inter">Edit Profile</Text>
-          <Link
-            className="text-text-default dark:text-dark-text-default"
-            href="../settings/editprofile"
-          ></Link>
         </TouchableOpacity>
       </View>
       <View className="rounded-2xl bg-gray p-4 gap-4 w-full">
@@ -94,7 +88,7 @@ export default function Page() {
       </Link> */}
       <TouchableOpacity
         className="flex-row justify-between w-full rounded-2xl border border-gray p-4 items-center"
-        onPress={() => navigation.navigate("friends")}
+        onPress={() => router.navigate("friends")}
       >
         <Text className="text-base font-bold">Your Friends</Text>
         <View className="flex-row">
