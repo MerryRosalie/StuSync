@@ -24,7 +24,7 @@ export default function Page() {
       </View>
       {/* active study sess */}
       <TouchableOpacity
-        className="bg-purple-default w-full h-40 rounded-2xl p-4 justify-between overflow-hidden"
+        className="bg-purple-default w-full h-40 rounded-2xl p-4 items-end justify-between overflow-hidden"
         onPress={() => router.navigate("chat")}
       >
         <Image
@@ -114,7 +114,7 @@ export default function Page() {
           className="flex-row justify-between"
           onPress={() => router.navigate("/history/overview")}
         >
-          <Text className="text-left text-xl font-semibold">
+          <Text className="text-left text-xl font-semibold text-text-default dark:text-dark-text-default">
             Past Study Sessions
           </Text>
           <Feather
@@ -140,12 +140,6 @@ export default function Page() {
           </View>
         </ScrollView>
       </View>
-      <Link
-        className="text-text-default dark:text-dark-text-default"
-        href="/timer"
-      >
-        Go to Timer
-      </Link>
     </SafeAreaView>
   );
 }
