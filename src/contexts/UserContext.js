@@ -1,7 +1,95 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  FriendsTemplate,
+  ProfileTemplate,
+  SettingsTemplate,
+  CalendarTemplate,
+  generateProfilePicture,
+} from "../Schema";
 
 const UserContext = createContext();
+
+// Mock users as app is beta used as friends for the current user
+const MOCK_USERS = {
+  user123: {
+    uid: "user123",
+    name: "Lauren Smith",
+    email: "lauren@test.com",
+    username: "laurensmith",
+    password: "password123",
+    profilePicture: "https://avatar.iran.liara.run/public/1",
+    profile: {
+      profilePicture: generateProfilePicture("Lauren Smith"),
+      aboutMe: "Computer Science Student",
+      currentCourses: ["COMP1511", "MATH1141"],
+      memberSince: "2024-01",
+    },
+    friends: {
+      ...FriendsTemplate,
+      incomingRequests: [],
+      pendingRequests: [],
+      allFriends: [],
+    },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+  user456: {
+    uid: "user456",
+    name: "Emma Wilson",
+    email: "emma@test.com",
+    username: "emmawilson",
+    password: "password456",
+    profilePicture: "https://avatar.iran.liara.run/public/6",
+    profile: {
+      profilePicture: generateProfilePicture("Emma Wilson"),
+      aboutMe: "Engineering Student",
+      currentCourses: ["ENGG1000", "PHYS1121"],
+      memberSince: "2024-01",
+    },
+    friends: { ...FriendsTemplate },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+  user789: {
+    uid: "user789",
+    name: "Michael Chen",
+    email: "michael@test.com",
+    username: "michaelchen",
+    password: "password789",
+    profilePicture: "https://avatar.iran.liara.run/public/3",
+    profile: {
+      profilePicture: generateProfilePicture("Michael Chen"),
+      aboutMe: "Mathematics Student",
+      currentCourses: ["MATH1141", "MATH1241"],
+      memberSince: "2024-01",
+    },
+    friends: { ...FriendsTemplate },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+  user101: {
+    uid: "user101",
+    name: "Sarah Johnson",
+    email: "sarah@test.com",
+    username: "sarahjohnson",
+    password: "password101",
+    profilePicture: "https://avatar.iran.liara.run/public/4",
+    profile: {
+      profilePicture: generateProfilePicture("Sarah Johnson"),
+      aboutMe: "Physics Student",
+      currentCourses: ["PHYS1121", "MATH1141"],
+      memberSince: "2024-01",
+    },
+    friends: { ...FriendsTemplate },
+    settings: { ...SettingsTemplate },
+    calendar: { ...CalendarTemplate },
+    studySessions: [],
+  },
+};
 
 export const UserProvider = ({ children }) => {
   const [userStore, setUserStore] = useState({
@@ -10,22 +98,44 @@ export const UserProvider = ({ children }) => {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
+  // Initialise mock users when the app starts
+  const initialiseUsers = async () => {
     try {
-      const storedUsers = await AsyncStorage.getItem("userStore");
-      if (storedUsers) {
-        setUserStore(JSON.parse(storedUsers));
+      const currentStore = await AsyncStorage.getItem("userStore");
+      if (!currentStore) {
+        // Only initialize mock users if there's no existing store
+        const initialStore = {
+          activeUser: null,
+          users: MOCK_USERS,
+        };
+        await AsyncStorage.setItem("userStore", JSON.stringify(initialStore));
+        setUserStore(initialStore);
+      } else {
+        // If store exists, make sure all mock users are present
+        const parsedStore = JSON.parse(currentStore);
+        const updatedUsers = {
+          ...MOCK_USERS,
+          ...parsedStore.users,
+        };
+        const updatedStore = {
+          ...parsedStore,
+          users: updatedUsers,
+        };
+        await AsyncStorage.setItem("userStore", JSON.stringify(updatedStore));
+        setUserStore(updatedStore);
       }
     } catch (error) {
-      console.error("Error loading users:", error);
-    } finally {
-      setIsLoading(false);
+      console.error("Error initializing mock users:", error);
     }
   };
+
+  useEffect(() => {
+    const initialise = async () => {
+      await initialiseUsers();
+      setIsLoading(false);
+    };
+    initialise();
+  }, []);
 
   const saveUserStore = async (newUserStore) => {
     try {
@@ -390,6 +500,19 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const clearStorage = async () => {
+    try {
+      await AsyncStorage.clear();
+      setUserStore({
+        activeUser: null,
+        users: {},
+      });
+      console.log("Storage successfully cleared!");
+    } catch (error) {
+      console.error("Error clearing storage:", error);
+    }
+  };
+
   return (
     <UserContext.Provider
       value={{
@@ -410,6 +533,7 @@ export const UserProvider = ({ children }) => {
         unfriend,
         updateUserEmail,
         updateUserPassword,
+        clearStorage,
       }}
     >
       {children}

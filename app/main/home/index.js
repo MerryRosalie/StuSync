@@ -84,6 +84,12 @@ export default function Page() {
       >
         Go to Signin
       </Link>
+      <Link
+        className="text-text-default dark:text-dark-text-default"
+        href="/timer"
+      >
+        Go to Timer
+      </Link>
     </SafeAreaView>
   );
 }

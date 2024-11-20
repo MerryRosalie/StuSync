@@ -5,14 +5,27 @@ import Checkbox from "./Checkbox";
 import ResultBox from "./ResultBox";
 
 // Main Poll Component - Manages poll options and voting state
-export default function Poll({ options, onChange, showResults }) {
+export default function Poll({
+  options,
+  onChange,
+  showResults,
+  values: propValues,
+}) {
   // Initialise votes state with all options set to false
   const [votes, setVotes] = useState(
-    options.reduce((accumulator, option) => {
-      accumulator[option] = false;
-      return accumulator;
-    }, {})
+    propValues ||
+      options.reduce((acc, option) => {
+        acc[option] = false;
+        return acc;
+      }, {})
   );
+
+  // Update votes when propValues changes
+  useEffect(() => {
+    if (propValues) {
+      setVotes(propValues);
+    }
+  }, [propValues]);
 
   // State for adding new poll options
   const [newLocation, setNewLocation] = useState("");
@@ -63,7 +76,7 @@ export default function Poll({ options, onChange, showResults }) {
             <ResultBox
               option={option}
               checked={votes[option]}
-              numOfVotes={1}
+              numOfVotes={votes[option] ? 1 : 0}
               percentage={
                 votes[option]
                   ? (1 / Object.values(votes).filter((value) => value).length) *
