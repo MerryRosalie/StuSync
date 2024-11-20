@@ -8,7 +8,7 @@ import { useRouter } from "expo-router";
 import { Link } from "expo-router";
 
 export default function Page() {
-  const navigation = useRouter();
+  const router = useRouter();
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 justify-around pb-32">
