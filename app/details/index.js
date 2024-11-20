@@ -19,12 +19,12 @@ export default function Page() {
   const { currentUser, allUsers } = useUser();
   const { activeSession, sessionStatus, startPomodoroTimer } = useSession();
 
-  console.log(activeSession, sessionStatus);
-
   const handleStartPomodoroTimer = () => {
     startPomodoroTimer();
     router.push("/timer");
   };
+
+  console.log("sessionDetails", currentUser.studySessions[0]);
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
@@ -90,9 +90,9 @@ export default function Page() {
             )}
           </View>
 
-          {currentUser.activeSession[0].location && (
+          {activeSession.location && (
             <Text className="flex-1 text-right line-clamp-1 text-ellipsis text-text-default dark:text-dark-text-default">
-              {currentUser.activeSession[0].location}
+              {activeSession.location}
             </Text>
           )}
           {sessionStatus.locationPollActive && (
@@ -118,7 +118,7 @@ export default function Page() {
         </View>
         {/* Start Study Session */}
         <TouchableOpacity
-          disabled={!currentUser.activeSession[0].location}
+          disabled={!activeSession.location}
           onPress={handleStartPomodoroTimer}
           className="flex-row mt-4 justify-center items-center gap-2 bg-purple-secondary dark:bg-dark-purple-secondary disabled:bg-purple-default/25 dark:disabled:bg-dark-purple-default/25 py-3 px-4 rounded-xl"
         >

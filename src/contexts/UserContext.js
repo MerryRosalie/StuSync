@@ -185,6 +185,46 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const editUser = async (uid, updates) => {
+    try {
+      const newUserStore = { ...userStore };
+      if (!newUserStore.users[uid]) {
+        throw new Error("User not found");
+      }
+
+      // Update the user while preserving existing data structure
+      newUserStore.users[uid] = {
+        ...newUserStore.users[uid],
+        ...updates,
+        // Handle nested updates
+        studySessions: Array.isArray(updates.studySessions)
+          ? updates.studySessions
+          : newUserStore.users[uid].studySessions,
+        profile: updates.profile
+          ? { ...newUserStore.users[uid].profile, ...updates.profile }
+          : newUserStore.users[uid].profile,
+        friends: updates.friends
+          ? { ...newUserStore.users[uid].friends, ...updates.friends }
+          : newUserStore.users[uid].friends,
+        settings: updates.settings
+          ? { ...newUserStore.users[uid].settings, ...updates.settings }
+          : newUserStore.users[uid].settings,
+      };
+
+      await saveUserStore(newUserStore);
+
+      // If we're editing the current user, trigger a re-render
+      if (uid === userStore.activeUser) {
+        await setCurrentUser(uid);
+      }
+
+      return newUserStore.users[uid];
+    } catch (error) {
+      console.error("Error editing user:", error);
+      throw error;
+    }
+  };
+
   const setCurrentUser = async (uid) => {
     try {
       const currentStore = await AsyncStorage.getItem("userStore");
@@ -515,6 +555,7 @@ export const UserProvider = ({ children }) => {
         allUsers: userStore.users,
         setCurrentUser,
         addUser,
+        editUser,
         removeUser,
         isLoading,
         login,

@@ -8,7 +8,7 @@ const VOTE_DURATION = 10; // 60 seconds for voting
 const SessionContext = createContext({});
 
 export function SessionProvider({ children }) {
-  const { currentUser, addUser, allUsers } = useUser();
+  const { currentUser, userStore, editUser, allUsers } = useUser();
   const router = useRouter();
 
   const [activeSession, setActiveSession] = useState(null);
@@ -46,7 +46,7 @@ export function SessionProvider({ children }) {
         }));
       }
     }
-  }, [currentUser, allUsers]);
+  }, [currentUser]);
 
   // Location poll timer effect
   useEffect(() => {
@@ -99,7 +99,7 @@ export function SessionProvider({ children }) {
               ...user,
               studySessions: [...user.studySessions, newSession],
             };
-            await addUser(updatedUser);
+            await editUser(updatedUser.uid, updatedUser);
           }
         })
       );
@@ -143,7 +143,7 @@ export function SessionProvider({ children }) {
                   : session
               ),
             };
-            await addUser(updatedUser);
+            await editUser(updatedUser.uid, updatedUser);
           }
         })
       );
@@ -167,10 +167,6 @@ export function SessionProvider({ children }) {
         ...activeSession,
         location, // Ensure we're setting the location directly
       };
-
-      console.log("Updating session with location:", location);
-      console.log("Previous session:", activeSession);
-      console.log("Updated session:", updatedSession);
 
       // First update the local state
       setActiveSession(updatedSession);
@@ -198,13 +194,7 @@ export function SessionProvider({ children }) {
             studySessions: userUpdatedSessions,
           };
 
-          // Debug logs
-          console.log(
-            `Updating user ${memberId} sessions:`,
-            userUpdatedSessions
-          );
-
-          await addUser(updatedUser);
+          await editUser(updatedUser.uid, updatedUser);
         })
       );
 
@@ -274,7 +264,7 @@ export function SessionProvider({ children }) {
                   : session
               ),
             };
-            await addUser(updatedUser);
+            await editUser(updatedUser.uid, updatedUser);
           }
         })
       );

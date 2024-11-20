@@ -56,7 +56,8 @@ const generateChatInstance = (
 };
 
 // ChatBubble component handles individual message display
-const ChatBubble = ({ mode, chat, onSwipe }) => {
+const ChatBubble = ({ mode: propMode, chat, onSwipe }) => {
+  const mode = chat.button ? "sender" : propMode;
   const router = useRouter();
 
   // Get sender details
