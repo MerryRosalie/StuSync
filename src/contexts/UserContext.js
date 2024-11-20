@@ -5,6 +5,7 @@ import {
   ProfileTemplate,
   SettingsTemplate,
   CalendarTemplate,
+  generateProfilePicture,
 } from "../Schema";
 
 const UserContext = createContext();
@@ -19,7 +20,7 @@ const MOCK_USERS = {
     password: "password123",
     profilePicture: "https://avatar.iran.liara.run/public/1",
     profile: {
-      ...ProfileTemplate,
+      profilePicture: generateProfilePicture("Lauren Smith"),
       aboutMe: "Computer Science Student",
       currentCourses: ["COMP1511", "MATH1141"],
       memberSince: "2024-01",
@@ -42,7 +43,7 @@ const MOCK_USERS = {
     password: "password456",
     profilePicture: "https://avatar.iran.liara.run/public/6",
     profile: {
-      ...ProfileTemplate,
+      profilePicture: generateProfilePicture("Emma Wilson"),
       aboutMe: "Engineering Student",
       currentCourses: ["ENGG1000", "PHYS1121"],
       memberSince: "2024-01",
@@ -60,7 +61,7 @@ const MOCK_USERS = {
     password: "password789",
     profilePicture: "https://avatar.iran.liara.run/public/3",
     profile: {
-      ...ProfileTemplate,
+      profilePicture: generateProfilePicture("Michael Chen"),
       aboutMe: "Mathematics Student",
       currentCourses: ["MATH1141", "MATH1241"],
       memberSince: "2024-01",
@@ -78,7 +79,7 @@ const MOCK_USERS = {
     password: "password101",
     profilePicture: "https://avatar.iran.liara.run/public/4",
     profile: {
-      ...ProfileTemplate,
+      profilePicture: generateProfilePicture("Sarah Johnson"),
       aboutMe: "Physics Student",
       currentCourses: ["PHYS1121", "MATH1141"],
       memberSince: "2024-01",

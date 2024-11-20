@@ -90,7 +90,7 @@ export const UserTemplate = {
   email: "",
   username: "",
   password: "",
-  profilePicture: "",
+  profilePicture: "https://ui-avatars.com/api/?background=random",
   profile: ProfileTemplate,
   friends: FriendsTemplate,
   settings: SettingsTemplate,

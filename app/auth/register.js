@@ -138,8 +138,6 @@ export default function Register() {
         username: username.trim().toLowerCase(),
         password: password,
         profilePicture: generateProfilePicture(name.trim()),
-        courses: courses,
-        createdAt: new Date().toISOString(),
         calendar: {
           events: [],
         },
@@ -163,11 +161,7 @@ export default function Register() {
           {
             id: 1,
             type: "friend_request",
-            user: {
-              uid: "user123",
-              name: "Lauren Smith",
-              avatar: "https://avatar.iran.liara.run/public/1",
-            },
+            uid: "user123",
             message: "sent you a friend request",
             timestamp: "5 mins ago",
             requiresAction: true,
@@ -176,11 +170,7 @@ export default function Register() {
           {
             id: 3,
             type: "friend_request",
-            user: {
-              uid: "user101",
-              name: "Sarah Johnson",
-              avatar: "https://avatar.iran.liara.run/public/4",
-            },
+            uid: "user101",
             message: "sent you a friend request",
             timestamp: "15 mins ago",
             requiresAction: true,
@@ -189,11 +179,7 @@ export default function Register() {
           {
             id: 4,
             type: "session_invite",
-            user: {
-              uid: "user456",
-              name: "Emma Wilson",
-              avatar: "https://avatar.iran.liara.run/public/6",
-            },
+            uid: "user456",
             time: "4:00 PM",
             date: "Tomorrow",
             location: "Main Library",
@@ -220,11 +206,7 @@ export default function Register() {
           {
             id: 6,
             type: "session_invite",
-            user: {
-              uid: "user123",
-              name: "Lauren Smith",
-              avatar: "https://avatar.iran.liara.run/public/1",
-            },
+            uid: "user123",
             time: "10:00 AM",
             date: "Saturday",
             location: "Science Building",

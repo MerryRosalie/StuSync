@@ -1,4 +1,5 @@
 import { Text, View, TouchableOpacity, Image, Alert } from "react-native";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function SessionInviteNotification({
   notification,
@@ -6,6 +7,9 @@ export default function SessionInviteNotification({
   onDeny,
   currentUserSessions = [],
 }) {
+  const { allUsers } = useUser();
+  const user = allUsers[notification.uid];
+
   const handleAcceptPress = () => {
     onAccept(notification, notification.id);
   };
@@ -13,13 +17,13 @@ export default function SessionInviteNotification({
   return (
     <View className="flex-row items-start p-4">
       <Image
-        source={{ uri: notification.user.avatar }}
+        source={{ uri: user.profilePicture }}
         className="w-12 h-12 rounded-full mr-3"
       />
       <View className="flex-1">
         <Text className="dark:text-dark-text-default">
           <Text className="font-inter-bold dark:text-dark-text-default">
-            {notification.user.name}
+            {user.name}
           </Text>
           <Text> is having a session at </Text>
           <Text className="font-inter-bold dark:text-dark-text-default">
