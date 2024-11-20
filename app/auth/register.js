@@ -312,13 +312,15 @@ export default function Register() {
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       <View className="flex-1">
         <View className="py-4 mt-8">
-          <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
-            <Feather
-              name="arrow-left"
-              size={24}
-              className="color-text-default dark:color-dark-text-default"
-            />
-          </TouchableOpacity>
+          {step > 1 && (
+            <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
+              <Feather
+                name="arrow-left"
+                size={24}
+                className="color-text-default dark:color-dark-text-default"
+              />
+            </TouchableOpacity>
+          )}
           <ProgressBar currentStep={step} totalSteps={5} />
         </View>
 
