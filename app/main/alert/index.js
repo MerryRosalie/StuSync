@@ -221,7 +221,7 @@ export default function Page() {
       />
 
       {/* Header */}
-      <View className="flex-row justify-between items-center px-4 pt-2 pb-9 mt-5 mb-2">
+      <View className="flex-row justify-between items-center px-4 pt-2 pb-3 mt-5 mb-2">
         <Text className="font-inter-bold text-xl dark:text-dark-text-default">
           Notifications
         </Text>
