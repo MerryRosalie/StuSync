@@ -6,8 +6,11 @@ export default function ProfileIcon({ imgUri, status, size }) {
     <View className={`relative w-${size} h-${size}`}>
       {/* Profile Icon */}
       <View className="w-full h-full rounded-full overflow-hidden">
-        {/* <Image source={{ uri: imageUri }} className="w-full h-full" /> */}
-        <View className="w-full h-full bg-blue-500"></View>
+        <Image
+          source={{ uri: imageUri }}
+          className="w-full h-full bg-blue-500"
+        />
+        {/* <View className="w-full h-full bg-blue-500"></View> */}
       </View>
       {/* Status Indicator */}
       <View
