@@ -55,12 +55,23 @@ export const ChatProvider = ({ children }) => {
     await saveChats(newChats.filter((chat) => chat.chatId !== chatId));
   };
 
+  // Clears the chats from AsyncStorage a helper function for development
+  const clearChats = async () => {
+    try {
+      await AsyncStorage.removeItem("chats");
+      setChats(ChatTemplate);
+    } catch (error) {
+      console.error("Error clearing chats:", error);
+    }
+  };
+
   return (
     <ChatContext.Provider
       value={{
         chats,
         addChat,
         removeChat,
+        clearChats,
       }}
     >
       {children}
