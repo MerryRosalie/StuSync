@@ -16,8 +16,12 @@ export default function Page() {
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 justify-around pb-32">
       <View>
-        <Text className="text-left text-lg font-medium">Welcome back</Text>
-        <Text className="text-left text-2xl font-semibold">Username</Text>
+        <Text className="text-left text-lg font-medium text-text-default dark:text-dark-text-default">
+          Welcome back
+        </Text>
+        <Text className="text-left text-2xl font-semibold text-text-default dark:text-dark-text-default">
+          Username
+        </Text>
       </View>
       {/* active study sess */}
       <TouchableOpacity
@@ -70,10 +74,14 @@ export default function Page() {
           className="flex-row justify-between"
           onPress={() => router.navigate("friends")}
         >
-          <Text className="text-left text-xl font-semibold">{`Friends`}</Text>
+          <Text className="text-left text-xl font-semibold text-text-default dark:text-dark-text-default">{`Friends`}</Text>
           <View className="flex-row items-center">
             <Text className="text-left text-base text-green">{`(7)`}</Text>
-            <Feather name="chevron-right" size={24} color="black" />
+            <Feather
+              name="chevron-right"
+              size={24}
+              className="text-text-default dark:text-dark-text-default"
+            />
           </View>
         </TouchableOpacity>
         <ScrollView horizontal>
@@ -92,10 +100,14 @@ export default function Page() {
           className="flex-row justify-between"
           onPress={() => router.navigate("/history/overview")}
         >
-          <Text className="text-left text-xl font-semibold">
+          <Text className="text-left text-xl font-semibold text-text-default dark:text-dark-text-default">
             Past Study Sessions
           </Text>
-          <Feather name="chevron-right" size={24} color="black" />
+          <Feather
+            name="chevron-right"
+            size={24}
+            className="text-text-default dark:text-dark-text-default"
+          />
         </TouchableOpacity>
         <ScrollView horizontal>
           <View className="gap-3 flex-row">
