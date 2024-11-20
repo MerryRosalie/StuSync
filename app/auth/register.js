@@ -234,7 +234,7 @@ export default function Register() {
   // If on first step go back to login otherwise go back one step
   const handleBackPress = () => {
     if (step === 1) {
-      router.back();
+      router.replace("/auth/login");
     } else {
       setStep((prev) => prev - 1);
     }
