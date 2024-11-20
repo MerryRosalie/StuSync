@@ -14,9 +14,11 @@ import Feather from "@expo/vector-icons/Feather";
 import Entypo from "@expo/vector-icons/Entypo";
 import { useRouter } from "expo-router";
 import React, { useMemo, useRef, useState, useEffect } from "react";
-import Sheet from "../../components/Sheet";
 import { format } from "date-fns/format";
 import * as ImagePicker from "expo-image-picker";
+
+// Components
+import Sheet from "../../components/Sheet";
 import ImageModal from "../../components/ImageModal";
 import VoiceRecorder from "../../components/chat/voice/VoiceRecorder";
 import VoiceMessage from "../../components/chat/voice/VoiceMessage";
@@ -24,8 +26,12 @@ import LocationPollModal from "../../components/chat/LocationPollModal";
 import ProposeEndTimeModal from "../../components/chat/ProposeEndTimeModal";
 import KickAMemberModal from "../../components/chat/KickAMemberModal";
 import BinaryPoll from "../../components/chat/poll/BinaryPoll";
-import { useChats } from "../../src/contexts/ChatContext";
+
+// Contexts
 import { useUser } from "../../src/contexts/UserContext";
+import { useSession } from "../../src/contexts/SessionContext";
+
+const LOCATION_OPTIONS = ["Electrical Engineering G04", "Quadrangle G040"];
 
 const generateChatInstance = (
   message,
@@ -33,24 +39,30 @@ const generateChatInstance = (
   voiceUri,
   reply,
   images,
-  poll
+  poll,
+  button
 ) => {
   return {
     messageId: Date.now().toString(),
     message,
     senderUid,
-    timestamp: Date.now().toString(),
+    timestamp: new Date().toISOString(),
     voiceUri,
     reply,
     images,
     poll,
+    button,
   };
 };
 
 // ChatBubble component handles individual message display
-const ChatBubble = ({ mode, chat, onSwipe }) => {
+const ChatBubble = ({ mode: propMode, chat, onSwipe }) => {
+  const mode = chat.button ? "sender" : propMode;
+  const router = useRouter();
+
   // Get sender details
   const { allUsers } = useUser();
+  const { sessionStatus, startPomodoroTimer } = useSession();
 
   // Animation value for swipe gesture
   const translateX = useRef(new Animated.Value(0)).current;
@@ -107,6 +119,12 @@ const ChatBubble = ({ mode, chat, onSwipe }) => {
       paired.push(images.slice(i, i + 2));
     }
     return paired;
+  };
+
+  // Handler to start pomodoro timer
+  const handleStartPomodoroTimer = () => {
+    startPomodoroTimer();
+    router.push("/timer");
   };
 
   return (
@@ -212,6 +230,23 @@ const ChatBubble = ({ mode, chat, onSwipe }) => {
             {/* Poll interface */}
             {chat.poll && <BinaryPoll />}
 
+            {/* Start study session button */}
+            {chat.button && (
+              <TouchableOpacity
+                onPress={handleStartPomodoroTimer}
+                className="px-4 py-3 flex-row gap-2 justify-center items-center border bg-background dark:bg-dark-background rounded-lg"
+              >
+                <Feather
+                  name="play"
+                  size={24}
+                  className="color-purple-default dark:color-dark-purple-default"
+                />
+                <Text className="text-purple-default dark:text-dark-purple-default">
+                  Start Study Session
+                </Text>
+              </TouchableOpacity>
+            )}
+
             {/* Message timestamp */}
             <Text
               className={`${
@@ -220,7 +255,7 @@ const ChatBubble = ({ mode, chat, onSwipe }) => {
                   : "text-background/50 dark:text-dark-background/50"
               } ml-auto`}
             >
-              {format(new Date(chat.timestamp * 1000), "p")}
+              {format(new Date(chat.timestamp), "p")}
             </Text>
           </View>
 
@@ -236,55 +271,152 @@ const ChatBubble = ({ mode, chat, onSwipe }) => {
   );
 };
 
-export default function Page() {
-  const { currentUser, allUsers } = useUser();
+export default function ChatPage() {
   const router = useRouter();
+  const { currentUser, allUsers } = useUser();
+  const { activeSession, sessionStatus, setSessionLocation, addChatToSession } =
+    useSession();
 
-  // References for scrolling down when there's a new message
-  const scrollView = useRef();
-
-  // References for different polls
+  // Refs
+  const scrollView = useRef(null);
   const locationSheetRef = useRef(null);
   const proposeEndTimeSheetRef = useRef(null);
   const kickAMemberSheetRef = useRef(null);
 
-  const { chats: allChats, addChat } = useChats();
-  const [chats, setChats] = useState(allChats.messages);
-
-  const [members, setMembers] = useState([
-    {
-      name: "Merry Rosalie",
-      username: "shinybuncis",
-    },
-    {
-      name: "Christine Phung",
-      username: "khr1s_",
-    },
-    {
-      name: "Urja Arora",
-      username: "ur-ja",
-    },
-  ]);
-
-  // States for chatting functionalities
+  // Chat States
+  const [chats, setChats] = useState(activeSession.chat.messages || []);
   const [message, setMessage] = useState("");
   const [images, setImages] = useState([]);
   const [reply, setReply] = useState(undefined);
   const [voiceUri, setVoiceUri] = useState(undefined);
 
-  // States to handle poll options e.g propose end time, kick a member, etc
+  // UI States
   const [showPollOptions, setShowPollOptions] = useState(false);
+  const [showLocationPoll, setShowLocationPoll] = useState(
+    sessionStatus.locationPollActive
+  );
+
+  // Poll States
   const [proposedEndTime, setProposedEndTime] = useState(undefined);
   const [memberKicking, setMemberKicking] = useState(undefined);
-
-  // States to show or hide location poll warning
-  const [showLocationPoll, setShowLocationPoll] = useState(true);
+  const [voteValues, setVoteValues] = useState(
+    LOCATION_OPTIONS.reduce((acc, option) => {
+      acc[option] = false;
+      return acc;
+    }, {})
+  );
+  const [showResults, setShowResults] = useState(false);
 
   // Memoized values for UI states
   const isTyping = useMemo(
     () => message.length !== 0 || images.length !== 0,
     [message, images]
   );
+
+  const members = useMemo(() => activeSession?.members || [], [activeSession]);
+
+  // Effects
+  // Watch for timer completion
+  useEffect(() => {
+    if (
+      sessionStatus.locationPollActive &&
+      sessionStatus.locationPollTimeLeft === 0
+    ) {
+      const selectedLocations = Object.entries(voteValues)
+        .filter(([_, isSelected]) => isSelected)
+        .map(([location]) => location);
+
+      const locationsToChooseFrom =
+        selectedLocations.length > 0 ? selectedLocations : LOCATION_OPTIONS;
+
+      const randomIndex = Math.floor(
+        Math.random() * locationsToChooseFrom.length
+      );
+      const finalLocation = locationsToChooseFrom[randomIndex];
+
+      if (!activeSession.location) {
+        handleLocationSelected(finalLocation);
+      }
+      locationSheetRef.current?.dismiss();
+    }
+  }, [sessionStatus.locationPollTimeLeft]);
+
+  // Handle voice uri
+  useEffect(() => {
+    if (voiceUri) {
+      const newChat = generateChatInstance(
+        message,
+        currentUser.uid,
+        voiceUri,
+        reply,
+        images,
+        false,
+        false
+      );
+      insertChat(newChat, activeSession.sessionId);
+    }
+  }, [voiceUri]);
+
+  // Effect to add chats when end time is proposed
+  useEffect(() => {
+    if (proposedEndTime) {
+      const newChat = generateChatInstance(
+        `⏰ I suggest we end at ${format(
+          proposedEndTime,
+          "p"
+        )}\n\nDoes this work for everyone?\n\nThis requires majority vote (at least 50%) to apply`,
+        currentUser.uid,
+        voiceUri,
+        reply,
+        images,
+        true,
+        false
+      );
+      insertChat(newChat, activeSession.sessionId);
+    }
+  }, [proposedEndTime]);
+
+  // Effect to add chats when a member is being kicked
+  useEffect(() => {
+    if (memberKicking) {
+      const newChat = generateChatInstance(
+        `⚠️ Remove ${memberKicking.name} from study session?\n\nThis requires majority vote (at least 50%) to apply`,
+        currentUser.uid,
+        voiceUri,
+        reply,
+        images,
+        true,
+        false
+      );
+      insertChat(newChat, activeSession.sessionId);
+    }
+  }, [memberKicking]);
+
+  // Handler when vote changes
+  const handleLocationVote = (values, showResults) => {
+    setVoteValues(values);
+    setShowResults(showResults);
+  };
+
+  // Handler for location selection
+  const handleLocationSelected = async (location) => {
+    try {
+      const chatMessage = generateChatInstance(
+        `📍 Location decided: ${location}! Click below to start the study session!`,
+        currentUser.uid,
+        null,
+        null,
+        [],
+        false,
+        true
+      );
+      await setSessionLocation(location);
+      await insertChat(chatMessage, activeSession.sessionId);
+      setShowLocationPoll(false);
+    } catch (error) {
+      console.error("Error in handleLocationSelected:", error);
+    }
+  };
 
   // Handler for sheet modal
   const handlePresentModalPress = (ref) => {
@@ -299,6 +431,25 @@ export default function Page() {
   // Handler to cancel reply
   const closeReply = () => {
     setReply(undefined);
+  };
+
+  // Function to add a chat to the chats array
+  const insertChat = async (chat, sessionId) => {
+    try {
+      await addChatToSession(chat, sessionId);
+      setChats((prevChats) => [...prevChats, chat]);
+      resetMessage();
+    } catch (error) {
+      console.error("Error in insertChat:", error);
+    }
+  };
+
+  // Function to reset message
+  const resetMessage = () => {
+    setMessage("");
+    setImages([]);
+    setVoiceUri(undefined);
+    closeReply();
   };
 
   // Image handling functions
@@ -340,78 +491,15 @@ export default function Page() {
     });
   };
 
-  // Effect to handle voice message recording completion
-  useEffect(() => {
-    if (voiceUri) {
-      const newChat = generateChatInstance(
-        message,
-        currentUser.uid,
-        voiceUri,
-        reply,
-        images,
-        false
-      );
-      insertChat(newChat);
-    }
-  }, [voiceUri]);
-
-  // Effect to add chats when end time is proposed
-  useEffect(() => {
-    if (proposedEndTime) {
-      const newChat = generateChatInstance(
-        `⏰ I suggest we end at ${format(
-          proposedEndTime,
-          "p"
-        )}\n\nDoes this work for everyone?\n\nThis requires majority vote (at least 50%) to apply`,
-        currentUser.uid,
-        voiceUri,
-        reply,
-        images,
-        true
-      );
-      insertChat(newChat);
-    }
-  }, [proposedEndTime]);
-
-  // Effect to add chats when a member is being kicked
-  useEffect(() => {
-    if (memberKicking) {
-      const newChat = generateChatInstance(
-        `⚠️ Remove ${memberKicking.name} from study session?\n\nThis requires majority vote (at least 50%) to apply`,
-        currentUser.uid,
-        voiceUri,
-        reply,
-        images,
-        true
-      );
-      insertChat(newChat);
-    }
-  }, [memberKicking]);
-
-  // Function to add a chat to the chats array
-  const insertChat = (chat) => {
-    setChats((prevChats) => {
-      const newChats = [...prevChats, chat];
-      return newChats;
-    });
-    addChat(chat); // Save to AsyncStorage
-    resetMessage();
-  };
-
-  // Function to reset message
-  const resetMessage = () => {
-    setMessage("");
-    setImages([]);
-    setVoiceUri(undefined);
-    closeReply();
-  };
-
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       {/* Header */}
       <View className="flex-row items-center justify-between mb-3 px-6">
         {/* Back button */}
-        <TouchableOpacity className="p-4" onPress={() => router.back()}>
+        <TouchableOpacity
+          className="p-4"
+          onPress={() => router.navigate("/main/home")}
+        >
           <Feather
             className="color-text-default dark:color-dark-text-default"
             name="chevron-left"
@@ -428,8 +516,9 @@ export default function Page() {
           </Text>
           <Text className="text-sm line-clamp-1 text-ellipsis text-text-default dark:text-dark-text-default">
             {members
-              .map((member) => member.name.split(" ")[0])
-              .sort()
+              .map((uid) => allUsers[uid])
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((friend) => friend.name.split(" ")[0])
               .join(", ")}
           </Text>
         </TouchableOpacity>
@@ -463,7 +552,14 @@ export default function Page() {
       )}
       {/* Location Poll Modal */}
       <Sheet ref={locationSheetRef}>
-        <LocationPollModal sheetRef={locationSheetRef} />
+        <LocationPollModal
+          sheetRef={locationSheetRef}
+          onComplete={handleLocationVote}
+          options={LOCATION_OPTIONS}
+          values={voteValues}
+          showResults={showResults}
+          locationPollTimeLeft={sessionStatus.locationPollTimeLeft}
+        />
       </Sheet>
       {/* Chat Interface */}
       <ScrollView
@@ -643,9 +739,10 @@ export default function Page() {
                   voiceUri,
                   reply,
                   images,
+                  false,
                   false
                 );
-                insertChat(newChat);
+                insertChat(newChat, activeSession.sessionId);
               }}
               className="p-4 bg-purple-default dark:bg-dark-purple-default rounded-full"
             >

@@ -20,7 +20,7 @@ export default function Poll({ options, onChange, showResults }) {
 
   // Determine if new option can be submitted
   const readyToSubmit = useMemo(
-    () => isAdding && newLocation,
+    () => isAdding && newLocation.trim().length > 0,
     [newLocation, isAdding]
   );
 

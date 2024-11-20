@@ -170,6 +170,72 @@ export default function Register() {
           privacy: "FriendsOnly",
         },
         studySessions: [],
+        notifications: [
+          // Dummy notifications as app is beta
+          {
+            id: 1,
+            type: "friend_request",
+            uid: "user123",
+            message: "sent you a friend request",
+            timestamp: "5 mins ago",
+            requiresAction: true,
+            category: "friends",
+          },
+          {
+            id: 3,
+            type: "friend_request",
+            uid: "user101",
+            message: "sent you a friend request",
+            timestamp: "15 mins ago",
+            requiresAction: true,
+            category: "friends",
+          },
+          {
+            id: 4,
+            type: "session_invite",
+            uid: "user456",
+            time: "4:00 PM",
+            date: "Tomorrow",
+            timestamp: "20 mins ago",
+            requiresAction: true,
+            category: "sessions",
+          },
+          {
+            id: 7,
+            type: "session_location",
+            sessionName: "MATH1141 Study Group",
+            location: "Room 205, Mathematics Building",
+            timestamp: "30 mins ago",
+            category: "sessions",
+          },
+          {
+            id: 8,
+            type: "session_location",
+            sessionName: "Physics Group Study",
+            location: "Physics Library, Level 2",
+            timestamp: "1 hour ago",
+            category: "sessions",
+          },
+          {
+            id: 6,
+            type: "session_invite",
+            uid: "user123",
+            time: "10:00 AM",
+            date: "Saturday",
+            timestamp: "2 hours ago",
+            requiresAction: true,
+            category: "sessions",
+          },
+          {
+            id: 11,
+            type: "session_reminder",
+            sessionName: "Physics Group Study",
+            time: "11:00 AM",
+            date: "Tomorrow",
+            timestamp: "2 hours ago",
+            category: "sessions",
+          },
+        ],
       };
 
       await addUser(newUser);
@@ -193,8 +259,7 @@ export default function Register() {
   const handleEmailStep = async () => {
     const emailExists = await checkEmailExists(email);
     if (emailExists) {
-      // Use the correct navigation method for Expo Router
-      router.push(`/auth/login?email=${encodeURIComponent(email)}`);
+      setEmailError("An account is already associated with this email");
       return;
     }
     setStep(step + 1);

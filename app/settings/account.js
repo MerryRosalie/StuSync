@@ -1,15 +1,8 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  View,
-  TextInput,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React from "react";
 import { useUser } from "../../src/contexts/UserContext";
 
 export default function AccountScreen() {
@@ -18,20 +11,20 @@ export default function AccountScreen() {
   const handleDeleteAccount = async () => {
     try {
       await removeUser(currentUser.uid);
-      navigation.navigate("Login");
+      router.navigate("/auth/login");
     } catch (error) {
       console.error("Error removing user:", error);
     }
   };
 
-  const navigation = useNavigation();
+  const router = useRouter();
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
       {/* Header */}
       <View className="w-full flex-row items-center justify-center relative mb-3">
         <TouchableOpacity
           className="absolute left-0 pl-0 p-4"
-          onPress={() => navigation.navigate("index")}
+          onPress={() => router.back()}
         >
           <Feather
             className="color-text-default dark:color-dark-text-default"
@@ -46,7 +39,7 @@ export default function AccountScreen() {
       <View className="justify-between w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40">
         <TouchableOpacity
           className="w-full flex-row rounded-2xl items-center justify-between p-4"
-          onPress={() => navigation.navigate("updateEmail")}
+          onPress={() => router.navigate("/settings/updateEmail")}
         >
           <View className="gap-4 flex-row items-center">
             <Feather name="mail" size={24} className="dark:text-white" />
@@ -59,7 +52,7 @@ export default function AccountScreen() {
         <View className="border-b border-gray mx-4 gap-2 dark:border-white" />
         <TouchableOpacity
           className="w-full flex-row rounded-2xl items-center justify-between p-4"
-          onPress={() => navigation.navigate("changePassword")}
+          onPress={() => router.navigate("/settings/changePassword")}
         >
           <View className="gap-4 flex-row items-center">
             <Feather name="key" size={24} className="dark:text-white" />

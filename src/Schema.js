@@ -19,6 +19,7 @@ export const TextTemplate = {
   reply: null,
   images: [],
   poll: false,
+  button: false,
 };
 
 export const ChatTemplate = {
@@ -105,5 +106,8 @@ export const isValidUser = (user) => {
 };
 
 export const generateProfilePicture = (name) => {
-  return `https://ui-avatars.com/api/?name=${name}&background=random`;
+  return `https://ui-avatars.com/api/?name=${name.replace(
+    " ",
+    "%20"
+  )}&background=random`;
 };

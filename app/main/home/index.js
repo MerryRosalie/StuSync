@@ -4,15 +4,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import PreviousStudySessCard from "../../../components/PreviousStudySessCard";
 import Feather from "@expo/vector-icons/Feather";
 import ProfileIcon from "../../../components/ProfileIcon";
-import { useNavigation } from "@react-navigation/native";
-import { Link, useRouter } from "expo-router";
-import glasses from "../../../assets/glasses.png";
-import girl from "../../../assets/girl.png";
+import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 
 export default function Page() {
-  const navigation = useNavigation();
-
   const router = useRouter();
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 justify-around pb-32">
       <View>

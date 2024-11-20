@@ -31,7 +31,7 @@ export default function Page() {
         <Text className="font-inter-bold text-xl text-text-default dark:text-dark-text-default">
           Your Profile
         </Text>
-        <TouchableOpacity onPress={() => router.navigate("settings")}>
+        <TouchableOpacity onPress={() => router.replace("/settings")}>
           <Feather
             name="settings"
             size={24}
