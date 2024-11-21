@@ -17,10 +17,11 @@ export default function Page() {
   const { currentUser, allUsers } = useUser();
 
   const [pastSessions, setPastSessions] = useState([]);
-
+  // console.log(currentUser);
   useEffect(() => {
     // if its not null
-    // currentUser.studySessions.filter((session) => !session.active);
+    // console.log(currentUser.studySessions.filter((session) => !session.active));
+    // console.log(currentUser);
   }, []);
   console.log(activeSession);
   return (
@@ -37,7 +38,7 @@ export default function Page() {
       {activeSession !== null && (
         <TouchableOpacity
           className="bg-purple-default w-full h-40 rounded-2xl p-4 items-end justify-between overflow-hidden"
-          onPress={() => router.navigate("chat")}
+          onPress={() => router.push("chat")}
         >
           <Image
             source={glasses}
@@ -80,7 +81,7 @@ export default function Page() {
         >
           <Image
             source={girl}
-            className="h-full w-[100%] absolute right-[-20%]"
+            className="h-full w-[100%] absolute right-[-25%] mix-blend-luminosity"
             resizeMode="contain"
           />
           <View className="w-3/5">
@@ -103,11 +104,11 @@ export default function Page() {
       <View className="gap-6">
         <TouchableOpacity
           className="flex-row justify-between"
-          onPress={() => router.navigate("friends")}
+          onPress={() => router.push("friends")}
         >
           <Text className="text-left text-xl font-semibold text-text-default dark:text-dark-text-default">{`Friends`}</Text>
           <View className="flex-row items-center">
-            <Text className="text-left text-base text-green">{`(7)`}</Text>
+            <Text className="text-left text-base text-green">{`(5)`}</Text>
             <Feather
               name="chevron-right"
               size={24}
@@ -121,9 +122,13 @@ export default function Page() {
               .map((uid) => allUsers[uid])
               .map((friend, index) => {
                 console.log(friend);
+                const pfp =
+                  friend.profilePicture === ""
+                    ? "https://avatar.iran.liara.run/public/1"
+                    : friend.profilePicture;
                 return (
                   <View className="items-center gap-2" key={index}>
-                    <ProfileIcon size={"20"} imgUri={friend.profilePicture} />
+                    <ProfileIcon size={"20"} imgUri={pfp} />
                     <Text className="text-text-default dark:text-dark-text-default">
                       {friend.username}
                     </Text>
@@ -150,18 +155,18 @@ export default function Page() {
         </TouchableOpacity>
         <ScrollView horizontal>
           <View className="gap-3 flex-row">
-            <PreviousStudySessCard
-              title={"COMP1511 grind"}
-              time={"13 DEC 2PM"}
-            />
-            <PreviousStudySessCard
-              title={"COMP1511 grind"}
-              time={"13 DEC 2PM"}
-            />
-            <PreviousStudySessCard
-              title={"COMP1511 grind"}
-              time={"13 DEC 2PM"}
-            />
+            {currentUser.studySessions
+              .filter((session) => !session.active)
+              .map((session, index) => {
+                return (
+                  <PreviousStudySessCard
+                    key={index}
+                    title={session.name}
+                    time={session.date}
+                    members={session.members}
+                  />
+                );
+              })}
           </View>
         </ScrollView>
       </View>

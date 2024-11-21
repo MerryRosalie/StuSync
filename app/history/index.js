@@ -33,64 +33,108 @@ export default function HistoryScreen() {
       {/* info */}
       <View className="gap-4">
         <View className="w-full border border-gray p-4 rounded-xl">
-          <Text className="text-base font-bold">Date</Text>
-          <Text className="text-base ">Monday, 1st January 2024</Text>
+          <Text className="text-base font-bold text-text-default dark:text-dark-text-default">
+            Date
+          </Text>
+          <Text className="text-base text-text-default dark:text-dark-text-default">
+            Monday, 1st January 2024
+          </Text>
         </View>
-        <View className="w-full border border-gray p-4 rounded-xl">
-          <Text className="text-base font-bold">Time</Text>
+        <View className="w-full border border-gray p-4 rounded-xl ">
+          <Text className="text-base font-bold text-text-default dark:text-dark-text-default">
+            Time
+          </Text>
           <View className="flex-row justify-between">
             <View className="items-start">
-              <Text className="text-base font-semibold">12:00 PM</Text>
-              <Text className="text-sm ">Start</Text>
+              <Text className="text-base font-semibold text-text-default dark:text-dark-text-default">
+                12:00 PM
+              </Text>
+              <Text className="text-sm text-text-default dark:text-dark-text-default ">
+                Start
+              </Text>
             </View>
             <View className="items-end">
-              <Text className="text-base font-semibold">14:00 PM</Text>
-              <Text className="text-sm ">End</Text>
+              <Text className="text-base font-semibold text-text-default dark:text-dark-text-default">
+                14:00 PM
+              </Text>
+              <Text className="text-sm text-text-default dark:text-dark-text-default">
+                End
+              </Text>
             </View>
           </View>
         </View>
         {/* location */}
         <View className="w-full border border-gray p-4 rounded-xl">
-          <Text className="text-base font-bold">Location</Text>
-          <Text className="text-base ">Quadrangle</Text>
+          <Text className="text-base font-bold text-text-default dark:text-dark-text-default">
+            Location
+          </Text>
+          <Text className="text-base text-text-default dark:text-dark-text-default">
+            Quadrangle
+          </Text>
         </View>
         <View className="w-full border border-gray p-4 rounded-xl">
-          <Text className="text-base font-bold mb-2">Members</Text>
+          <Text className="text-base font-bold mb-2 text-text-default dark:text-dark-text-default">
+            Members
+          </Text>
           <View className="gap-4">
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-4">
                 <ProfileIcon size={"12"} />
                 <View>
-                  <Text className="text-base">Christine Phung</Text>
-                  <Text className="text-XS">@khr1s_</Text>
+                  <Text className="text-base text-text-default dark:text-dark-text-default">
+                    Christine Phung
+                  </Text>
+                  <Text className="text-xs text-text-default dark:text-dark-text-default">
+                    @khr1s_
+                  </Text>
                 </View>
               </View>
               <TouchableOpacity>
-                <Feather name="more-horizontal" size={28} color="black" />
+                <Feather
+                  name="more-horizontal"
+                  size={28}
+                  className="text-text-default dark:text-dark-text-default"
+                />
               </TouchableOpacity>
             </View>
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-4">
                 <ProfileIcon size={"12"} />
                 <View>
-                  <Text className="text-base">Christine Phung</Text>
-                  <Text className="text-XS">@khr1s_</Text>
+                  <Text className="text-base text-text-default dark:text-dark-text-default">
+                    Christine Phung
+                  </Text>
+                  <Text className="text-xs text-text-default dark:text-dark-text-default">
+                    @khr1s_
+                  </Text>
                 </View>
               </View>
               <TouchableOpacity>
-                <Feather name="more-horizontal" size={28} color="black" />
+                <Feather
+                  name="more-horizontal"
+                  size={28}
+                  className="text-text-default dark:text-dark-text-default"
+                />
               </TouchableOpacity>
             </View>
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center gap-4">
                 <ProfileIcon size={"12"} />
                 <View>
-                  <Text className="text-base">Christine Phung</Text>
-                  <Text className="text-XS">@khr1s_</Text>
+                  <Text className="text-base text-text-default dark:text-dark-text-default">
+                    Christine Phung
+                  </Text>
+                  <Text className="text-xs text-text-default dark:text-dark-text-default">
+                    @khr1s_
+                  </Text>
                 </View>
               </View>
               <TouchableOpacity>
-                <Feather name="more-horizontal" size={28} color="black" />
+                <Feather
+                  name="more-horizontal"
+                  size={28}
+                  className="text-text-default dark:text-dark-text-default"
+                />
               </TouchableOpacity>
             </View>
           </View>

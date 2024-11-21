@@ -5,8 +5,6 @@ import { format } from "date-fns/format";
 
 // Component which represents the page for location poll
 export default function ProposeEndTimeModal({ sheetRef, onSubmit }) {
-  const today = new Date();
-
   // State to handle date input
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(today);
@@ -46,7 +44,6 @@ export default function ProposeEndTimeModal({ sheetRef, onSubmit }) {
             setSelectedDate(selectedDate);
             setShowDatePicker(false);
           }}
-          minimumDate={today}
         />
       )}
 

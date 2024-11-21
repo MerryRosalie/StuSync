@@ -77,7 +77,7 @@ export default function Friend({ user }) {
       warn: false,
       onPress: () => {
         bottomSheetRef.current?.dismiss();
-        router.navigate(`/user/${user.uid}`);
+        router.replace(`/user/${user.uid}`);
       },
     },
     {
@@ -109,7 +109,7 @@ export default function Friend({ user }) {
   return (
     <View className="flex-row items-center gap-2 p-2 flex-2">
       <TouchableOpacity
-        onPress={() => router.navigate(`/user/${user.uid}`)}
+        onPress={() => router.replace(`/user/${user.uid}`)}
         className="flex-1 flex-row items-center gap-2"
       >
         {/* Profile picture */}

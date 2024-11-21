@@ -169,15 +169,15 @@ export default function Page() {
 
   // Timer state
   const [studyMinutes, setStudyMinutes] = useState(
-    activeSession ? activeSession.timer.studyDuration : 25 * 60
+    activeSession ? activeSession?.timer?.studyDuration : 25 * 60
   );
   const [breakMinutes, setBreakMinutes] = useState(
-    activeSession ? activeSession.timer.breakDuration : 5 * 60
+    activeSession ? activeSession?.timer.breakDuration : 5 * 60
   );
   const [selectedActivity, setSelectedActivity] = useState("");
   const [timeLeft, setTimeLeft] = useState(studyMinutes);
   const [isActive, setIsActive] = useState(false);
-  const [isBreak, setIsBreak] = useState(false);
+  const [isBreak, setIsBreak] = useState(activeSession?.breakActive || false);
   const [isVoting, setIsVoting] = useState(false);
 
   // States to handle voting
@@ -193,6 +193,13 @@ export default function Page() {
   // Animation and sheet refs
   const settingsSheetRef = useRef(null);
   const breakPollSheetRef = useRef(null);
+
+  // Route to home if user hasn't accepted a session
+  useEffect(() => {
+    if (!activeSession) {
+      router.replace("/main/home");
+    }
+  }, [activeSession]);
 
   // Add cleanup when navigating away
   useEffect(() => {
@@ -218,7 +225,7 @@ export default function Page() {
         breakPollSheetRef.current?.present();
       } else {
         readyToEndSession();
-        router.navigate("/details");
+        router.replace("/details");
       }
       setIsActive(false);
     }
@@ -258,9 +265,9 @@ export default function Page() {
 
   // Start timer according to the state
   useEffect(() => {
-    if (isBreak && activeSession.breakActive && !isVoting) {
+    if (isBreak && !isVoting) {
       startBreakTimer();
-    } else if (!isBreak && activeSession.pomodoroActive && !isVoting) {
+    } else if (!isBreak && activeSession?.pomodoroActive && !isVoting) {
       startPomodoroTimer();
     }
   }, [isBreak, isVoting]);
@@ -301,6 +308,8 @@ export default function Page() {
     setVoteValues(values);
     setShowResults(showResults);
   };
+
+  if (!activeSession) return null;
 
   return (
     <SafeAreaView

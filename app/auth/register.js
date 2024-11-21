@@ -161,15 +161,62 @@ export default function Register() {
           memberSince: new Date().toISOString(),
         },
         friends: {
-          allFriends: [],
+          allFriends: ["user202", "user303", "user404", "user505", "user606"],
           incomingRequests: ["user123", "user101"],
-          pendingRequests: [],
+          pendingRequests: ["user707"],
         },
         settings: {
           theme: "Light",
           privacy: "FriendsOnly",
         },
-        studySessions: [],
+        studySessions: [
+          {
+            active: false,
+            chat: { messages: [] },
+            date: "24 NOV 4PM",
+            name: "exam :pensive:",
+            location: "Library Room A",
+            members: ["user202", "user303", "user404"],
+            sessionId: "session_1",
+            time: "4:00 PM",
+            timer: {
+              breakDuration: 300,
+              currentPhase: "end",
+              studyDuration: 1500,
+            },
+          },
+          {
+            active: false,
+            chat: { messages: [] },
+            date: "19 NOV 4PM",
+            name: "MATH1141 REVISION SESSION",
+            location: "Library Room A",
+            members: ["user202", "user303", "user404"],
+            sessionId: "session_1",
+            time: "4:00 PM",
+            timer: {
+              breakDuration: 300,
+              currentPhase: "end",
+              studyDuration: 1500,
+            },
+          },
+
+          {
+            active: false,
+            chat: { messages: [] },
+            date: "18 NOV 2PM",
+            name: "PHYS1121 PRACTICE GROUP",
+            location: "Physics Lab 3",
+            members: ["user505", "user606"],
+            sessionId: "session_2",
+            time: "2:00 PM",
+            timer: {
+              breakDuration: 600,
+              currentPhase: "end",
+              studyDuration: 1800,
+            },
+          },
+        ],
         notifications: [
           // Dummy notifications as app is beta
           {

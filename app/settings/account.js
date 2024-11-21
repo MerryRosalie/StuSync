@@ -11,7 +11,7 @@ export default function AccountScreen() {
   const handleDeleteAccount = async () => {
     try {
       await removeUser(currentUser.uid);
-      router.navigate("/auth/login");
+      router.replace("/auth/login");
     } catch (error) {
       console.error("Error removing user:", error);
     }
@@ -39,7 +39,7 @@ export default function AccountScreen() {
       <View className="justify-between w-full rounded-2xl border bg-text-dimmed/25 dark:bg-dark-text-dimmed/25 border-text-dimmed/40 dark:border-dark-text-dimmed/40">
         <TouchableOpacity
           className="w-full flex-row rounded-2xl items-center justify-between p-4"
-          onPress={() => router.navigate("/settings/updateEmail")}
+          onPress={() => router.replace("/settings/updateEmail")}
         >
           <View className="gap-4 flex-row items-center">
             <Feather name="mail" size={24} className="dark:text-white" />
@@ -52,7 +52,7 @@ export default function AccountScreen() {
         <View className="border-b border-gray mx-4 gap-2 dark:border-dark-text-dimmed" />
         <TouchableOpacity
           className="w-full flex-row rounded-2xl items-center justify-between p-4"
-          onPress={() => router.navigate("/settings/changePassword")}
+          onPress={() => router.replace("/settings/changePassword")}
         >
           <View className="gap-4 flex-row items-center">
             <Feather name="key" size={24} className="dark:text-white" />

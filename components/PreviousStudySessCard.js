@@ -1,15 +1,19 @@
 import { router } from "expo-router";
 import { useColorScheme } from "nativewind";
-import { Switch, TouchableOpacity, Text, View, Pressable } from "react-native";
-
-export default function PreviousStudySessCard({ title, time, friends }) {
+import {
+  Switch,
+  TouchableOpacity,
+  Text,
+  View,
+  Pressable,
+  Image,
+} from "react-native";
+import { useUser } from "../src/contexts/UserContext";
+export default function PreviousStudySessCard({ title, time, members }) {
   const { colorScheme, toggleColorScheme } = useColorScheme();
-  const circles = [
-    { color: "bg-red-500", label: "Circle 1" },
-    { color: "bg-blue-500", label: "Circle 2" },
-    { color: "bg-blue-500", label: "Circle 3" },
-    { color: "bg-yellow-500", label: "Circle 4" },
-  ];
+  const { currentUser, allUsers } = useUser();
+
+  console.log(members);
   return (
     // shadow-sm shadow-black
     <TouchableOpacity
@@ -27,16 +31,20 @@ export default function PreviousStudySessCard({ title, time, friends }) {
         </Text>
       </View>
       <View className=" flex-row items-center justify-center relative h-8">
-        {/* TODO: fix this with images/profiles */}
-        {circles.map((circle, index) => (
-          <View
-            key={index}
-            className={`${circle.color} w-8 h-8 rounded-full border-2 border-white absolute mt-auto`}
-            style={{
-              left: index * 20, // profiles are offset
-            }}
-          />
-        ))}
+        {members
+          .map((uid) => allUsers[uid])
+          .slice(0, 4)
+          .map((member, index) => {
+            console.log(member);
+            return (
+              <Image
+                key={index}
+                source={{ uri: member.profilePicture }}
+                className="w-8 h-8 object-cover rounded-full border border-background dark:border-dark-background absolute mt-auto"
+                style={{ resizeMode: "cover", left: index * 20 }}
+              />
+            );
+          })}
       </View>
     </TouchableOpacity>
   );
