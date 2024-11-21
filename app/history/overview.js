@@ -5,20 +5,24 @@ import {
   ScrollView,
   View,
   TextInput,
+  Image,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
+import { useUser } from "../../src/contexts/UserContext";
+import { format, addHours } from "date-fns";
 
 export default function OverviewScreen() {
+  const { currentUser, allUsers } = useUser();
   const router = useRouter();
 
-  const circles = [
-    { color: "bg-red-500", label: "Circle 1" },
-    { color: "bg-blue-500", label: "Circle 2" },
-    { color: "bg-blue-500", label: "Circle 3" },
-    { color: "bg-yellow-500", label: "Circle 4" },
-  ];
+  //   const circles = [
+  //     { color: "bg-red-500", label: "Circle 1" },
+  //     { color: "bg-blue-500", label: "Circle 2" },
+  //     { color: "bg-blue-500", label: "Circle 3" },
+  //     { color: "bg-yellow-500", label: "Circle 4" },
+  //   ];
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
@@ -38,27 +42,59 @@ export default function OverviewScreen() {
           Past Study Sessions
         </Text>
       </View>
-      <TouchableOpacity
-        className="rounded-xl border p-4 w-full"
-        onPress={() => router.push("index")}
-      >
-        <View className="flex-row items-center justify-between">
-          <Text className="text-lg font-medium">COMP1511 grind</Text>
-          {/* <View className="flex-row items-center justify-center relative h-8">
-
-            {circles.map((circle, index) => (
-              <View
-                key={index}
-                className={`${circle.color} w-8 h-8 rounded-full border-2 border-white absolute mt-auto`}
-                style={{
-                  left: index * 20, // profiles are offset
-                }}
-              />
-            ))}
-          </View> */}
-        </View>
-        <Text className="text-xs">13 DEC 2PM</Text>
-      </TouchableOpacity>
+      <View className="gap-4">
+        {currentUser?.studySessions
+          .filter((session) => !session?.active)
+          .map((session, index) => (
+            <TouchableOpacity
+              key={index}
+              className="rounded-xl bg-background dark:bg-dark-background border border-dark-background/10 dark:border-background/10 my-1 py-6 px-4 w-full"
+              onPress={() => {
+                router.navigate({
+                  pathname: "/history",
+                  params: {
+                    title: session.name,
+                    time: session.date,
+                    members: JSON.stringify(session.members),
+                    location: session.location,
+                  },
+                });
+              }}
+              style={{
+                elevation: 2,
+                shadowOffset: { width: 0, height: 2 },
+                shadowRadius: 100,
+              }}
+            >
+              <View className="w-full flex-row items-center gap-4">
+                <View className="flex-1">
+                  <Text className="text-lg font-medium text-text-default dark:text-dark-text-default">
+                    {session?.name}
+                  </Text>
+                  <Text className=" text-text-default dark:text-dark-text-default opacity-50">
+                    {format(session?.date, "eeee do MMMM yyyy, p")}
+                    {" - "}
+                    {format(addHours(session?.date, 2), "p")}
+                  </Text>
+                </View>
+                <View className="flex-row items-center justify-center">
+                  {/* Render friends circles */}
+                  {session?.members
+                    .map((uid) => allUsers[uid])
+                    .slice(0, 3)
+                    .map((friend, index) => (
+                      <Image
+                        key={index}
+                        source={{ uri: friend.profilePicture }}
+                        className="w-8 h-8 object-cover rounded-full border border-background dark:border-dark-background -mx-1"
+                        style={{ resizeMode: "cover" }}
+                      />
+                    ))}
+                </View>
+              </View>
+            </TouchableOpacity>
+          ))}
+      </View>
     </SafeAreaView>
   );
 }

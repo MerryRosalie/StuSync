@@ -31,7 +31,7 @@ export default function PreviousStudySessCard({ session }) {
 
   return (
     <TouchableOpacity
-      className="w-52 h-36 my-2 bg-background dark:bg-dark-background shadow-dark-background dark:shadow-background rounded-[12] gap-1 p-4 justify-between"
+      className="w-52 h-36 my-2 bg-background dark:bg-dark-background border border-dark-background/10 dark:border-background/10 shadow-dark-background dark:shadow-background rounded-[12] gap-1 p-4 justify-between"
       onPress={() => {
         router.navigate({
           pathname: "/history",

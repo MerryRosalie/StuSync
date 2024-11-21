@@ -24,7 +24,7 @@ export default function Page() {
             Welcome back
           </Text>
           <Text className="text-left text-2xl font-semibold text-text-default dark:text-dark-text-default">
-            {currentUser.name}
+            {currentUser?.name}
           </Text>
         </View>
         {/* active study sess */}
@@ -106,7 +106,7 @@ export default function Page() {
           </Text>
           <View className="flex-row items-center">
             <Text className="text-left text-base text-green">
-              {`(${currentUser.friends.allFriends.length})`}
+              {`(${currentUser?.friends.allFriends.length})`}
             </Text>
             <Feather
               name="chevron-right"
@@ -121,17 +121,21 @@ export default function Page() {
           className=""
         >
           <View className="gap-8 flex-row">
-            {currentUser.friends.allFriends.map((friendId, index) => {
+            {currentUser?.friends.allFriends.map((friendId, index) => {
               const friend = allUsers[friendId];
               if (!friend) return null;
 
               return (
-                <View className="items-center gap-2" key={index}>
+                <TouchableOpacity
+                  onPress={() => router.push(`/user/${friend.uid}`)}
+                  className="items-center gap-2"
+                  key={index}
+                >
                   <ProfileIcon imgUri={friend.profilePicture} size={"20"} />
                   <Text className="text-text-default dark:text-dark-text-default">
                     {friend.username}
                   </Text>
-                </View>
+                </TouchableOpacity>
               );
             })}
           </View>
@@ -153,11 +157,11 @@ export default function Page() {
           />
         </TouchableOpacity>
 
-        {currentUser.studySessions?.filter((session) => !session.active)
+        {currentUser?.studySessions?.filter((session) => !session.active)
           .length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View className="gap-3 flex-row">
-              {currentUser.studySessions
+              {currentUser?.studySessions
                 .filter((session) => !session.active)
                 .map((session, index) => (
                   <PreviousStudySessCard key={index} session={session} />

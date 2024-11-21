@@ -27,19 +27,19 @@ export default function Page() {
   const [selectedTab, setSelectedTab] = useState(ProfileTab.AboutMe);
 
   const isFriended = useMemo(
-    () => currentUser.friends.allFriends.includes(user.uid),
-    [currentUser, currentUser.friends.allFriends]
+    () => currentUser?.friends?.allFriends.includes(user?.uid),
+    [currentUser, currentUser?.friends?.allFriends]
   );
 
   const isRequestSent = useMemo(
-    () => currentUser.friends.pendingRequests.includes(user.uid),
-    [currentUser, currentUser.friends.pendingRequests]
+    () => currentUser?.friends?.pendingRequests.includes(user?.uid),
+    [currentUser, currentUser?.friends?.pendingRequests]
   );
 
   const mutualFriends = useMemo(
     () =>
-      currentUser.friends.allFriends
-        .filter((uid) => user.friends.allFriends.includes(uid))
+      currentUser?.friends?.allFriends
+        .filter((uid) => user?.friends?.allFriends.includes(uid))
         .map((uid) => allUsers[uid])
         .sort((a, b) => a.name.localeCompare(b.name)),
     [user, currentUser]
@@ -48,19 +48,19 @@ export default function Page() {
   // Handle sending friend request
   const handleAddFriend = async () => {
     try {
-      await addPendingRequest(user.uid);
+      await addPendingRequest(user?.uid);
       Alert.alert(
         "Friend Request Sent",
-        `Sent a friend request to @${user.username}`
+        `Sent a friend request to @${user?.username}`
       );
     } catch (error) {
       let message = "Failed to send friend request";
 
       // Handle specific error cases
       if (error.message === "Friend request already sent") {
-        message = `You've already sent a friend request to @${user.username}`;
+        message = `You've already sent a friend request to @${user?.username}`;
       } else if (error.message === "Users are already friends") {
-        message = `You're already friends with @${user.username}`;
+        message = `You're already friends with @${user?.username}`;
       }
 
       Alert.alert("Error", message);
@@ -71,7 +71,7 @@ export default function Page() {
   const handleUnfriend = async () => {
     Alert.alert(
       "Unfriend",
-      `Are you sure you want to unfriend @${user.username}?`,
+      `Are you sure you want to unfriend @${user?.username}?`,
       [
         {
           text: "Cancel",
@@ -82,13 +82,13 @@ export default function Page() {
           style: "destructive",
           onPress: async () => {
             try {
-              await unfriend(user.uid);
+              await unfriend(user?.uid);
             } catch (error) {
               let message = "Failed to unfriend user";
 
               // Handle specific error cases
               if (error.message === "Users are not friends") {
-                message = `You're not friends with @${user.username}`;
+                message = `You're not friends with @${user?.username}`;
               }
 
               Alert.alert("Error", message);
@@ -103,7 +103,7 @@ export default function Page() {
   const handleCancelRequest = async () => {
     Alert.alert(
       "Cancel Request",
-      `Are you sure you want to cancel the friend request to @${user.username}?`,
+      `Are you sure you want to cancel the friend request to @${user?.username}?`,
       [
         {
           text: "No",
@@ -114,12 +114,12 @@ export default function Page() {
           style: "destructive",
           onPress: async () => {
             try {
-              await cancelPendingRequest(user.uid);
+              await cancelPendingRequest(user?.uid);
             } catch (error) {
               let message = "Failed to cancel friend request";
 
               if (error.message === "No pending request found") {
-                message = `No pending request found for @${user.username}`;
+                message = `No pending request found for @${user?.username}`;
               }
 
               Alert.alert("Error", message);
@@ -153,7 +153,7 @@ export default function Page() {
         {/* Profile picture */}
         <View className="relative self-center mt-6">
           <Image
-            source={{ uri: user.profilePicture }}
+            source={{ uri: user?.profilePicture }}
             className="w-24 h-24 rounded-full object-cover border-4 border-background dark:border-dark-background"
             style={{ resizeMode: "cover" }}
           />
@@ -162,10 +162,10 @@ export default function Page() {
         {/* User info */}
         <View className="self-center mt-3 px-6">
           <Text className="text-lg font-inter-bold text-center text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
-            {user.name}
+            {user?.name}
           </Text>
           <Text className="text-sm text-center text-text-default dark:text-dark-text-default line-clamp-1 text-ellipsis">
-            @{user.username}
+            @{user?.username}
           </Text>
         </View>
         {isFriended ? (
@@ -264,7 +264,7 @@ export default function Page() {
                 About Me
               </Text>
               <Text className="text-text-default dark:text-dark-text-default">
-                {user.aboutMe || "N/A"}
+                {user?.aboutMe || "N/A"}
               </Text>
             </View>
             <View className="gap-2">
@@ -272,7 +272,7 @@ export default function Page() {
                 Current Courses
               </Text>
               <Text className="uppercase text-text-default dark:text-dark-text-default">
-                {user.courses.join(", ")}
+                {user?.courses?.join(", ") || "N/A"}
               </Text>
             </View>
             <View className="gap-2">
@@ -280,7 +280,7 @@ export default function Page() {
                 Member Since
               </Text>
               <Text className="text-text-default dark:text-dark-text-default">
-                {format(user.createdAt, "MMM d, yyyy")}
+                {format(user?.profile?.memberSince, "MMM d, yyyy")}
               </Text>
             </View>
           </View>

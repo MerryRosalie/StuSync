@@ -19,13 +19,6 @@ export default function Page() {
     return newDate;
   };
 
-  const circles = [
-    { color: "bg-red-500", label: "Circle 1" },
-    { color: "bg-blue-500", label: "Circle 2" },
-    { color: "bg-blue-500", label: "Circle 3" },
-    { color: "bg-yellow-500", label: "Circle 4" },
-  ];
-
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
       <View className="flex-row justify-between  w-full">
@@ -127,7 +120,7 @@ export default function Page() {
                 <Image
                   key={index}
                   source={{ uri: friend.profilePicture }}
-                  className="w-8 h-8 object-cover rounded-full border border-background dark:border-dark-background"
+                  className="w-8 h-8 object-cover rounded-full border border-background dark:border-dark-background -mx-1"
                   style={{ resizeMode: "cover" }}
                 />
               ))}

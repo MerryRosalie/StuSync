@@ -33,7 +33,7 @@ export default function HistoryScreen() {
       </View>
       {/* info */}
       <View className="gap-4">
-        <View className="w-full border border-gray p-4 rounded-xl">
+        <View className="w-full border border-text-dimmed dark:border-dark-text-dimmed p-4 rounded-xl">
           <Text className="text-base font-bold text-text-default dark:text-dark-text-default">
             Date
           </Text>
@@ -41,7 +41,7 @@ export default function HistoryScreen() {
             {format(new Date(time), "eeee, do MMMM yyyy")}
           </Text>
         </View>
-        <View className="w-full border border-gray p-4 rounded-xl ">
+        <View className="w-full border border-text-dimmed dark:border-dark-text-dimmed p-4 rounded-xl ">
           <Text className="text-base font-bold text-text-default dark:text-dark-text-default">
             Time
           </Text>
@@ -65,7 +65,7 @@ export default function HistoryScreen() {
           </View>
         </View>
         {/* location */}
-        <View className="w-full border border-gray p-4 rounded-xl">
+        <View className="w-full border border-text-dimmed dark:border-dark-text-dimmed p-4 rounded-xl">
           <Text className="text-base font-bold text-text-default dark:text-dark-text-default">
             Location
           </Text>
@@ -73,7 +73,7 @@ export default function HistoryScreen() {
             {location}
           </Text>
         </View>
-        <View className="w-full border border-gray p-4 rounded-xl">
+        <View className="w-full border border-text-dimmed dark:border-dark-text-dimmed p-4 rounded-xl">
           <Text className="text-base font-bold mb-2 text-text-default dark:text-dark-text-default">
             Members
           </Text>
