@@ -1,18 +1,17 @@
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  View,
-  TextInput,
-} from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
-import { useRouter, router, useLocalSearchParams } from "expo-router";
-import React, { useState } from "react";
-import { useNavigation } from "expo-router";
-import ProfileIcon from "../../components/ProfileIcon";
+import { router, useLocalSearchParams } from "expo-router";
+import React from "react";
+import { addHours, format } from "date-fns";
+import { useUser } from "../../src/contexts/UserContext";
+import Friend from "../../components/friends/Friend";
+
 export default function HistoryScreen() {
-  const { title } = useLocalSearchParams();
+  const { allUsers } = useUser();
+  const { title, time, members: rawMembers, location } = useLocalSearchParams();
+
+  const members = JSON.parse(rawMembers);
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
@@ -20,7 +19,7 @@ export default function HistoryScreen() {
       <View className="w-full flex-row items-center justify-center relative mb-3">
         <TouchableOpacity
           className="absolute left-0 pl-0 p-4"
-          onPress={() => router.navigate("/main/home")}
+          onPress={() => router.push("/main/home")}
         >
           <Feather
             className="color-text-default dark:color-dark-text-default"
@@ -39,7 +38,7 @@ export default function HistoryScreen() {
             Date
           </Text>
           <Text className="text-base text-text-default dark:text-dark-text-default">
-            Monday, 1st January 2024
+            {format(new Date(time), "eeee, do MMMM yyyy")}
           </Text>
         </View>
         <View className="w-full border border-gray p-4 rounded-xl ">
@@ -49,7 +48,7 @@ export default function HistoryScreen() {
           <View className="flex-row justify-between">
             <View className="items-start">
               <Text className="text-base font-semibold text-text-default dark:text-dark-text-default">
-                12:00 PM
+                {format(new Date(time), "p")}
               </Text>
               <Text className="text-sm text-text-default dark:text-dark-text-default ">
                 Start
@@ -57,7 +56,7 @@ export default function HistoryScreen() {
             </View>
             <View className="items-end">
               <Text className="text-base font-semibold text-text-default dark:text-dark-text-default">
-                14:00 PM
+                {format(addHours(new Date(time), 2), "p")}
               </Text>
               <Text className="text-sm text-text-default dark:text-dark-text-default">
                 End
@@ -71,7 +70,7 @@ export default function HistoryScreen() {
             Location
           </Text>
           <Text className="text-base text-text-default dark:text-dark-text-default">
-            Quadrangle
+            {location}
           </Text>
         </View>
         <View className="w-full border border-gray p-4 rounded-xl">
@@ -79,66 +78,12 @@ export default function HistoryScreen() {
             Members
           </Text>
           <View className="gap-4">
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-4">
-                <ProfileIcon size={"12"} />
-                <View>
-                  <Text className="text-base text-text-default dark:text-dark-text-default">
-                    Christine Phung
-                  </Text>
-                  <Text className="text-xs text-text-default dark:text-dark-text-default">
-                    @khr1s_
-                  </Text>
-                </View>
-              </View>
-              <TouchableOpacity>
-                <Feather
-                  name="more-horizontal"
-                  size={28}
-                  className="text-text-default dark:text-dark-text-default"
-                />
-              </TouchableOpacity>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-4">
-                <ProfileIcon size={"12"} />
-                <View>
-                  <Text className="text-base text-text-default dark:text-dark-text-default">
-                    Christine Phung
-                  </Text>
-                  <Text className="text-xs text-text-default dark:text-dark-text-default">
-                    @khr1s_
-                  </Text>
-                </View>
-              </View>
-              <TouchableOpacity>
-                <Feather
-                  name="more-horizontal"
-                  size={28}
-                  className="text-text-default dark:text-dark-text-default"
-                />
-              </TouchableOpacity>
-            </View>
-            <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center gap-4">
-                <ProfileIcon size={"12"} />
-                <View>
-                  <Text className="text-base text-text-default dark:text-dark-text-default">
-                    Christine Phung
-                  </Text>
-                  <Text className="text-xs text-text-default dark:text-dark-text-default">
-                    @khr1s_
-                  </Text>
-                </View>
-              </View>
-              <TouchableOpacity>
-                <Feather
-                  name="more-horizontal"
-                  size={28}
-                  className="text-text-default dark:text-dark-text-default"
-                />
-              </TouchableOpacity>
-            </View>
+            {members
+              .map((uid) => allUsers[uid])
+              .sort((a, b) => a.name.localeCompare(b.name))
+              .map((friend, index) => (
+                <Friend key={index} user={friend} />
+              ))}
           </View>
         </View>
       </View>

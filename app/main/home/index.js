@@ -70,7 +70,7 @@ export default function Page() {
         ) : (
           <TouchableOpacity
             className="bg-purple-secondary w-full h-40 rounded-2xl p-4 justify-center gap-4 overflow-hidden"
-            onPress={() => router.navigate("main/alert")}
+            onPress={() => router.push("main/alert")}
           >
             <Image
               source={girl}
@@ -141,7 +141,7 @@ export default function Page() {
       <View className="gap-3">
         <TouchableOpacity
           className="flex-row justify-between"
-          onPress={() => router.navigate("/history/overview")}
+          onPress={() => router.push("/history/overview")}
         >
           <Text className="text-left text-xl font-semibold text-text-default dark:text-dark-text-default mb-3">
             Past Study Sessions
@@ -160,12 +160,7 @@ export default function Page() {
               {currentUser.studySessions
                 .filter((session) => !session.active)
                 .map((session, index) => (
-                  <PreviousStudySessCard
-                    key={index}
-                    title={session.name}
-                    time={session.date}
-                    members={session.members}
-                  />
+                  <PreviousStudySessCard key={index} session={session} />
                 ))}
             </View>
           </ScrollView>
