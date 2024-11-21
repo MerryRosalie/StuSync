@@ -1,7 +1,14 @@
-import { Tabs } from "expo-router";
+import { Tabs, Redirect } from "expo-router";
 import TabBar from "../../components/TabBar";
+import { useUser } from "../../src/contexts/UserContext";
 
 export default function RootLayout() {
+  const { currentUser } = useUser();
+
+  if (!currentUser) {
+    return <Redirect href="/auth/login" />;
+  }
+
   return (
     <Tabs initialRouteName="home" tabBar={(props) => <TabBar {...props} />}>
       <Tabs.Screen
