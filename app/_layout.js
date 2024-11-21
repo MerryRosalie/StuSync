@@ -25,9 +25,7 @@ export {
 } from "expo-router";
 
 export const unstable_settings = {
-  // TODO: Change to Auth first
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "main",
+  initialRouteName: "auth",
 };
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
@@ -80,7 +78,7 @@ function RootLayoutNavigation() {
   return (
     <GestureHandlerRootView className="flex-1">
       <BottomSheetModalProvider>
-        <Stack initialRouteName="main" screenOptions={{ headerShown: false }}>
+        <Stack initialRouteName="auth" screenOptions={{ headerShown: false }}>
           <Stack.Screen
             name="auth"
             options={{
@@ -89,8 +87,8 @@ function RootLayoutNavigation() {
               gestureDirection: "horizontal",
             }}
           />
-          <Stack.Screen name="main" options={{ headerShown: false }} />
-          <Stack.Screen name="friends" options={{ headerShown: false }} />
+          {/* <Stack.Screen name="main" options={{ headerShown: false }} /> */}
+          {/* <Stack.Screen name="friends" options={{ headerShown: false }} /> */}
         </Stack>
       </BottomSheetModalProvider>
       <StatusBar style="auto" />

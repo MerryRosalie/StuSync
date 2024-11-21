@@ -9,7 +9,6 @@ import { SafeAreaView, View, Text, TouchableOpacity } from "react-native";
 import ProgressBar from "../../components/register/ProgressBar";
 import UsernameStep from "../../components/register/steps/UsernameStep";
 import Feather from "@expo/vector-icons/Feather";
-import { generateProfilePicture } from "../../src/Schema";
 
 export default function Register() {
   const router = useRouter();
@@ -149,9 +148,7 @@ export default function Register() {
         email: email.trim().toLowerCase(),
         username: username.trim().toLowerCase(),
         password: password,
-        profilePicture: generateProfilePicture(name.trim()),
-        courses: courses,
-        createdAt: new Date().toISOString(),
+        profilePicture: "",
         calendar: {
           events: [],
         },
@@ -161,62 +158,15 @@ export default function Register() {
           memberSince: new Date().toISOString(),
         },
         friends: {
-          allFriends: ["user202", "user303", "user404", "user505", "user606"],
-          incomingRequests: ["user123", "user101"],
-          pendingRequests: ["user707"],
+          allFriends: [],
+          incomingRequests: ["user123", "user101"], // Lauren Smith and Sarah Johnson
+          pendingRequests: [],
         },
         settings: {
           theme: "Light",
           privacy: "FriendsOnly",
         },
-        studySessions: [
-          {
-            active: false,
-            chat: { messages: [] },
-            date: "24 NOV 4PM",
-            name: "exam :pensive:",
-            location: "Library Room A",
-            members: ["user202", "user303", "user404"],
-            sessionId: "session_1",
-            time: "4:00 PM",
-            timer: {
-              breakDuration: 300,
-              currentPhase: "end",
-              studyDuration: 1500,
-            },
-          },
-          {
-            active: false,
-            chat: { messages: [] },
-            date: "19 NOV 4PM",
-            name: "MATH1141 REVISION SESSION",
-            location: "Library Room A",
-            members: ["user202", "user303", "user404"],
-            sessionId: "session_1",
-            time: "4:00 PM",
-            timer: {
-              breakDuration: 300,
-              currentPhase: "end",
-              studyDuration: 1500,
-            },
-          },
-
-          {
-            active: false,
-            chat: { messages: [] },
-            date: "18 NOV 2PM",
-            name: "PHYS1121 PRACTICE GROUP",
-            location: "Physics Lab 3",
-            members: ["user505", "user606"],
-            sessionId: "session_2",
-            time: "2:00 PM",
-            timer: {
-              breakDuration: 600,
-              currentPhase: "end",
-              studyDuration: 1800,
-            },
-          },
-        ],
+        studySessions: [],
         notifications: [
           // Dummy notifications as app is beta
           {
@@ -371,15 +321,13 @@ export default function Register() {
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background">
       <View className="flex-1">
         <View className="py-4 mt-8">
-          {step > 1 && (
-            <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
-              <Feather
-                name="arrow-left"
-                size={24}
-                className="color-text-default dark:color-dark-text-default"
-              />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity onPress={handleBackPress} className="px-4 mb-4">
+            <Feather
+              name="arrow-left"
+              size={24}
+              className="color-text-default dark:color-dark-text-default"
+            />
+          </TouchableOpacity>
           <ProgressBar currentStep={step} totalSteps={5} />
         </View>
 
