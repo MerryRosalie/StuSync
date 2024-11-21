@@ -19,7 +19,7 @@ export default function PreviousStudySessCard({ title, time, members }) {
     <TouchableOpacity
       className=" w-52 h-36 border border-[#EEEEEE] rounded-[12] gap-1 p-4 justify-between"
       onPress={() => {
-        router.navigate("/history");
+        router.navigate({ pathname: "/history", params: { title: title } });
       }}
     >
       <View>

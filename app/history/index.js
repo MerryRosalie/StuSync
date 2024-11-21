@@ -7,11 +7,13 @@ import {
   TextInput,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
-import { useRouter, router } from "expo-router";
+import { useRouter, router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
 import { useNavigation } from "expo-router";
 import ProfileIcon from "../../components/ProfileIcon";
 export default function HistoryScreen() {
+  const { title } = useLocalSearchParams();
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-dark-background p-6 gap-8 items-center">
       {/* Header */}
@@ -27,7 +29,7 @@ export default function HistoryScreen() {
           />
         </TouchableOpacity>
         <Text className="font-inter-bold text-text-default dark:text-dark-text-default">
-          COMP1511 grind
+          {title}
         </Text>
       </View>
       {/* info */}
