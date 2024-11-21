@@ -158,15 +158,49 @@ export default function Register() {
           memberSince: new Date().toISOString(),
         },
         friends: {
-          allFriends: [],
-          incomingRequests: ["user123", "user101"], // Lauren Smith and Sarah Johnson
+          allFriends: [
+            "user456",
+            "user303",
+            "user789",
+            "user202",
+            "user404",
+            "user505",
+            "user606",
+            "user707 ",
+          ],
+          incomingRequests: ["user123", "user101"],
           pendingRequests: [],
         },
         settings: {
           theme: "Light",
           privacy: "FriendsOnly",
         },
-        studySessions: [],
+        studySessions: [
+          {
+            id: "sess1",
+            name: "COMP1511 Workshop",
+            date: "2024-03-15T14:00:00Z",
+            active: false,
+            members: ["user456", "user789"],
+            location: "K17 Lab 5",
+          },
+          {
+            id: "sess2",
+            name: "Math Study Group",
+            date: "2024-03-14T10:00:00Z",
+            active: false,
+            members: ["user303", "user404"],
+            location: "Main Library Level 3",
+          },
+          {
+            id: "sess3",
+            name: "Project Meeting",
+            date: "2024-03-13T16:00:00Z",
+            active: false,
+            members: ["user505", "user606"],
+            location: "Online",
+          },
+        ],
         notifications: [
           // Dummy notifications as app is beta
           {
@@ -192,6 +226,7 @@ export default function Register() {
             type: "session_invite",
             uid: "user456",
             time: "4:00 PM",
+            sessionName: "Locked in for real",
             date: "Tomorrow",
             timestamp: "20 mins ago",
             requiresAction: true,
@@ -216,8 +251,9 @@ export default function Register() {
           {
             id: 6,
             type: "session_invite",
-            uid: "user123",
+            uid: "user303",
             time: "10:00 AM",
+            sessionName: "COMP4511 Grind",
             date: "Saturday",
             timestamp: "2 hours ago",
             requiresAction: true,

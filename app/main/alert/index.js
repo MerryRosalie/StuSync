@@ -90,6 +90,7 @@ export default function Page() {
 
       const newSession = {
         sessionId: `session_${Date.now()}`,
+        name: sessionData.name || "Study Session",
         date: sessionData.date,
         time: sessionData.time,
         location: sessionData.location || "",
