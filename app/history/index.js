@@ -32,7 +32,7 @@ export default function HistoryScreen() {
         </Text>
       </View>
       {/* info */}
-      <View className="gap-4">
+      <View className="gap-4 w-full">
         <View className="w-full border border-text-dimmed dark:border-dark-text-dimmed p-4 rounded-xl">
           <Text className="text-base font-bold text-text-default dark:text-dark-text-default">
             Date

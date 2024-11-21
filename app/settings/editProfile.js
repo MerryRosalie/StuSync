@@ -199,12 +199,12 @@ export default function EditProfileScreen() {
           Edit Profile
         </Text>
       </View>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        className="flex-1"
-        keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-      >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1 w-full px-3"
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        >
           <ScrollView className="flex-1" contentContainerStyle={{ gap: 24 }}>
             {/* Edit profile picture */}
             <TouchableOpacity
@@ -212,9 +212,14 @@ export default function EditProfileScreen() {
               className="w-32 h-32 self-center"
             >
               <Image
-                className="w-32 h-32 object-cover rounded-full"
-                source={{ uri: profilePicture }}
-                style={{ resizeMode: "cover" }}
+                source={{
+                  uri:
+                    currentUser.profilePicture === ""
+                      ? "https://avatar.iran.liara.run/public/1"
+                      : currentUser.profilePicture,
+                }}
+                className="w-32 h-32 rounded-full"
+                resizeMode="cover"
               />
               <View className="absolute bottom-0 right-0 w-12 h-12 rounded-full bg-purple-secondary dark:bg-dark-purple-secondary justify-center items-center">
                 <Feather
@@ -226,12 +231,12 @@ export default function EditProfileScreen() {
             </TouchableOpacity>
             <View className="w-full gap-4">
               {/* name input */}
-              <View className="gap-2">
-                <Text className="text-base font-semibold text-text-default dark:text-dark-text-default">
+              <View className="gap-2 w-full">
+                <Text className="text-base font-semibold text-text-default dark:text-dark-text-default ">
                   Name
                 </Text>
                 <TextInput
-                  className={`border ${
+                  className={`border w-full ${
                     errors.name ? "border-red-500" : "border-gray"
                   } text-text-default dark:text-dark-text-default placeholder:text-text-default/25 dark:placeholder:text-dark-text-default/25 rounded-xl items-center p-4`}
                   placeholder="Enter name"
@@ -330,8 +335,8 @@ export default function EditProfileScreen() {
               </Text>
             </TouchableOpacity>
           </ScrollView>
-        </TouchableWithoutFeedback>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </SafeAreaView>
   );
 }
