@@ -15,7 +15,7 @@ export default function Page() {
     }
   };
 
-  handleClearStorage();
+  //   handleClearStorage();
 
   // TODO: Change to Auth first
   return (

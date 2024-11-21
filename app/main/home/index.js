@@ -79,9 +79,9 @@ export default function Page() {
             />
             <View className="w-3/5">
               <Text className="text-purple-default font-semibold text-2xl">
-                Start studying now!!
+                Start Studying Now!
               </Text>
-              <View className="bg-white px-4 py-2 items-center gap-4 rounded-xl flex-row">
+              <View className="bg-white mt-4 px-4 py-2 justify-center items-center gap-4 rounded-xl flex-row">
                 <Text className="text-sm text-purple-default">
                   Check Notifications
                 </Text>
@@ -101,7 +101,9 @@ export default function Page() {
           className="flex-row justify-between"
           onPress={() => router.push("friends")}
         >
-          <Text className="text-left text-xl font-semibold text-text-default dark:text-dark-text-default">{`Friends`}</Text>
+          <Text className="text-left text-xl font-semibold text-text-default dark:text-dark-text-default">
+            Your Friends
+          </Text>
           <View className="flex-row items-center">
             <Text className="text-left text-base text-green">
               {`(${currentUser.friends.allFriends.length})`}

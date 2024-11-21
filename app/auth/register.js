@@ -166,7 +166,7 @@ export default function Register() {
             "user404",
             "user505",
             "user606",
-            "user707 ",
+            "user707",
           ],
           incomingRequests: ["user123", "user101"],
           pendingRequests: [],

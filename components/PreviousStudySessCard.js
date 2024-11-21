@@ -30,9 +30,14 @@ export default function PreviousStudySessCard({ title, time, members }) {
 
   return (
     <TouchableOpacity
-      className="w-52 h-36 border border-[#EEEEEE] rounded-[12] gap-1 p-4 justify-between"
+      className="w-52 h-36 my-2 bg-background dark:bg-dark-background shadow-dark-background dark:shadow-background rounded-[12] gap-1 p-4 justify-between"
       onPress={() => {
         router.navigate({ pathname: "/history", params: { title: title } });
+      }}
+      style={{
+        elevation: 2,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 100,
       }}
     >
       <View>
