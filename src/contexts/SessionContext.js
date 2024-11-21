@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useUser } from "./UserContext";
 
-const VOTE_DURATION = 10; // BETA: 30 seconds for voting
+const VOTE_DURATION = 30; // BETA: 30 seconds for voting
 
 const SessionContext = createContext({});
 
